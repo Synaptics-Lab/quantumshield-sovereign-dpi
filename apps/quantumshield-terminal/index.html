@@ -568,14 +568,21 @@
           <div class="deck-header">
             <span class="deck-title">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" color="var(--rice)"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-              1-Seed 5-Rail Key Custody
+              Universal 5-Rail Key Custody
             </span>
-            <button class="btn btn-outline btn-sm" onclick="generateNewSeed()">Randomize</button>
+            <div style="display: flex; gap: 6px;">
+              <span class="badge-chip" style="background: rgba(185, 224, 76, 0.12); color: var(--rice); font-size: 9px;">OAUTH 2.0 / PASSKEY READY</span>
+              <button class="btn btn-outline btn-sm" onclick="generateNewSeed()">Randomize</button>
+            </div>
           </div>
           
+          <div style="font-size: 11px; color: var(--dusk); margin-bottom: 10px; line-height: 1.4;">
+            Universal Interchangeable Auth: Derives or binds from <strong>Master Seed</strong>, <strong>OAuth 2.0 / OIDC (Google/Apple)</strong>, <strong>Passkeys (WebAuthn)</strong>, <strong>Enterprise SSO (Okta/SAML)</strong>, or <strong>Zero-Config Naked POST</strong>. Protected by Defensive Patent Prior Art (ADR-888 Claim 4).
+          </div>
+
           <div class="input-row">
             <div class="input-label">
-              <span>Master Seed (32 Bytes Hex)</span>
+              <span>Master Seed / Derived Entropy (32 Bytes Hex)</span>
               <span style="color: var(--rice);">Zero-Bridge Root</span>
             </div>
             <input type="text" id="wallet-seed" class="mono-input" value="425ed4e4a36b30ea425ed4e4a36b30ea425ed4e4a36b30ea425ed4e4a36b30ea" onchange="calculateRails()" />

@@ -199,6 +199,6 @@ All contracts are deployed and operational on the SynapticChain Layer-1 testnet:
 This software is released under the **Synaptic Public License v1.0 (SPL-1.0)**.
 
 - **Open Grants:** Hackathon evaluation, academic review, client dApp development, and public testnet RPC integration are royalty-free.
-- **Defensive Patent Protection:** International patent claims covering CE-WOTS+ monotonic watermark folding (Claim 1), Universal 5-Rail Isomorphism (Claim 2), and Static 256-Lane DAG scheduling (Claim 3) are aggressively retained. Hostile patent assertions or unauthorized protocol hard forks result in immediate and automatic license termination.
+- **Defensive Patent Protection:** International patent claims covering CE-WOTS+ monotonic watermark folding (Claim 1), Universal 5-Rail Isomorphism (Claim 2), Static 256-Lane DAG scheduling (Claim 3), and Universal Interchangeable Authentication Provider Abstraction Layer (Zero-Auth / OAuth 2.0 / OIDC / Passkey / WebAuthn / Enterprise SSO / ZK-Proof Auto-Onboarding & Deterministic Identity Nullifier State Machine Binding, Claim 4) are aggressively retained. Hostile patent assertions, patent trolling, or unauthorized protocol hard forks result in immediate and automatic license termination.
 
 See [`LICENSE.md`](./LICENSE.md) for full terms.
