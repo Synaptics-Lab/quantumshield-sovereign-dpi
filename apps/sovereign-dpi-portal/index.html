@@ -343,8 +343,18 @@
       .stat:nth-child(2n) { border-right: none; }
       .stat:nth-last-child(1), .stat:nth-last-child(2) { border-bottom: none; }
       .stats.cols3 .stat:nth-last-child(1) { border-bottom: 1px solid var(--hairline); }
-      .brand .word { font-size: 14px; }
-      .telemetry { display: none; }
+      .brand .word { font-size: 13px; }
+      .telemetry { display: flex; gap: 4px; }
+      .telemetry .tele-pill:not(:first-child) { display: none; }
+      .head-row2 {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 6px;
+      }
+      .head-row2::-webkit-scrollbar { display: none; }
+      .head-row2 .tab { flex-shrink: 0; font-size: 11.5px; padding: 6px 12px; }
       .fleet-in { padding: 22px 20px; }
       .amount-grid { grid-template-columns: 1fr; }
       .foot-base { flex-direction: column; align-items: flex-start; }

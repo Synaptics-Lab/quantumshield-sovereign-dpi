@@ -380,19 +380,66 @@
       box-shadow: 0 0 6px rgba(185, 224, 76, 0.4);
     }
 
-    /* Terminal Console Output */
-    pre.terminal-screen {
-      background: #040807;
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 14px;
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      color: #A3BFB2;
-      line-height: 1.6;
-      max-height: 200px;
-      overflow-y: auto;
-      white-space: pre-wrap;
+    /* Responsive Form & Matrix Utilities */
+    .form-grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .lane-matrix-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .terminal-header .header-flex {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+      }
+      .brand-title {
+        font-size: 16px !important;
+        flex-wrap: wrap !important;
+      }
+      .brand-title .sub-title {
+        display: none !important;
+      }
+      .header-actions {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .header-actions .btn {
+        font-size: 11px !important;
+        padding: 6px 12px !important;
+        flex: 1 1 auto;
+      }
+      .asset-vault-hero {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+      }
+      .container-wide {
+        padding: 0 12px !important;
+      }
+      .deck-card {
+        padding: 14px !important;
+      }
+      .form-grid-2col {
+        grid-template-columns: 1fr !important;
+      }
+      .form-btn-row {
+        flex-direction: column !important;
+      }
+      .lane-matrix-grid {
+        min-width: 500px !important;
+      }
+      .telemetry-ribbon {
+        font-size: 10px !important;
+      }
     }
   </style>
 </head>
@@ -403,7 +450,7 @@
     <div class="container-wide ribbon-flex">
       <div>
         <span class="status-led"></span>
-        <strong style="color: #FFFFFF;">SCBFT QUORUM 3/3</strong> (Lockstep Active) ·
+        <strong style="color: #FFFFFF;">DAG-PRIMARY QUORUM 3/3</strong> (Lockstep Active) ·
         <span>HEIGHT <strong id="ribbon-height" style="color: var(--rice);">#720</strong></span> ·
         <span>FINALITY <strong style="color: #FFFFFF;">420ms</strong></span>
       </div>
@@ -417,18 +464,18 @@
 
   <!-- Main Header -->
   <header class="terminal-header">
-    <div class="container-wide" style="display: flex; justify-content: space-between; align-items: center;">
+    <div class="container-wide header-flex" style="display: flex; justify-content: space-between; align-items: center;">
       <a href="/" class="brand-title">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" color="var(--rice)">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           <path d="M9 12l2 2 4-4"/>
         </svg>
         QUANTUM<span>SHIELD</span>
-        <span style="font-size: 12px; font-weight: 500; color: var(--dusk);">· Interactive Cryptographic Playground &amp; Terminal</span>
+        <span class="sub-title" style="font-size: 12px; font-weight: 500; color: var(--dusk);">· Interactive Cryptographic Playground &amp; Terminal</span>
         <span class="badge-chip" style="margin-left: 6px;">⚡ Playground</span>
       </a>
 
-      <div style="display: flex; align-items: center; gap: 10px;">
+      <div class="header-actions" style="display: flex; align-items: center; gap: 8px;">
         <button class="btn btn-rice btn-sm" onclick="triggerAutoOnboardAndAirdrop()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           Claim Starter Airdrop (SYN · sUSD · $BOT)
@@ -679,7 +726,9 @@
           <div style="font-size: 11.5px; color: var(--dusk); margin-bottom: 10px;">
             Independent hardware lanes prevent head-of-line blocking. Select any lane to route transactions:
           </div>
-          <div class="lane-matrix-grid" id="lane-matrix"></div>
+          <div class="lane-matrix-wrapper">
+            <div class="lane-matrix-grid" id="lane-matrix"></div>
+          </div>
         </div>
 
         <!-- Settlement & Transfer Console -->
@@ -692,7 +741,7 @@
             <span class="badge-chip">0.50% TSA ROUTED</span>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div class="form-grid-2col">
             <div class="input-row">
               <div class="input-label">Recipient Account</div>
               <input type="text" id="transfer-recipient" class="mono-input" value="syn1t9hp790tpp450jh0sd8lyd3znqccycal4m2z0u" />
@@ -709,7 +758,7 @@
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div class="form-grid-2col">
             <div class="input-row">
               <div class="input-label">Transfer Amount</div>
               <input type="number" id="transfer-amount" class="mono-input" value="100.00" step="1.0" oninput="updateTaxPreview()" />
@@ -721,7 +770,7 @@
             </div>
           </div>
 
-          <div style="display: flex; gap: 10px;">
+          <div class="form-btn-row" style="display: flex; gap: 10px;">
             <button class="btn btn-rice btn-block" onclick="executeSovereignTransfer()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
               Dispatch Settlement (Sub-500ms)
@@ -739,11 +788,11 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" color="var(--rice)"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
               L1 Telemetry & Execution Log
             </span>
-            <span class="badge-chip" id="log-status">CONNECTED</span>
+            <span class="badge-chip" style="color: var(--rice); border-color: rgba(185, 224, 76, 0.4);">CONNECTED</span>
           </div>
           <pre class="terminal-screen" id="console-logs">> QuantumShield Sovereign Multi-Rail Terminal initialized.
 > Connected to Layer-1 JSON-RPC: https://nodes.synapticchain.xyz/rpc
-> SCBFT Quorum: 3 / 3 Validators in active lockstep (Zeta physical mesh)
+> Consensus Quorum: 3 / 3 Neurons in active lockstep (DAG-Primary ADR-641)
 > Foreign Rails: XRPL Testnet (:51234) · Solana Devnet (:443) armed.</pre>
         </div>
 
