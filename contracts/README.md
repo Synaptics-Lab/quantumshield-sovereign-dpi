@@ -18,5 +18,9 @@
 - **ZRA Single Treasury Account (TSA):** `syn1t9hp790tpp450jh0sd8lyd3znqccycal4m2z0u`
 - **Ambient Flow-Bot Execution Ring:** 6 on-chain merchant and citizen simulation accounts actively settling tax-split transactions.
 
+## Developer Documentation & Primers
+- **[SynapticLang Developer Primer](../docs/SYNAPTICLANG_HACKATHON_PRIMER.md):** Language specification, syntax, storage annotations, types, branchless design, and verified compiler workarounds.
+- **[Contract Compile & Deploy Guide](../docs/CONTRACT_COMPILE_AND_DEPLOY_GUIDE.md):** Step-by-step runbook for `synlang compile`, gas estimation, deployment via CLI/SDK/RPC, `init()` state initialization, and on-chain verification.
+
 ## Machine-Readable ABIs
 JSON ABIs for client integrations are located under [`contracts/abi/`](./abi/).

@@ -141,6 +141,13 @@ quantumshield-sovereign-dpi/
 │   ├── nginx.conf                 # Multi-vhost reverse proxy configuration
 │   └── Dockerfile                 # Lightweight Alpine web server container
 │
+├── docs/                          # Developer Primers & Technical Specifications
+│   ├── SYNAPTICLANG_HACKATHON_PRIMER.md   # Complete SynapticLang syntax, VM rules & patterns
+│   ├── CONTRACT_COMPILE_AND_DEPLOY_GUIDE.md # Step-by-step synlang compile, gas sizing & deploy runbook
+│   ├── AUDIT_VERIFICATION_MATRIX.md       # 100% Traceable code-path verification matrix
+│   ├── HACKATHON_SUBMISSION_PACK_AND_DEFENSE.md # Submission presentation pack & defense
+│   └── GRANT_PROPOSAL_POST_QUANTUM_BIP360_EF.md # Ethereum Foundation BIP-360 grant proposal
+│
 └── scripts/
     └── hackathon-preflight.sh     # 10-second non-interactive health verification script
 ```
