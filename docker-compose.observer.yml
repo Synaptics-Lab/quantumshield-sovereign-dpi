@@ -1,0 +1,56 @@
+services:
+  # ==============================================================================
+  # 1. SynapticChain Read-Only Observer Node
+  # ==============================================================================
+  # Syncs real-time blocks & checkpoints from the African testnet mesh via P2P.
+  # Verifies state roots locally with zero-trust in third-party RPCs.
+  # Exposes local JSON-RPC at http://localhost:8545.
+  # ==============================================================================
+  observer-node:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.observer
+    image: synapticchain/observer:latest
+    container_name: synaptic-observer
+    restart: unless-stopped
+    ports:
+      - "8545:8545"   # Local JSON-RPC API
+      - "8546:8546"   # Local WebSocket Firehose
+      - "9000:9000"   # P2P GossipSub Network Port
+    volumes:
+      - observer_data:/data/observer
+      - ./config/observer.toml:/app/config/observer.toml:ro
+      - ./config/genesis-testnet.toml:/data/observer/genesis-testnet.toml:ro
+      - ./config/genesis-testnet.toml:/app/genesis-testnet.toml:ro
+    command: >
+      --mode light
+      --rpc-port 8545
+      --p2p-port 9000
+      --data-dir /data/observer
+      --log-level info
+      --skip-stake-check
+      --bootstrap /ip4/100.126.201.109/tcp/9000
+    environment:
+      - RUST_LOG=info
+
+  # ==============================================================================
+  # 2. Local Canopy Explorer UI (Evergreen Spatial Interface)
+  # ==============================================================================
+  # Configured to interface directly with your local observer node at :8545.
+  # Watch checkpoints tick and verify transactions on your local machine.
+  # ==============================================================================
+  canopy-explorer:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: canopy-local-explorer
+    restart: unless-stopped
+    ports:
+      - "3000:3000"   # Open http://localhost:3000
+    environment:
+      - SYNAPTIC_RPC=http://observer-node:8545
+    depends_on:
+      - observer-node
+
+volumes:
+  observer_data:

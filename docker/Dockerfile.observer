@@ -1,0 +1,63 @@
+# ==============================================================================
+# SynapticChain Observer Node — Auditor & Developer Container
+# ==============================================================================
+# Lightweight, hardened Debian Bookworm container for read-only chain verification.
+# Zero proprietary consensus source code exposed.
+# ==============================================================================
+
+FROM ubuntu:noble
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    jq \
+    libssl3 \
+    libstdc++6 \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install pre-compiled release binary
+ARG BINARY_URL="https://synapticchain.xyz/downloads/synaptic-node"
+RUN echo "Fetching official pre-compiled synaptic-node binary from ${BINARY_URL}..." && \
+    curl -fsSL "${BINARY_URL}" -o /usr/local/bin/synaptic-node && \
+    chmod +x /usr/local/bin/synaptic-node && \
+    /usr/local/bin/synaptic-node --version || true
+
+# Create data directory
+RUN mkdir -p /data/observer
+
+# Bundle genesis configuration
+COPY config/genesis-testnet.toml /app/genesis-testnet.toml
+COPY config/genesis-testnet.toml /app/genesis.toml
+COPY config/genesis-testnet.toml /data/observer/genesis-testnet.toml
+
+# Expose ports:
+# 8545: Local JSON-RPC API
+# 8546: WebSocket Firehose
+# 9000: libp2p P2P GossipSub
+# 9090: Prometheus Metrics
+EXPOSE 8545 8546 9000 9090
+
+ENV MODE=light \
+    RPC_PORT=8545 \
+    P2P_PORT=9000 \
+    DATA_DIR=/data/observer \
+    RUST_LOG=info
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=3 \
+    CMD curl -fsS http://localhost:8545/health || exit 1
+
+ENTRYPOINT ["synaptic-node"]
+CMD [ \
+    "--mode", "light", \
+    "--rpc-port", "8545", \
+    "--p2p-port", "9000", \
+    "--data-dir", "/data/observer", \
+    "--log-level", "info", \
+    "--skip-stake-check", \
+    "--bootstrap", "/dns4/nodes.synapticchain.xyz/tcp/9000" \
+]

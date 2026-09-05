@@ -1,4 +1,4 @@
-.PHONY: all help install preflight demo verify serve docker-up docker-down
+.PHONY: all help install preflight demo verify serve docker-up docker-down observer observer-docker observer-down observer-status
 
 all: help
 
@@ -6,12 +6,16 @@ help:
 	@echo "======================================================================"
 	@echo "  QUANTUMSHIELD & SOVEREIGN DPI SUITE — HACKATHON COMMANDS"
 	@echo "======================================================================"
-	@echo "  make preflight    - Run 10-second system and consensus health check"
-	@echo "  make demo         - Run live 6-pillar hackathon demonstration"
-	@echo "  make verify       - Run cryptographic SDK unit tests (Python & JS)"
-	@echo "  make serve        - Serve local portals on port 8080"
-	@echo "  make docker-up    - Launch local portals & x402 gateway via Docker"
-	@echo "  make docker-down  - Stop Docker services"
+	@echo "  make preflight       - Run 10-second system and consensus health check"
+	@echo "  make demo            - Run live 6-pillar hackathon demonstration"
+	@echo "  make observer        - Launch 1-click read-only observer node (:8545)"
+	@echo "  make observer-docker - Launch observer node & local explorer in Docker"
+	@echo "  make observer-down   - Stop observer node & local explorer"
+	@echo "  make observer-status - Check local observer node sync status"
+	@echo "  make verify          - Run cryptographic SDK unit tests (Python & JS)"
+	@echo "  make serve           - Serve local portals on port 8080"
+	@echo "  make docker-up       - Launch local portals & x402 gateway via Docker"
+	@echo "  make docker-down     - Stop Docker services"
 	@echo "======================================================================"
 
 install:
@@ -43,3 +47,15 @@ docker-up:
 
 docker-down:
 	docker compose down
+
+observer:
+	./scripts/run-observer.sh
+
+observer-docker:
+	docker compose -f docker-compose.observer.yml up -d
+
+observer-down:
+	docker compose -f docker-compose.observer.yml down
+
+observer-status:
+	./scripts/run-observer.sh --status

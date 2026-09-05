@@ -104,6 +104,22 @@ Spins up local instances of the Canopy Explorer (`:3000`), QuantumShield Termina
 make docker-up
 ```
 
+### Option D: Trustless Verification via Local Observer Node (The Decentralization Flex)
+Launch an independent read-only observer node on your local machine to verify P2P blocks directly from the mesh with zero trust in third-party endpoints:
+```bash
+# 1-Command launch (Docker or native Linux x86_64)
+make observer
+
+# Verify local P2P block streaming at localhost:8545
+curl -s -X POST http://localhost:8545 \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"syn_getStatus","params":[],"id":1}' | jq .
+
+# Open local Canopy Explorer connected to your observer node
+open http://localhost:3000
+```
+*(See [`docs/OBSERVER_NODE_KIT.md`](./docs/OBSERVER_NODE_KIT.md) for architecture, configuration, and verification runbook).*
+
 ---
 
 ## 5. Repository Layout & Component Guide
@@ -115,8 +131,13 @@ quantumshield-sovereign-dpi/
 ├── SPECIFICATION.md               # Post-quantum CE-WOTS+ and 5-Rail cryptographic specifications
 ├── LICENSE.md                     # Synaptic Public License v1.0 (SPL-1.0) with Patent Claims notice
 ├── Makefile                       # One-command orchestration: demo, preflight, verify, serve
-├── docker-compose.yml             # Container orchestration for all web applications & gateways
+├── docker-compose.yml             # Container orchestration for web applications & portals
+├── docker-compose.observer.yml    # 1-Click observer node & local explorer stack
 ├── demo_hackathon_e2e.py          # 6-Pillar live interactive testnet verification runner
+│
+├── config/                        # Network & Node Configurations
+│   ├── observer.toml              # Read-only observer P2P & RPC configuration
+│   └── genesis-testnet.toml       # Canonical testnet genesis state configuration
 │
 ├── apps/                          # Production Web Applications & Gateways
 │   ├── quantumshield-terminal/    # Sovereign Web4 Terminal Wallet (5-Rail, CE-WOTS+, 256-Lane matrix)
@@ -139,9 +160,11 @@ quantumshield-sovereign-dpi/
 │
 ├── docker/                        # Containerization & Web Ingress
 │   ├── nginx.conf                 # Multi-vhost reverse proxy configuration
-│   └── Dockerfile                 # Lightweight Alpine web server container
+│   ├── Dockerfile                 # Lightweight Alpine web server container
+│   └── Dockerfile.observer        # Read-only Ubuntu Noble observer node container
 │
 ├── docs/                          # Developer Primers & Technical Specifications
+│   ├── OBSERVER_NODE_KIT.md       # Observer node operations & auditor runbook
 │   ├── SYNAPTICLANG_HACKATHON_PRIMER.md   # Complete SynapticLang syntax, VM rules & patterns
 │   ├── CONTRACT_COMPILE_AND_DEPLOY_GUIDE.md # Step-by-step synlang compile, gas sizing & deploy runbook
 │   ├── AUDIT_VERIFICATION_MATRIX.md       # 100% Traceable code-path verification matrix
@@ -149,6 +172,7 @@ quantumshield-sovereign-dpi/
 │   └── GRANT_PROPOSAL_POST_QUANTUM_BIP360_EF.md # Ethereum Foundation BIP-360 grant proposal
 │
 └── scripts/
+    ├── run-observer.sh            # 1-Click observer node launcher (Docker/Native)
     └── hackathon-preflight.sh     # 10-second non-interactive health verification script
 ```
 

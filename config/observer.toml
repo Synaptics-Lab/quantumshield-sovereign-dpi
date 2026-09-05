@@ -1,0 +1,38 @@
+# ==============================================================================
+# SynapticChain Observer Node Configuration
+# ==============================================================================
+# Mode: Read-only Observer (Zero Stake, Zero Private Keys, Zero Voting Authority)
+# Connects to the SynapticChain African Testnet mesh over libp2p GossipSub.
+# Cryptographically verifies state roots and exposes local JSON-RPC / WebSocket.
+# ==============================================================================
+
+[node]
+mode = "light"                        # Observer / light mode (no block production)
+log_level = "info"
+skip_stake_check = true                # Observers do not require validator stake
+
+[network]
+chain_id = 0                           # Synaptic African Testnet
+shards = 1
+rpc_port = 8545
+p2p_port = 9000
+metrics_port = 9090
+data_dir = "./data/observer"
+
+[p2p]
+# Live Continental Mesh Bootstrap Relays (Alpha Germany, Bravo South Africa, Zeta US)
+bootstrap_peers = [
+    "/dns4/nodes.synapticchain.xyz/tcp/9000",
+    "/ip4/100.81.111.43/tcp/9000",      # Alpha (Frankfurt, Germany)
+    "/ip4/100.78.228.39/tcp/9000",      # Bravo (Johannesburg, South Africa)
+    "/ip4/100.126.201.109/tcp/9000"     # Zeta (New Jersey, US)
+]
+
+# Bootstrap authority endpoint (dynamic peer discovery)
+bootstrap_authority = "https://nodes.synapticchain.xyz/net/bootstrap"
+
+[rpc]
+bind_address = "0.0.0.0"
+port = 8545
+cors_allowed_origins = ["*"]
+rate_limit_per_second = 1000
