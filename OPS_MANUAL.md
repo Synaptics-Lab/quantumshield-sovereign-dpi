@@ -22,11 +22,11 @@ make preflight
 ### Manual Visual Sanity Check
 Open these three browser tabs side-by-side:
 1. **Tab 1 — Canopy Explorer:** [`https://nodes.synapticchain.xyz`](https://nodes.synapticchain.xyz)
-   - *Check:* Block height is ticking upwards past #1,390; 3/3 validators showing green lockstep.
+   - *Role:* **Proof of Live L1 Consensus & Height** (Block height ticking #1,390+, 3/3 validators in green lockstep).
 2. **Tab 2 — QuantumShield Terminal:** [`https://wallet.synapticchain.xyz/quantum/`](https://wallet.synapticchain.xyz/quantum/)
-   - *Check:* Terminal console loads with Canopy light-mode styling; buttons responsive; XRPL XLS-20 soulbound anchor verified.
+   - *Role:* **Interactive Cryptographic Playground & Terminal** (5-Rail derivation, CE-WOTS+ post-quantum proof, XRPL XLS-20 anchor, live testnet faucets).
 3. **Tab 3 — GovPay Sovereign Suite:** [`https://govpay.synapticchain.xyz`](https://govpay.synapticchain.xyz) (or [`https://synapticchain.xyz/govpay/`](https://synapticchain.xyz/govpay/))
-   - *Check:* Bank of Zambia vault displays **150,000,000 ZMW**; recent settlements feed ticking.
+   - *Role:* **Real-World Impact** (Bank of Zambia **150,000,000 ZMW** vault float, ZRA tax collector, INRIS identity).
 
 ---
 

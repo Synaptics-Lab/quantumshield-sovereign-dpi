@@ -160,11 +160,11 @@ def main():
     # --------------------------------------------------------------------------
     # PILLAR 6: Web Portals & Explorer Verification
     # --------------------------------------------------------------------------
-    section(6, "Live Production Portals & Developer Explorer")
-    print(f"  ✓ Canopy Explorer:        {BOLD}https://nodes.synapticchain.xyz{NC}")
-    print(f"  ✓ QuantumShield Terminal: {BOLD}https://wallet.synapticchain.xyz/quantum/{NC}")
-    print(f"  ✓ GovPay Sovereign Suite: {BOLD}https://govpay.synapticchain.xyz{NC} (or {BOLD}https://synapticchain.xyz/govpay/{NC})")
-    print(f"  ✓ Public JSON-RPC API:    {BOLD}https://nodes.synapticchain.xyz/rpc{NC}")
+    section(6, "Live Production Portals & 3-Tab Laser-Focused Surface")
+    print(f"  ✓ Tab 1 — Canopy Explorer:     {BOLD}https://nodes.synapticchain.xyz{NC} [Proof of L1 Consensus & Height]")
+    print(f"  ✓ Tab 2 — Playground/Terminal: {BOLD}https://wallet.synapticchain.xyz/quantum/{NC} [Interactive Cryptographic Playground & Terminal]")
+    print(f"  ✓ Tab 3 — GovPay Sovereign:    {BOLD}https://govpay.synapticchain.xyz{NC} [Real-World Impact: 150M ZMW Central Bank Float]")
+    print(f"  ✓ Public JSON-RPC API:         {BOLD}https://nodes.synapticchain.xyz/rpc{NC}")
 
     print(f"\n{BOLD}{GREEN}════════════════════════════════════════════════════════════════════════════════{NC}")
     print(f"{BOLD}{GREEN}  >>> DEMONSTRATION COMPLETE: ALL 6 PILLARS VERIFIED OPERATIONAL <<<{NC}")

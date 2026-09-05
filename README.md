@@ -45,15 +45,15 @@ It solves three foundational dilemmas in modern digital finance:
 
 ---
 
-## 2. Live Interactive Deployments
+## 2. Live Interactive Deployments (The 3-Tab Laser-Focused Surface)
 
 All portals are running live in production and interface directly with the SynapticChain Layer-1 testnet:
 
-| Application | Live URL | Description |
+| Tab / Application | Live URL | Presentation Role & Description |
 |---|---|---|
-| **Canopy Explorer** | [https://nodes.synapticchain.xyz](https://nodes.synapticchain.xyz) | Canopy Evergreen light spatial UI; live SCBFT DAG telemetry, validator matrix, and checkpoint height |
-| **QuantumShield Terminal** | [https://wallet.synapticchain.xyz/quantum/](https://wallet.synapticchain.xyz/quantum/) | Institutional terminal wallet; 5-Rail key derivation, CE-WOTS+ simulator, 256-lane concurrency matrix |
-| **GovPay Sovereign Suite** | [https://govpay.synapticchain.xyz](https://govpay.synapticchain.xyz) | National DPI portal; 150M ZMW Central Bank vault, ZRA tax collector, INRIS biometric identity |
+| **Tab 1: Canopy Explorer** | [https://nodes.synapticchain.xyz](https://nodes.synapticchain.xyz) | **Proof of Live L1 Consensus & Height:** Canopy Evergreen light spatial UI; live SCBFT DAG telemetry, 3/3 validator matrix, and continuous block height |
+| **Tab 2: QuantumShield Terminal** | [https://wallet.synapticchain.xyz/quantum/](https://wallet.synapticchain.xyz/quantum/) | **Interactive Cryptographic Playground & Terminal (5-Rail + Quantum Defense):** 5-Rail key derivation, CE-WOTS+ post-quantum proof, XRPL XLS-20 soulbound anchor, live faucets, 256-lane concurrency matrix |
+| **Tab 3: GovPay Sovereign Suite** | [https://govpay.synapticchain.xyz](https://govpay.synapticchain.xyz) | **Real-World Impact:** National DPI portal; 150M ZMW Central Bank vault, ZRA tax collector, INRIS biometric identity |
 | **Public JSON-RPC API** | `https://nodes.synapticchain.xyz/rpc` | High-throughput JSON-RPC 2.0 endpoint (sub-500ms response time) |
 
 ---

@@ -58,23 +58,33 @@ Institutional finance, central bank reserves, and sovereign cross-border corrido
 | Service | Live URL | Design & Purpose |
 |---|---|---|
 | **Canopy Explorer** | [https://nodes.synapticchain.xyz](https://nodes.synapticchain.xyz) | Canopy Evergreen light spatial UI; real-time SCBFT DAG telemetry & height inspector |
-| **QuantumShield Terminal** | [https://wallet.synapticchain.xyz/quantum/](https://wallet.synapticchain.xyz/quantum/) | Institutional terminal wallet; 5-Rail derivation, CE-WOTS+ simulator, 256-lane matrix, XRPL XLS-20 Soulbound anchor |
+| **QuantumShield Playground & Terminal** | [https://wallet.synapticchain.xyz/quantum/](https://wallet.synapticchain.xyz/quantum/) | QuantumShield Interactive Cryptographic Playground & Terminal (5-Rail + Quantum Defense, XRPL XLS-20 anchor, Pacs.008) |
 | **GovPay Sovereign Suite** | [https://govpay.synapticchain.xyz](https://govpay.synapticchain.xyz) | National DPI portal; BoZ 150M ZMW vault, ZRA tax collector, INRIS biometric identity |
 | **Public JSON-RPC API** | `https://nodes.synapticchain.xyz/rpc` | Public JSON-RPC 2.0 endpoint (sub-500ms response) |
 
 ---
 
-## 4. 3-Minute Live Presentation Walkthrough (Judge Script)
+## 4. The 3-Tab Laser-Focused Live Presentation Surface
+
+| Tab | Application | URL | Presentation Focus |
+|---|---|---|---|
+| **Tab 1** | **Canopy Explorer** | [https://nodes.synapticchain.xyz](https://nodes.synapticchain.xyz) | **Proof of Live L1 Consensus & Height** (SCBFT 3/3 lockstep, sub-500ms DAG finality, zero-slop telemetry) |
+| **Tab 2** | **QuantumShield Terminal** | [https://wallet.synapticchain.xyz/quantum/](https://wallet.synapticchain.xyz/quantum/) | **Interactive Playground (5-Rail + Quantum Defense)** (CE-WOTS+, live XRP/SOL faucets, XRPL XLS-20 anchor, 256-lane matrix) |
+| **Tab 3** | **GovPay Sovereign DPI** | [https://govpay.synapticchain.xyz](https://govpay.synapticchain.xyz) | **Real-World Impact (150M ZMW Central Bank Float)** (Bank of Zambia reserve, ZRA tax collector, INRIS biometric SBT) |
+
+---
+
+## 5. 3-Minute Live Presentation Walkthrough (Judge Script)
 
 ### Step 1: Prove Live Consensus (0:00 – 0:45)
-- Open [`https://nodes.synapticchain.xyz`](https://nodes.synapticchain.xyz).
+- Open **Tab 1** ([`https://nodes.synapticchain.xyz`](https://nodes.synapticchain.xyz)).
 - Point out the **Canopy Evergreen** design language (Mist `#F2F6F2`, Pine `#0D2B24`, Fern `#1E7A5C`, Rice `#B9E04C`).
 - Observe live canonical checkpoint height advancing past #1,390 with sub-500ms commitments.
 - Show the 3-neuron SCBFT consensus quorum in continuous lockstep.
 
-### Step 2: Demonstrate QuantumShield & 5-Rail Derivation (0:45 – 1:45)
-- Open [`https://wallet.synapticchain.xyz/quantum/`](https://wallet.synapticchain.xyz/quantum/).
-- Enter a 32-byte seed and click **"Derive 5-Rail Isomorphism"**.
+### Step 2: Demonstrate the Interactive Cryptographic Playground (0:45 – 1:45)
+- Open **Tab 2** ([`https://wallet.synapticchain.xyz/quantum/`](https://wallet.synapticchain.xyz/quantum/) — **QuantumShield Interactive Cryptographic Playground & Terminal**).
+- Enter a 32-byte seed or click "Randomize Seed" to demonstrate **"Derive 5-Rail Isomorphism"**.
 - Point out simultaneous address generation for SynapticChain, Ethereum, XRPL, Solana, and Bitcoin without third-party bridges.
 - Highlight the **XRPL XLS-20 Non-Transferable (Soulbound) NFT Anchor** anchoring the Synaptic identity to XRPL testnet ledger consensus (`Flags: 0`, Taxon `402`).
 - Navigate to the **"CE-WOTS+ Quantum Defense"** section: click **"Verify Signature & Advance Watermark"** to show instant SIMD hash verification and ADR-062 replay invalidation.
