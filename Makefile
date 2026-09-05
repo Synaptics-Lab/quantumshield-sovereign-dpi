@@ -28,6 +28,12 @@ verify:
 	python3 sdk/python/test_client.py
 	node sdk/js/test.js
 
+bench-stunt:
+	python3 /opt/synapticchain/stunt_5wallets_256lanes.py
+
+bench-amdahl:
+	python3 /opt/synapticchain/amdahl_law_256lanes_10wallets.py
+
 serve:
 	@echo "Serving apps locally on http://localhost:8080..."
 	python3 -m http.server 8080 --directory apps

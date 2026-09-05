@@ -166,6 +166,24 @@ curl -i -s http://localhost:8402/api/agent-alpha | grep -iE "HTTP|x402|WWW-Authe
 cd /opt/quantumshield-sovereign-dpi/apps/x402-gateway && node client_agent.js
 ```
 
+### 8. Live 256-Lane Concurrency Stunt & Amdahl's Law Speedup Benchmark
+Demonstrates real Layer-1 parallel ingestion across all 256 independent lanes per account (zero nonce collision, 100% ack rate, >6,000 submission TPS):
+
+```bash
+# 1. 5 Wallets × 256 Lanes (1,280 simultaneous txs across Zeta mesh):
+python3 /opt/synapticchain/stunt_5wallets_256lanes.py
+
+# 2. 10 Wallets × 256 Lanes (2,560 txs formal Amdahl's Law speedup test):
+python3 /opt/synapticchain/amdahl_law_256lanes_10wallets.py
+
+# 3. View empirical sweep telemetry dataset (4,640 transactions across all trials):
+cat /opt/synapticchain/sweep_results.json | jq .
+```
+- **Empirical speedup:** $53.43\times$ acceleration ($p = 98.51\%$ parallel fraction).
+- **Executive Report:** [`/opt/synapticchain/AMDAHL_PARALLEL_EFFICIENCY_REPORT.md`](file:///opt/synapticchain/AMDAHL_PARALLEL_EFFICIENCY_REPORT.md)
+- **Academic Manuscript:** [`/opt/synapticchain/PAPER_DECOUPLED_MULTI_LANE_SCALING.md`](file:///opt/synapticchain/PAPER_DECOUPLED_MULTI_LANE_SCALING.md)
+
+
 ---
 
 ## 4. "If The Judge Asks..." — Defense Cheat Sheet
