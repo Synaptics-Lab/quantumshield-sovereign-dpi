@@ -4,7 +4,7 @@
   "CarbonCreditToken": "syn1ugs4794mhjyxl86sdkecp8mnee0wlprkrvr8jy",
   "CarbonCreditMarketplace": "syn109zfmgqafzy963jjkdd9lf5fm8e9tqhnfz95rx",
   "TerrariumEngine": "syn1dj2a3nlrc44lqtwzeg9ws0d6plzeayrmxy98m2",
-  "CorridorRouter": "syn15wcyqdzktwwgn0j76cau74hgcav68hxn7tzrpv",
+  "CorridorRouter": "syn1x6xd0803wurjm4mhg05szjkrd8eku99hpn883a",
   "sUSD": "syn1v4vjp7ejvl2l8zznd4u8z4l5pg9ugcvn4w32xm",
   "sUSD_ODL": "syn1v4vjp7ejvl2l8zznd4u8z4l5pg9ugcvn4w32xm",
   "sUSD_reconciled_at_unix": 1788442800,
@@ -14,14 +14,14 @@
   "cNGN": "syn1hseelgyr3n270xeypg7uzuqld2cww4jlhakwz8",
   "SwapEngineV3b_ODL": "syn1l8ksxre9efc3fcut8tu3crzr4tfutmrh2p6mff",
   "corridor_stablecoins": {
-    "cTZS": "syn1vktw65hkg7fa9n5uje78zurzy9ws76l6urp6vl",
-    "cNGN": "syn1hseelgyr3n270xeypg7uzuqld2cww4jlhakwz8",
-    "cKES": "syn1actw7q3tl8yupe40hq87hx2qdlq7k8xcddvyk6",
-    "cZAR": "syn1xhg3qw0tgz7mjzzkwch6cc3w8yswmeyxdg7qq3"
+    "cTZS": "syn1yvteylckazas4f444shc8hjwjdc6ye3rhzwxew",
+    "cNGN": "syn1fputlu5ax4cy8vfpdpgpx2fekyvzg6e3l8zcdz",
+    "cKES": "syn1s6z0nz070j9u08pq42ta6vesyzcpvkerfqnll4",
+    "cZAR": "syn1ffr9pr8akafsykrv8kquh74yvhux5clgh3g8mf"
   },
-  "generated_at_unix": 1788433914,
+  "generated_at_unix": 1788612863,
   "rpc": "https://nodes.synapticchain.xyz/rpc",
-  "StablecoinToken": "syn1v4vjp7ejvl2l8zznd4u8z4l5pg9ugcvn4w32xm",
+  "StablecoinToken": "syn1ylzgjh6zwl2n2k7tsprs9q0yrerde3dl44nz8p",
   "corridor_pools": {
     "sUSD/cTZS": "syn1l8ksxre9efc3fcut8tu3crzr4tfutmrh2p6mff",
     "sUSD/cNGN": "syn1sv75jm95tejynehv5hvkklqwnpk6mjzugea7vt",
@@ -33,7 +33,7 @@
   "x402_RewardDistributor": "syn178xa78d46ar93v0d8hvh0jzhgvl2ewe9c4nnw9",
   "x402_SubscriptionNFT": "syn1wd9wn2vq3q9q3ydmn59e703w28cxpq8h8fz352",
   "x402_BondingCurveToken": "syn1q3ksvtwu8azp2jyfl35p8weuajx5gvgremd6tz",
-  "AgentToken": "syn168ujxx4f4w9y5x6s4ut2smkg7lr73gu446v4ph",
+  "AgentToken": "syn1v5e37x5xrcgsn3hs4lfuyh0ent5gekv0nq4v87",
   "TimeOracle": "syn1mylpl4z038zp937cgxg5k038qkczmtl2sz666p",
   "ViralityEngine": "syn1zlpvfuu25y52wadaljudkwpvxjcu05040rgaye",
   "deaddev_token": "syn1s9xyv8fmhq349s655h2ynyuhx584szkv2gxxwf",
@@ -49,6 +49,10 @@
   "zambia_server_wallet": "syn12mtvlv3a2e3n7zx6le0lzfk0gn986l8f4hd2kj",
   "zambia_seed_nullifier": "0813fe93681179e505f84c10507779ded0638a960e95f23ce0527358b025cba0",
   "zambia_sovereign_suite_deployed_at_unix": 1788608952,
-  "SubscriptionManager": "syn15q8w4u709t454jc0tm7jvmr6r8d4tj0y26t54j",
-  "institutional_auditor": "syn16zfcmmmkwpqy6tuw4tqjsr6k2td4dqnrkyf9ev"
+  "SubscriptionManager": "syn1vvkge3flnng0j62ttctgmcpf3jvqpec8s9qkzf",
+  "institutional_auditor": "syn16zfcmmmkwpqy6tuw4tqjsr6k2td4dqnrkyf9ev",
+  "AgentMarket": "syn1l3luf8sd7aeeg6jzha50xupafvp3yguue048kk",
+  "AgentDEX": "syn17n2w7hs8pnggh0pcjtapdsj4ehquvdjcmdly3j",
+  "AgentLaunchpad": "syn1ep7ada7lek52lf462f89nfzc483nqw2hmcxfh6",
+  "AgentStaking": "syn1rn8y4hscmqrdqqvjcyh33zksv7yw65tkdc3atx"
 }
