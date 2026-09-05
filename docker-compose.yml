@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  portals:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "3000:3000"  # Canopy Explorer
+      - "3001:3001"  # QuantumShield Terminal Wallet
+      - "3002:3002"  # GovPay Sovereign DPI Portal
+    restart: unless-stopped
+    environment:
+      - SYNAPTIC_RPC=https://nodes.synapticchain.xyz/rpc
+
+  x402-gateway:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./apps/x402-gateway:/app
+    command: sh -c "npm install && node server.js"
+    ports:
+      - "8402:8402"
+    restart: unless-stopped
+    environment:
+      - PORT=8402
+      - SYNAPTIC_RPC=https://nodes.synapticchain.xyz/rpc
+      - PAYMENT_RECIPIENT=syn1t9hp790tpp450jh0sd8lyd3znqccycal4m2z0u

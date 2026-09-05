@@ -1,0 +1,11 @@
+{
+  "name": "@synaptic/sdk-quantumshield",
+  "version": "1.0.0",
+  "description": "JavaScript / TypeScript Client SDK for SynapticChain, QuantumShield, and 5-Rail Derivations",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": ["synapticchain", "quantumshield", "wots", "5-rail", "sovereign-dpi"],
+  "license": "SPL-1.0"
+}

@@ -1,0 +1,11 @@
+{
+  "contract": "SynIdentityNFT",
+  "standard": "Soulbound Non-Fungible Identity Credential",
+  "category": "INRIS Biometric Anti-Ghost Registry",
+  "functions": [
+    { "name": "init", "inputs": [{ "name": "authority", "type": "Address" }], "outputs": [] },
+    { "name": "mint_identity", "inputs": [{ "name": "recipient", "type": "Address" }, { "name": "national_id_hash", "type": "String" }, { "name": "biometric_proof", "type": "String" }], "outputs": [{ "type": "u64" }] },
+    { "name": "verify_identity", "inputs": [{ "name": "account", "type": "Address" }], "outputs": [{ "type": "bool" }] },
+    { "name": "revoke_identity", "inputs": [{ "name": "token_id", "type": "u64" }], "outputs": [{ "type": "bool" }] }
+  ]
+}

@@ -1,0 +1,391 @@
+// ============================================================================
+// ISO 20022 Payment Settlement Contract (Production)
+// ============================================================================
+//
+// Government money-transfer corridor contract for the Gambia–Senegal pilot.
+//
+// Design constraints (work around known compiler/VM bugs):
+//   - No `if/else` blocks that contain state writes, `call_contract`, `emit`,
+//     or `require!`. Branching is done by splitting into separate functions.
+//   - No `!` operator; use `== false` and `== true` instead.
+//   - No `Result<>`, `enum`, or helper functions.
+//   - No `.contains_key()` on state maps (compiler drops the call).
+//   - No struct field access on values read from maps (type is lost, so the
+//     field access is not lowered and the whole struct is compared).
+//   - Use parallel scalar maps instead of `Map<String, Struct>`.
+//
+// Settlement flow:
+//   1. deployer calls setup(settlement_token)
+//   2. treasury prefunds the contract with settlement tokens
+//   3. authorized agent calls initiate_payment(...) to record the ISO message
+//   4. after compliance checks off-chain, authorized agent calls execute_payment
+//      which transfers escrowed tokens to the creditor and marks COMPLETED
+//
+// ============================================================================
+
+contract ISO20022Payment {
+    // -------------------------------------------------------------------------
+    // State
+    // -------------------------------------------------------------------------
+    state owner: Address;
+    state paused: bool;
+    state settlement_token: Address;
+    state payment_count: u64;
+    state sanctioned: Map<Address, bool>;
+    state frozen: Map<Address, bool>;
+    state authorized_agents: Map<Address, bool>;
+
+    // Payment data stored as parallel scalar maps (avoids struct field-access bug).
+    state payment_exists: Map<String, bool>;
+    state payment_message_type: Map<String, String>;
+    state payment_status: Map<String, String>;
+    state payment_debtor: Map<String, Address>;
+    state payment_creditor: Map<String, Address>;
+    state payment_amount: Map<String, u128>;
+    state payment_currency: Map<String, String>;
+    state payment_creation_time: Map<String, u64>;
+    state payment_execution_time: Map<String, u64>;
+    state payment_validation_level: Map<String, String>;
+
+    // -------------------------------------------------------------------------
+    // Structs (only used for return values, never stored in maps)
+    // -------------------------------------------------------------------------
+    struct PaymentInfo {
+        message_id: String,
+        message_type: String,
+        status: String,
+        debtor: Address,
+        creditor: Address,
+        amount: u128,
+        currency: String,
+        creation_time: u64,
+        execution_time: u64,
+        validation_level: String,
+    }
+
+    // -------------------------------------------------------------------------
+    // Events
+    // -------------------------------------------------------------------------
+    event PaymentInitiated {
+        message_id: String,
+        message_type: String,
+        debtor: Address,
+        creditor: Address,
+        amount: u128,
+        currency: String,
+    }
+
+    event PaymentExecuted {
+        message_id: String,
+        transaction_id: Hash,
+        status: String,
+    }
+
+    event PaymentStatusUpdated {
+        message_id: String,
+        old_status: String,
+        new_status: String,
+    }
+
+    event PartySanctioned {
+        party: Address,
+        sanctioned_by: Address,
+    }
+
+    event PartyUnsanctioned {
+        party: Address,
+        unsanctioned_by: Address,
+    }
+
+    event PartyFrozen {
+        party: Address,
+        frozen_by: Address,
+    }
+
+    event PartyUnfrozen {
+        party: Address,
+        unfrozen_by: Address,
+    }
+
+    event AgentAuthorized {
+        agent: Address,
+        authorized_by: Address,
+    }
+
+    event AgentRevoked {
+        agent: Address,
+        revoked_by: Address,
+    }
+
+    event ContractPaused {
+        by: Address,
+    }
+
+    event ContractUnpaused {
+        by: Address,
+    }
+
+    // -------------------------------------------------------------------------
+    // Setup
+    // -------------------------------------------------------------------------
+    #[writes(owner, paused, settlement_token, payment_count, authorized_agents)]
+    pub fn setup(settlement_token: Address) {
+        self.owner = msg.sender;
+        self.paused = false;
+        self.settlement_token = settlement_token;
+        self.payment_count = 0;
+        self.authorized_agents[msg.sender] = true;
+    }
+
+    // -------------------------------------------------------------------------
+    // Payment initiation
+    // -------------------------------------------------------------------------
+    #[reads(paused, sanctioned, frozen, authorized_agents, payment_exists,
+            payment_count)]
+    #[writes(payment_exists, payment_message_type, payment_status, payment_debtor,
+            payment_creditor, payment_amount, payment_currency,
+            payment_creation_time, payment_execution_time, payment_validation_level,
+            payment_count)]
+    pub fn initiate_payment(
+        message_id: String,
+        message_type: String,
+        debtor: Address,
+        creditor: Address,
+        amount: u128,
+        currency: String,
+        validation_level: String,
+    ) {
+        require!(self.paused == false, "Contract is paused");
+        require!(self.authorized_agents[msg.sender] == true, "Not authorized");
+        require!(message_id.len() != 0, "Invalid message_id");
+        require!(message_type.len() != 0, "Invalid message_type");
+        require!(debtor != Address::zero(), "Invalid debtor");
+        require!(creditor != Address::zero(), "Invalid creditor");
+        require!(amount != 0, "Invalid amount");
+        require!(currency.len() == 3, "Invalid currency code");
+        require!(self.payment_exists[message_id] == false, "Payment already exists");
+        require!(self.sanctioned[debtor] == false, "Debtor sanctioned");
+        require!(self.sanctioned[creditor] == false, "Creditor sanctioned");
+        require!(self.frozen[debtor] == false, "Debtor frozen");
+        require!(self.frozen[creditor] == false, "Creditor frozen");
+
+        self.payment_exists[message_id] = true;
+        self.payment_message_type[message_id] = message_type;
+        self.payment_status[message_id] = "PENDING";
+        self.payment_debtor[message_id] = debtor;
+        self.payment_creditor[message_id] = creditor;
+        self.payment_amount[message_id] = amount;
+        self.payment_currency[message_id] = currency;
+        self.payment_creation_time[message_id] = block_height();
+        self.payment_execution_time[message_id] = 0;
+        self.payment_validation_level[message_id] = validation_level;
+        self.payment_count = self.payment_count + 1;
+
+        emit PaymentInitiated {
+            message_id: message_id,
+            message_type: message_type,
+            debtor: debtor,
+            creditor: creditor,
+            amount: amount,
+            currency: currency,
+        };
+    }
+
+    // -------------------------------------------------------------------------
+    // Payment execution (settlement)
+    // -------------------------------------------------------------------------
+    #[reads(paused, sanctioned, frozen, authorized_agents, payment_exists,
+            payment_status, payment_debtor, payment_creditor, payment_amount,
+            settlement_token)]
+    #[writes(payment_status, payment_execution_time)]
+    pub fn execute_payment(message_id: String) {
+        require!(self.paused == false, "Contract is paused");
+        require!(self.authorized_agents[msg.sender] == true, "Not authorized");
+        require!(self.payment_exists[message_id] == true, "Payment not found");
+
+        require!(self.payment_status[message_id] == "PENDING", "Payment not pending");
+
+        let debtor = self.payment_debtor[message_id];
+        let creditor = self.payment_creditor[message_id];
+        require!(self.sanctioned[debtor] == false, "Debtor sanctioned");
+        require!(self.sanctioned[creditor] == false, "Creditor sanctioned");
+        require!(self.frozen[debtor] == false, "Debtor frozen");
+        require!(self.frozen[creditor] == false, "Creditor frozen");
+
+        emit PaymentStatusUpdated {
+            message_id: message_id,
+            old_status: "PENDING",
+            new_status: "EXECUTING",
+        };
+
+        // Transfer settlement tokens from contract escrow to creditor.
+        let amount = self.payment_amount[message_id];
+        call_contract(self.settlement_token, "transfer", creditor, amount);
+
+        self.payment_status[message_id] = "COMPLETED";
+        self.payment_execution_time[message_id] = block_height();
+
+        emit PaymentExecuted {
+            message_id: message_id,
+            transaction_id: Hash::zero(),
+            status: "COMPLETED",
+        };
+
+        emit PaymentStatusUpdated {
+            message_id: message_id,
+            old_status: "EXECUTING",
+            new_status: "COMPLETED",
+        };
+    }
+
+    // -------------------------------------------------------------------------
+    // Payment failure / rejection (no token movement)
+    // -------------------------------------------------------------------------
+    #[reads(paused, authorized_agents, payment_exists, payment_status)]
+    #[writes(payment_status, payment_execution_time)]
+    pub fn reject_payment(message_id: String) {
+        require!(self.paused == false, "Contract is paused");
+        require!(self.authorized_agents[msg.sender] == true, "Not authorized");
+        require!(self.payment_exists[message_id] == true, "Payment not found");
+        require!(self.payment_status[message_id] == "PENDING", "Payment not pending");
+
+        self.payment_status[message_id] = "REJECTED";
+        self.payment_execution_time[message_id] = block_height();
+
+        emit PaymentStatusUpdated {
+            message_id: message_id,
+            old_status: "PENDING",
+            new_status: "REJECTED",
+        };
+    }
+
+    // -------------------------------------------------------------------------
+    // Compliance administration
+    // -------------------------------------------------------------------------
+    #[reads(owner)]
+    #[writes(sanctioned)]
+    pub fn sanction_party(party: Address) {
+        require!(msg.sender == self.owner, "Not owner");
+        self.sanctioned[party] = true;
+        emit PartySanctioned { party: party, sanctioned_by: msg.sender };
+    }
+
+    #[reads(owner)]
+    #[writes(sanctioned)]
+    pub fn unsanction_party(party: Address) {
+        require!(msg.sender == self.owner, "Not owner");
+        self.sanctioned[party] = false;
+        emit PartyUnsanctioned { party: party, unsanctioned_by: msg.sender };
+    }
+
+    #[reads(owner)]
+    #[writes(frozen)]
+    pub fn freeze_party(party: Address) {
+        require!(msg.sender == self.owner, "Not owner");
+        self.frozen[party] = true;
+        emit PartyFrozen { party: party, frozen_by: msg.sender };
+    }
+
+    #[reads(owner)]
+    #[writes(frozen)]
+    pub fn unfreeze_party(party: Address) {
+        require!(msg.sender == self.owner, "Not owner");
+        self.frozen[party] = false;
+        emit PartyUnfrozen { party: party, unfrozen_by: msg.sender };
+    }
+
+    #[reads(owner)]
+    #[writes(authorized_agents)]
+    pub fn authorize_agent(agent: Address) {
+        require!(msg.sender == self.owner, "Not owner");
+        self.authorized_agents[agent] = true;
+        emit AgentAuthorized { agent: agent, authorized_by: msg.sender };
+    }
+
+    #[reads(owner)]
+    #[writes(authorized_agents)]
+    pub fn revoke_agent(agent: Address) {
+        require!(msg.sender == self.owner, "Not owner");
+        self.authorized_agents[agent] = false;
+        emit AgentRevoked { agent: agent, revoked_by: msg.sender };
+    }
+
+    #[reads(owner)]
+    #[writes(paused)]
+    pub fn pause() {
+        require!(msg.sender == self.owner, "Not owner");
+        self.paused = true;
+        emit ContractPaused { by: msg.sender };
+    }
+
+    #[reads(owner)]
+    #[writes(paused)]
+    pub fn unpause() {
+        require!(msg.sender == self.owner, "Not owner");
+        self.paused = false;
+        emit ContractUnpaused { by: msg.sender };
+    }
+
+    // -------------------------------------------------------------------------
+    // View helpers
+    // -------------------------------------------------------------------------
+    #[reads(payment_exists, payment_message_type, payment_status, payment_debtor,
+            payment_creditor, payment_amount, payment_currency,
+            payment_creation_time, payment_execution_time, payment_validation_level)]
+    pub fn get_payment(message_id: String) -> PaymentInfo {
+        require!(self.payment_exists[message_id] == true, "Payment not found");
+        PaymentInfo {
+            message_id: message_id,
+            message_type: self.payment_message_type[message_id],
+            status: self.payment_status[message_id],
+            debtor: self.payment_debtor[message_id],
+            creditor: self.payment_creditor[message_id],
+            amount: self.payment_amount[message_id],
+            currency: self.payment_currency[message_id],
+            creation_time: self.payment_creation_time[message_id],
+            execution_time: self.payment_execution_time[message_id],
+            validation_level: self.payment_validation_level[message_id],
+        }
+    }
+
+    #[reads(payment_exists, payment_status)]
+    pub fn get_payment_status(message_id: String) -> String {
+        require!(self.payment_exists[message_id] == true, "Payment not found");
+        self.payment_status[message_id]
+    }
+
+    #[reads(payment_count)]
+    pub fn get_payment_count() -> u64 {
+        self.payment_count
+    }
+
+    #[reads(sanctioned)]
+    pub fn is_sanctioned(party: Address) -> bool {
+        self.sanctioned[party]
+    }
+
+    #[reads(frozen)]
+    pub fn is_frozen(party: Address) -> bool {
+        self.frozen[party]
+    }
+
+    #[reads(authorized_agents)]
+    pub fn is_authorized(agent: Address) -> bool {
+        self.authorized_agents[agent]
+    }
+
+    #[reads(paused)]
+    pub fn is_paused() -> bool {
+        self.paused
+    }
+
+    #[reads(owner)]
+    pub fn get_owner() -> Address {
+        self.owner
+    }
+
+    #[reads(settlement_token)]
+    pub fn get_settlement_token() -> Address {
+        self.settlement_token
+    }
+}

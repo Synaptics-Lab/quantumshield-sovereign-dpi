@@ -1,0 +1,14 @@
+{
+  "contract": "AtomicRouter",
+  "category": "Universal 5-Rail Settlement",
+  "functions": [
+    { "name": "init", "inputs": [], "outputs": [] },
+    { "name": "initiate_swap", "inputs": [{ "name": "swap_id", "type": "String" }, { "name": "recipient", "type": "Address" }, { "name": "deadline_blocks", "type": "u64" }, { "name": "dest_chain", "type": "u32" }, { "name": "amount", "type": "u128" }], "outputs": [{ "type": "bool" }] },
+    { "name": "claim_swap", "inputs": [{ "name": "swap_id", "type": "String" }, { "name": "preimage_hex", "type": "String" }], "outputs": [{ "type": "bool" }] },
+    { "name": "refund_swap", "inputs": [{ "name": "swap_id", "type": "String" }], "outputs": [{ "type": "bool" }] }
+  ],
+  "events": [
+    { "name": "SwapInitiated", "inputs": [{ "name": "swap_id", "type": "String" }, { "name": "sender", "type": "Address" }, { "name": "recipient", "type": "Address" }, { "name": "amount", "type": "u128" }, { "name": "dest_chain", "type": "u32" }, { "name": "deadline", "type": "u64" }] },
+    { "name": "SwapClaimed", "inputs": [{ "name": "swap_id", "type": "String" }, { "name": "recipient", "type": "Address" }, { "name": "amount_paid", "type": "u128" }, { "name": "syn_burned", "type": "u128" }, { "name": "preimage", "type": "String" }] }
+  ]
+}

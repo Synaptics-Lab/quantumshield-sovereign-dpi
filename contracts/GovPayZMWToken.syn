@@ -1,0 +1,93 @@
+// ============================================================================
+// Token — SRC20-compatible token with annotations
+// Based on WSYN pattern, using u128 for compiler compatibility
+// ============================================================================
+
+contract Token {
+    state name: String;
+    state symbol: String;
+    state decimals: u8;
+    state total_supply: u128;
+    state balances: Map<Address, u128>;
+    state allowances: Map<Address, Map<Address, u128>>;
+    state owner: Address;
+
+    event Transfer(from: Address, to: Address, amount: u128);
+    event Approval(owner: Address, spender: Address, amount: u128);
+
+    #[writes(name, symbol, decimals, total_supply, balances, owner)]
+    pub fn init(token_name: String, token_symbol: String, token_decimals: u8, initial_supply: u128) {
+        self.name = token_name;
+        self.symbol = token_symbol;
+        self.decimals = token_decimals;
+        self.total_supply = initial_supply;
+        self.owner = msg.sender;
+        self.balances[msg.sender] = initial_supply;
+        emit Transfer(Address::zero(), msg.sender, initial_supply);
+    }
+
+    #[reads(name)]
+    pub fn get_name() -> String { self.name }
+
+    #[reads(symbol)]
+    pub fn get_symbol() -> String { self.symbol }
+
+    #[reads(decimals)]
+    pub fn get_decimals() -> u8 { self.decimals }
+
+    #[reads(total_supply)]
+    pub fn get_total_supply() -> u128 { self.total_supply }
+
+    #[reads(balances)]
+    pub fn balance_of(account: Address) -> u128 {
+        return self.balances[account];
+    }
+
+    #[reads(allowances)]
+    pub fn allowance(owner_addr: Address, spender: Address) -> u128 {
+        return self.allowances[owner_addr][spender];
+    }
+
+    #[reads(balances, allowances, total_supply)]
+    #[writes(balances, allowances, total_supply)]
+    pub fn transfer(to: Address, amount: u128) -> bool {
+        let sender = msg.sender;
+        require!(self.balances[sender] >= amount, "Insufficient balance");
+        self.balances[sender] = self.balances[sender] - amount;
+        self.balances[to] = self.balances[to] + amount;
+        emit Transfer(sender, to, amount);
+        return true;
+    }
+
+    #[reads(balances, allowances)]
+    #[writes(balances, allowances)]
+    pub fn transfer_from(from: Address, to: Address, amount: u128) -> bool {
+        let sender = msg.sender;
+        let allowed = self.allowances[from][sender];
+        require!(allowed >= amount, "Insufficient allowance");
+        require!(self.balances[from] >= amount, "Insufficient balance");
+        self.allowances[from][sender] = allowed - amount;
+        self.balances[from] = self.balances[from] - amount;
+        self.balances[to] = self.balances[to] + amount;
+        emit Transfer(from, to, amount);
+        return true;
+    }
+
+    #[reads(allowances)]
+    #[writes(allowances)]
+    pub fn approve(spender: Address, amount: u128) -> bool {
+        self.allowances[msg.sender][spender] = amount;
+        emit Approval(msg.sender, spender, amount);
+        return true;
+    }
+
+    #[reads(balances, total_supply, owner)]
+    #[writes(balances, total_supply)]
+    pub fn mint(to: Address, amount: u128) -> bool {
+        require!(msg.sender == self.owner, "Not owner");
+        self.total_supply = self.total_supply + amount;
+        self.balances[to] = self.balances[to] + amount;
+        emit Transfer(Address::zero(), to, amount);
+        return true;
+    }
+}

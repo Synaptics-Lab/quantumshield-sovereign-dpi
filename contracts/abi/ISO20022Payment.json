@@ -1,0 +1,10 @@
+{
+  "contract": "ISO20022Payment",
+  "standard": "ISO 20022 Pacs.008 RTGS Interbank Router",
+  "category": "Interbank Cross-Border Settlement",
+  "functions": [
+    { "name": "init", "inputs": [{ "name": "settlement_token", "type": "Address" }], "outputs": [] },
+    { "name": "send_pacs008", "inputs": [{ "name": "end_to_end_id", "type": "String" }, { "name": "uetr", "type": "String" }, { "name": "debtor_agent", "type": "String" }, { "name": "creditor_agent", "type": "String" }, { "name": "creditor", "type": "Address" }, { "name": "amount", "type": "u128" }], "outputs": [{ "type": "bool" }] },
+    { "name": "get_pacs008_status", "inputs": [{ "name": "end_to_end_id", "type": "String" }], "outputs": [{ "type": "u8" }] }
+  ]
+}

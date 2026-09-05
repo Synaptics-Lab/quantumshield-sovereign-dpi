@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="robots" content="noindex" />
+  <title>Sovereign DPI Suite — National Treasury · Central Bank · GovPay</title>
+  <meta name="description" content="Interactive demonstration of the Sovereign Digital Public Infrastructure (DPI) Suite: Single Treasury &amp; Customs Account, Citizen &amp; Merchant GovPay Wallet, INRIS Ghost-Buster social cash transfers, and Central Bank ISO 20022 real-time settlement." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230d2b24'/%3E%3Cpath d='M28 26 L50 78 L72 26' stroke='%23b9e04c' stroke-width='11' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Zambia Sovereign DPI Suite" />
+  <meta property="og:description" content="Proving government revenue · ghost-busting · ISO 20022 — live interactive demonstration for the Smart Zambia Institute." />
+  <meta name="theme-color" content="#f2f6f2" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── ledger design system (unified with synapticchain.xyz / wallet / api) ── */
+    :root {
+      --mist: #f2f6f2;
+      --card: #ffffff;
+      --pine: #0d2b24;
+      --fern: #1e7a5c;
+      --fern-soft: rgba(30, 122, 92, 0.10);
+      --lime: #b9e04c;
+      --dusk: #5c6f68;
+      --ember: #c2502f;
+      --ember-soft: rgba(194, 80, 47, 0.09);
+      --border: rgba(13, 43, 36, 0.14);
+      --hairline: rgba(13, 43, 36, 0.08);
+      --shadow-sm: 0 1px 2px rgba(13, 43, 36, 0.06), 0 1px 6px rgba(13, 43, 36, 0.05);
+      --shadow-lg: 0 12px 32px -12px rgba(13, 43, 36, 0.18);
+      --font-display: 'Space Grotesk', 'Inter', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --r-md: 10px;
+      --r-lg: 14px;
+      --r-xl: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--mist);
+      color: var(--pine);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      max-width: 100vw;
+      font-size: 15px;
+    }
+    img, svg { max-width: 100%; }
+    [hidden] { display: none !important; }
+    ::selection { background: var(--lime); color: var(--pine); }
+    a { color: inherit; text-decoration: none; }
+    :focus-visible { outline: 2px solid var(--fern); outline-offset: 2px; border-radius: 4px; }
+    button { font: inherit; color: inherit; }
+
+    .grid-paper {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(13, 43, 36, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(13, 43, 36, 0.05) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+    .container { width: 100%; max-width: 1240px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+    .display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.035em; line-height: 0.98; text-transform: uppercase; }
+    .label { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.14em; font-size: 10.5px; font-weight: 600; }
+    .mono { font-family: var(--font-mono); }
+
+    /* ── header ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(242, 246, 242, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .head-row1 { display: flex; align-items: center; height: 58px; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; min-width: 0; }
+    .brand svg { width: 30px; height: 30px; border-radius: 8px; flex: none; }
+    .brand .word { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.03em; font-size: 16px; white-space: nowrap; }
+    .brand .tick {
+      font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+      border: 1px solid rgba(13,43,36,0.2); background: var(--lime);
+      border-radius: 4px; padding: 2px 5px; line-height: 1; flex: none;
+    }
+    .telemetry { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .tele-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: var(--font-mono); font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--dusk);
+      border: 1px solid var(--border); background: var(--card);
+      border-radius: 999px; padding: 5px 11px; box-shadow: var(--shadow-sm); white-space: nowrap;
+    }
+    .tele-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fern); animation: pulse 2.2s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    .head-row2 { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 0 10px; }
+    .tab {
+      font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; padding: 8px 13px; border-radius: 999px;
+      border: 1px solid var(--border); background: var(--card); color: var(--dusk);
+      cursor: pointer; white-space: nowrap; transition: background 120ms, color 120ms, border-color 120ms;
+    }
+    .tab:hover { color: var(--pine); border-color: rgba(13,43,36,0.4); }
+    .tab.on { background: var(--pine); color: var(--mist); border-color: var(--pine); }
+
+    /* ── hero ── */
+    .hero { padding: 40px 0 8px; }
+    .hero-status {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em;
+      border: 1px solid var(--border); background: var(--card);
+      border-radius: 999px; padding: 7px 14px; box-shadow: var(--shadow-sm);
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--fern); animation: pulse 2.2s ease-in-out infinite; }
+    .hero h1 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: -0.04em; line-height: 0.96; font-size: clamp(30px, 5vw, 54px); margin: 18px 0 12px; }
+    .hero h1 .hollow { color: transparent; -webkit-text-stroke: 1.5px var(--pine); }
+    .hero h1 .fern { color: var(--fern); }
+    .hero p.lede { max-width: 720px; font-size: 15px; color: var(--dusk); margin-bottom: 6px; }
+    .hero p.lede strong { color: var(--pine); font-weight: 600; }
+
+    /* section scaffolding */
+    .view { padding: 26px 0 40px; }
+    .sec-head { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+    .sec-kicker { display: flex; align-items: center; gap: 9px; color: var(--fern); }
+    .sec-kicker .rule { width: 26px; height: 1px; background: var(--fern); }
+    .sec-head h2 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: -0.03em; line-height: 1.05; font-size: clamp(22px, 3.2vw, 32px); }
+    .sec-head .aside { margin-left: auto; color: var(--dusk); font-size: 12.5px; max-width: 340px; }
+    .block-sub { color: var(--dusk); font-size: 13.5px; max-width: 820px; margin-bottom: 18px; }
+    .block-sub strong { color: var(--pine); font-weight: 600; }
+
+    /* buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      font-family: var(--font-mono); font-size: 11.5px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      height: 42px; padding: 0 18px; border-radius: 10px;
+      border: 1px solid var(--border); cursor: pointer; background: var(--card);
+      transition: transform 100ms, background 120ms, border-color 120ms;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-solid { background: var(--pine); color: var(--mist); border-color: var(--pine); }
+    .btn-solid:hover { background: #123a30; }
+    .btn-accent { background: var(--fern); color: var(--mist); border-color: var(--fern); box-shadow: var(--shadow-sm); }
+    .btn-accent:hover:not(:disabled) { background: #17664c; }
+    .btn-block { width: 100%; height: 46px; font-size: 12px; }
+
+    /* stat band */
+    .stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--border); border-radius: var(--r-lg);
+      background: var(--card); box-shadow: var(--shadow-sm);
+      overflow: hidden; margin-top: 14px;
+    }
+    .stats.cols3 { grid-template-columns: repeat(3, 1fr); }
+    .stat { padding: 18px 20px; border-right: 1px solid var(--hairline); min-width: 0; }
+    .stat:last-child { border-right: none; }
+    .stat .num { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.03em; font-size: 26px; line-height: 1.05; white-space: nowrap; }
+    .stat .num.fern { color: var(--fern); }
+    .stat .num.ember { color: var(--ember); }
+    .stat .cap { display: block; margin-top: 7px; font-family: var(--font-mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dusk); }
+
+    /* fleet band (pine dark) */
+    .fleet { border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--pine); color: var(--mist); box-shadow: var(--shadow-lg); overflow: hidden; }
+    .fleet-in { padding: 30px 30px; display: flex; gap: 30px; align-items: center; flex-wrap: wrap; }
+    .fleet .label { color: rgba(242,246,242,0.55); }
+    .fleet .big-num { font-family: var(--font-display); font-weight: 700; font-size: clamp(34px, 4.6vw, 52px); letter-spacing: -0.035em; color: var(--lime); line-height: 1; white-space: nowrap; }
+    .fleet .sub-num { font-family: var(--font-mono); font-size: 12.5px; color: rgba(242,246,242,0.75); margin-top: 10px; }
+    .fleet-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; max-width: 560px; }
+    .chip {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+      border: 1px solid rgba(242,246,242,0.22); border-radius: 999px;
+      padding: 4px 11px; color: rgba(242,246,242,0.86); white-space: nowrap;
+    }
+    .chip.hot { border-color: rgba(185,224,76,0.55); color: var(--lime); }
+    .fleet-cta { margin-left: auto; display: flex; flex-direction: column; gap: 8px; min-width: 220px; }
+    .fleet-cta .metric { text-align: left; }
+    .fleet-cta .metric .num { font-family: var(--font-display); font-weight: 700; font-size: 26px; letter-spacing: -0.03em; }
+    .fleet-cta .metric .cap { font-family: var(--font-mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.13em; color: rgba(242,246,242,0.6); }
+
+    /* cards / grid */
+    .net { display: grid; grid-template-columns: 1.15fr 1fr; gap: 14px; align-items: start; }
+    .net > * { min-width: 0; }
+    .iso-grid { grid-template-columns: 1fr 1.4fr; }
+    .net-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      box-shadow: var(--shadow-sm); padding: 24px; min-width: 0; position: relative;
+    }
+    .net-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--lime), var(--fern)); opacity: 0.9;
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+    }
+    .net-card h3 { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin-bottom: 4px; }
+    .net-card .net-sub { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fern); margin-bottom: 16px; }
+
+    .kv { display: flex; flex-direction: column; gap: 0; }
+    .kv-row { display: flex; justify-content: space-between; gap: 14px; padding: 11px 2px; border-bottom: 1px solid var(--hairline); align-items: baseline; }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-row .k { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dusk); flex: none; }
+    .kv-row .v { font-family: var(--font-mono); font-size: 12.5px; text-align: right; word-break: break-word; }
+    .kv-row .v.fern { color: var(--fern); font-weight: 600; }
+
+    /* pills */
+    .pill {
+      font-family: var(--font-mono); font-size: 9px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; border-radius: 999px; padding: 3px 9px;
+      border: 1px solid rgba(30,122,92,0.45); background: var(--fern-soft); color: var(--fern);
+      white-space: nowrap; display: inline-block;
+    }
+    .pill.lime { border-color: rgba(185,224,76,0.7); background: var(--lime); color: var(--pine); }
+    .pill.bad { border-color: rgba(194,80,47,0.45); background: var(--ember-soft); color: var(--ember); }
+    .pill.plain { border-color: var(--border); background: var(--mist); color: var(--dusk); }
+
+    /* tables */
+    .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--card); box-shadow: var(--shadow-sm); }
+    .data-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; }
+    .data-table th {
+      text-align: left; font-size: 9px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--dusk); padding: 11px 14px;
+      border-bottom: 1px solid var(--border); background: var(--mist); white-space: nowrap;
+    }
+    .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--hairline); white-space: nowrap; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table td.amt, .data-table th.amt { text-align: right; }
+    .data-table td.fern { color: var(--fern); font-weight: 600; }
+    .data-table td.hash { color: var(--fern); }
+    .data-table td.time { color: var(--dusk); }
+    .data-table td.entity { color: var(--pine); font-weight: 600; font-family: var(--font-sans); font-size: 12.5px; }
+    .row-in { animation: rowIn 500ms ease; }
+    @keyframes rowIn { from { opacity: 0; transform: translateY(-5px); } }
+    tr.wallet-row td:first-child { border-left: 3px solid var(--lime); }
+    tr.dup-row td:first-child { border-left: 3px solid var(--ember); }
+
+    .stream-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin: 26px 0 12px; }
+    .live-tag { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--fern); }
+    .live-tag .dot { background: var(--fern); }
+
+    /* forms */
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dusk); margin-bottom: 6px; }
+    .field input {
+      width: 100%; font-family: var(--font-mono); font-size: 14.5px; padding: 11px 13px;
+      border: 1px solid var(--border); border-radius: 10px; background: var(--mist);
+      color: var(--pine); transition: border-color 120ms;
+    }
+    .field input:focus { outline: none; border-color: var(--fern); }
+    .field input:read-only { background: var(--card); color: var(--dusk); }
+    .field .hint { font-size: 11px; color: var(--dusk); margin-top: 5px; font-family: var(--font-mono); }
+    .field .hint.error { color: var(--ember); }
+    .amount-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .amt-out { color: var(--fern); font-weight: 600; }
+
+    .fee-box { background: var(--mist); border: 1px solid var(--hairline); border-radius: 12px; padding: 13px 15px; font-family: var(--font-mono); font-size: 11.5px; margin-bottom: 16px; }
+    .fee-box .fr { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; color: var(--dusk); }
+    .fee-box .fr b { color: var(--pine); font-weight: 600; }
+    .fee-box .fr.total { border-top: 1px solid var(--hairline); margin-top: 6px; padding-top: 8px; color: var(--pine); }
+    .fee-box .fr .fern { color: var(--fern); font-weight: 600; }
+
+    /* progress */
+    .progress { height: 8px; border-radius: 999px; background: var(--mist); border: 1px solid var(--hairline); overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: var(--fern); border-radius: 999px; transition: width 280ms ease; }
+    .progress-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fern); margin-top: 8px; min-height: 14px; }
+
+    /* receipt */
+    .receipt { margin-top: 16px; border: 1px solid rgba(30,122,92,0.4); border-radius: var(--r-lg); background: var(--card); padding: 18px; position: relative; overflow: hidden; }
+    .receipt::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--lime), var(--fern)); }
+    .receipt h4 { font-family: var(--font-display); font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+    .receipt .rc-meta { display: flex; gap: 7px; flex-wrap: wrap; margin: 8px 0 12px; }
+    pre.xml {
+      background: var(--pine); color: rgba(242,246,242,0.88); font-family: var(--font-mono); font-size: 10.5px;
+      line-height: 1.65; padding: 16px; border-radius: 12px; overflow: auto; max-width: 100%; max-height: 320px;
+      white-space: pre; -webkit-overflow-scrolling: touch;
+    }
+
+    /* QR */
+    .qr-panel {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      width: 200px; height: 200px; margin: 0 auto; display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-lg);
+    }
+    .qr-panel canvas, .qr-panel img { border-radius: 6px; }
+    .qr-caption { text-align: center; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dusk); margin-top: 12px; }
+    .qr-caption b { color: var(--pine); }
+
+    /* gauge */
+    .gauge { height: 16px; border-radius: 999px; background: rgba(242,246,242,0.12); border: 1px solid rgba(242,246,242,0.22); overflow: hidden; }
+    .gauge-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--fern), var(--lime)); border-radius: 999px; }
+    .gauge.pulse .gauge-fill { animation: gaugePulse 900ms ease; }
+    @keyframes gaugePulse { 0% { opacity: 0.55; } 100% { opacity: 1; } }
+    .gauge-kv { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 11px; color: rgba(242,246,242,0.72); margin-top: 8px; }
+
+    /* ISO inspector */
+    .iso-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .iso-item {
+      display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
+      padding: 10px 12px; border: 1px solid var(--hairline); background: var(--mist);
+      border-radius: var(--r-md); cursor: pointer; margin-bottom: 7px;
+      font-family: var(--font-mono); font-size: 11px; transition: border-color 120ms, background 120ms;
+    }
+    .iso-item:hover { border-color: var(--fern); }
+    .iso-item.sel { border-color: var(--fern); background: var(--fern-soft); }
+    .iso-item .msg-id { color: var(--pine); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .iso-item .msg-time { margin-left: auto; color: var(--dusk); flex: none; }
+    .iso-head-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .iso-head-row .mono { font-size: 11px; color: var(--dusk); }
+
+    .log-box { background: var(--pine); border-radius: 12px; padding: 13px 15px; max-height: 260px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .log-line { display: flex; justify-content: space-between; gap: 10px; font-family: var(--font-mono); font-size: 11px; color: rgba(242,246,242,0.86); padding: 4px 0; border-bottom: 1px solid rgba(242,246,242,0.08); }
+    .log-line:last-child { border-bottom: none; }
+    .log-line .ok { color: var(--lime); font-weight: 600; }
+    .log-line .bad { color: #ff9a76; font-weight: 600; }
+    .log-line.row-in { animation: rowIn 400ms ease; }
+
+    /* footer */
+    footer { margin-top: 60px; border-top: 1px solid var(--border); background: var(--card); }
+    .foot-base {
+      border-top: 1px solid var(--hairline); padding: 18px 0 24px;
+      display: flex; gap: 14px; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      color: var(--dusk); font-family: var(--font-mono); font-size: 11px;
+    }
+    .foot-base b { color: var(--pine); }
+
+    /* responsive */
+    @media (max-width: 1020px) {
+      .net { grid-template-columns: 1fr; }
+      .iso-grid { grid-template-columns: 1fr; }
+      .sec-head .aside { margin-left: 0; }
+      .fleet-cta { margin-left: 0; width: 100%; }
+    }
+    @media (max-width: 760px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .stats.cols3 { grid-template-columns: repeat(2, 1fr); }
+      .stat { border-bottom: 1px solid var(--hairline); }
+      .stat:nth-child(2n) { border-right: none; }
+      .stat:nth-last-child(1), .stat:nth-last-child(2) { border-bottom: none; }
+      .stats.cols3 .stat:nth-last-child(1) { border-bottom: 1px solid var(--hairline); }
+      .brand .word { font-size: 14px; }
+      .telemetry { display: none; }
+      .fleet-in { padding: 22px 20px; }
+      .amount-grid { grid-template-columns: 1fr; }
+      .foot-base { flex-direction: column; align-items: flex-start; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .dot, .live-tag .dot, .tele-pill .dot { animation: none !important; }
+      .row-in { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-paper" aria-hidden="true"></div>
+
+  <header>
+    <div class="container head-row1">
+      <div class="brand">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="100" height="100" rx="22" fill="#0d2b24"/>
+          <path d="M28 26 L50 78 L72 26" stroke="#b9e04c" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="word">Zambia Sovereign DPI Suite</span>
+        <span class="tick">ISO 20022</span>
+      </div>
+      <div class="telemetry" aria-hidden="true">
+        <span class="tele-pill"><span class="dot"></span> Mesh <b id="meshNum">#—</b></span>
+        <span class="tele-pill">Finality <b id="finalityMs">—</b></span>
+        <span class="tele-pill">Lanes <b>2,048</b></span>
+      </div>
+    </div>
+    <div class="container head-row2" role="tablist" aria-label="Sovereign apps">
+      <button class="tab on" data-app="app4" role="tab" aria-selected="true">1 · Bank of Zambia Observer</button>
+      <button class="tab" data-app="app1" role="tab" aria-selected="false">2 · ZRA Treasury &amp; Customs</button>
+      <button class="tab" data-app="app2" role="tab" aria-selected="false">3 · Sovereign GovPay Wallet</button>
+      <button class="tab" data-app="app3" role="tab" aria-selected="false">4 · INRIS Ghost-Buster SCT</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ══════════ HERO ══════════ -->
+    <section class="hero">
+      <span class="hero-status" id="heroStatus"><span class="dot" aria-hidden="true"></span> Connecting to SynapticChain African alpha testnet…</span>
+      <h1>Built for the <span class="fern">central bank</span> — proving <span class="hollow">automated revenue</span>, ghost-busting &amp; ISO 20022</h1>
+      <p class="lede">
+        Sovereign infrastructure for the <strong>Bank of Zambia</strong> — a central bank settlement layer, not a local-bank product.
+        Four applications on the SynapticChain settlement layer + sovereign payment rails:
+        <strong>1:1 fiat-reserve central bank oversight</strong>, <strong>0.50% automated ZRA treasury inflow</strong>,
+        <strong>live-measured sub-second cross-border settlement</strong>, and <strong>biometric ghost-beneficiary elimination</strong>.
+      </p>
+    </section>
+
+    <!-- ══════════ APP 2: ZRA TREASURY & CUSTOMS ══════════ -->
+    <section class="view" id="app1-view" hidden>
+      <div class="sec-head">
+        <span class="sec-kicker"><span class="rule"></span> <span class="label">App 2</span></span>
+        <h2>ZRA Sovereign Treasury &amp; Customs Gateway</h2>
+        <span class="aside">Ministry of Finance &amp; Zambia Revenue Authority — automated 0.50% non-tax revenue on every cross-border settlement.</span>
+      </div>
+      <p class="block-sub">
+        Real-time monitoring of the Nakonde–Tunduma trade corridor. Every settlement is split on-chain:
+        <strong>0.50% flows automatically into the Single Treasury Account (TSA)</strong> — no paper filing, no weeks of audit lag, no leakage.
+      </p>
+
+      <div class="fleet">
+        <div class="fleet-in">
+          <div>
+            <span class="label">ZRA Single Treasury Account (TSA) — live balance</span>
+            <div class="big-num" id="tsaBalance">—</div>
+            <div class="sub-num" id="tsaToday">—</div>
+            <div class="fleet-chips">
+              <span class="chip hot">0.50% sovereign cut</span>
+              <span class="chip">pacs.008.001.08</span>
+              <span class="chip">Audit lag 0.00s</span>
+              <span class="chip">TZA corridor · Nakonde–Tunduma</span>
+            </div>
+          </div>
+          <div class="fleet-cta">
+            <div class="metric">
+              <div class="num" id="statTsaRate">—</div>
+              <div class="cap">ZRA sovereign cut collected</div>
+            </div>
+            <div class="metric">
+              <div class="num" id="statLag">—</div>
+              <div class="cap">Customs audit lag (live)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="num" id="statCorridor">—</div><span class="cap">Nakonde corridor volume</span></div>
+        <div class="stat"><div class="num fern" id="statZraCut">—</div><span class="cap">ZRA 0.50% cut to date</span></div>
+        <div class="stat"><div class="num" id="statTxs">—</div><span class="cap">Settled pacs.008 transfers</span></div>
+        <div class="stat"><div class="num fern" id="statBlocked2">—</div><span class="cap">Fraud attempts blocked</span></div>
+      </div>
+
+      <div class="stream-head">
+        <span class="label">Live ZRA customs settlement stream · Nakonde border</span>
+        <span class="live-tag"><span class="dot" aria-hidden="true"></span> Live inscriptions</span>
+      </div>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Time</th><th>Trader / Entity</th><th class="amt">Trade Value</th>
+              <th class="amt">ZRA Split (0.50%)</th><th>pacs.008 Hash</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="txBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════ APP 3: GOVPAY SOVEREIGN WALLET ══════════ -->
+    <section class="view" id="app2-view" hidden>
+      <div class="sec-head">
+        <span class="sec-kicker"><span class="rule"></span> <span class="label">App 3</span></span>
+        <h2>Sovereign GovPay Wallet</h2>
+        <span class="aside">Powered by SynapticChain — trader &amp; citizen client, cross-border SMEs, transporters &amp; shopkeepers. Bank-grade sovereign settlement.</span>
+      </div>
+      <p class="block-sub">
+        Hardware-secured Ed25519 signing across <strong>2,048 parallel concurrency lanes</strong>, <strong>zero user gas fees</strong>,
+        and <strong>1-click ZMW → TZS corridor remittance with live-measured finality</strong> — replacing 7–10% bank wires and 3-day delays.
+      </p>
+
+      <div class="net">
+        <div class="net-card">
+          <h3>Instant Cross-Border Remittance</h3>
+          <div class="net-sub">ZMW → TZS · settled on-chain · finality measured live</div>
+
+          <div class="kv" style="margin-bottom:16px;">
+            <div class="kv-row"><span class="k">Wallet balance (ZMW · on-chain)</span><span class="v" id="balCZMW">—</span></div>
+            <div class="kv-row"><span class="k">Wallet balance (TZS · reference rate)</span><span class="v" id="balCTZS">—</span></div>
+            <div class="kv-row"><span class="k">Wallet balance (USD · reference rate)</span><span class="v" id="balSUSD">—</span></div>
+          </div>
+
+          <div class="field">
+            <label for="sendAmt">Send amount (ZMW)</label>
+            <input type="number" id="sendAmt" value="1000.00" min="1" max="50000" step="0.01" inputmode="decimal" />
+            <div class="hint" id="amtHint">ZRA TSA receives 0.50% of every settlement automatically.</div>
+          </div>
+          <div class="amount-grid">
+            <div class="field">
+              <label>Recipient receives</label>
+              <input type="text" id="recvOut" class="amt-out" value="105,289.00 TZS" readonly />
+            </div>
+            <div class="field">
+              <label>Recipient (Vodacom M-Pesa · Tunduma)</label>
+              <input type="text" value="+255 75 987 6543" readonly />
+            </div>
+          </div>
+
+          <div class="fee-box" id="feeBox">
+            <div class="fr"><span>Total fee (1.5% proposal · 0.50% settles on-chain):</span><b id="feeTotal">15.00 ZMW</b></div>
+            <div class="fr"><span>• ZRA Treasury cut (0.50% · settled on-chain now):</span><b class="fern" id="feeZra">5.00 ZMW</b></div>
+            <div class="fr"><span>• Network processing margin (0.75% · proposed):</span><b id="feeMargin">7.50 ZMW</b></div>
+            <div class="fr"><span>• Local agent (0.25% · proposed):</span><b id="feeAgent">2.50 ZMW</b></div>
+            <div class="fr total"><span>Saved vs 7.5% bank wire (projected):</span><b class="fern" id="saveLine">60.00 ZMW</b></div>
+          </div>
+
+          <button class="btn btn-accent btn-block" id="sendBtn">Execute sovereign settlement</button>
+          <div id="progWrap" hidden>
+            <div class="progress" style="margin-top:14px;"><div class="progress-fill" id="progFill"></div></div>
+            <div class="progress-label" id="progLabel"></div>
+          </div>
+
+          <div class="receipt" id="receipt" hidden>
+            <h4>Settlement finalized</h4>
+            <div class="rc-meta">
+              <span class="pill lime">Finalized ✓</span>
+              <span class="pill">Finality <b id="rFinality">—</b></span>
+              <span class="pill">pacs.008 validated</span>
+            </div>
+            <div class="kv">
+              <div class="kv-row"><span class="k">Transaction hash</span><span class="v fern" id="rHash">—</span></div>
+              <div class="kv-row"><span class="k">ZRA TSA credited</span><span class="v fern" id="rZra">—</span></div>
+              <div class="kv-row"><span class="k">Recipient received</span><span class="v" id="rAmt">—</span></div>
+            </div>
+            <div style="margin-top:12px;"><pre class="xml" id="rXml"></pre></div>
+          </div>
+        </div>
+
+        <div class="net-card">
+          <h3>Nakonde Border Merchant POS</h3>
+          <div class="net-sub">Dynamic QR · MTN MoMo · Airtel Money · card</div>
+          <div class="qr-panel" id="qrBox" aria-label="Sovereign GovPay merchant QR code"></div>
+          <div class="qr-caption"><b>Sovereign GovPay merchant #8891</b><br />Scan to pay in Kwacha — MTN MoMo · Airtel Money · instant SMS proof</div>
+          <div class="kv" style="margin-top:16px;">
+            <div class="kv-row"><span class="k">Mobile money rails</span><span class="v">MTN · Airtel · Zamtel · M-Pesa · AzamPay</span></div>
+            <div class="kv-row"><span class="k">Signing</span><span class="v">Ed25519 · hardware enclave</span></div>
+            <div class="kv-row"><span class="k">User gas fees</span><span class="v fern">Zero</span></div>
+            <div class="kv-row"><span class="k">Concurrency lanes</span><span class="v">2,048 parallel</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ APP 4: INRIS GHOST-BUSTER ══════════ -->
+    <section class="view" id="app3-view" hidden>
+      <div class="sec-head">
+        <span class="sec-kicker"><span class="rule"></span> <span class="label">App 4</span></span>
+        <h2>INRIS Ghost-Buster Social Cash Transfer</h2>
+        <span class="aside">Ministry of Community Development &amp; Public Service payroll — one biometric citizen, one soulbound wallet.</span>
+      </div>
+      <p class="block-sub">
+        Every citizen wallet is bound to a <strong>SynIdentityNFT soulbound identity attested against INRIS</strong>.
+        Duplicate national registration IDs are rejected on-chain before a single ngwee moves —
+        ending ghost civil servants and duplicate welfare claims.
+      </p>
+
+      <div class="stats cols3">
+        <div class="stat"><div class="num" id="statVerified">0</div><span class="cap">Verified INRIS beneficiaries</span></div>
+        <div class="stat"><div class="num ember" id="statBlocked">0</div><span class="cap">Ghost beneficiaries blocked</span></div>
+        <div class="stat"><div class="num fern" id="statSaved">—</div><span class="cap">Treasury funds saved (projected)</span></div>
+      </div>
+
+      <div class="net" style="margin-top:16px;">
+        <div>
+          <div class="stream-head">
+            <span class="label">Live INRIS biometric verification feed</span>
+            <span class="live-tag"><span class="dot" aria-hidden="true"></span> Soulbound checks</span>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead><tr><th>Citizen</th><th>NRC No.</th><th>District</th><th>Verdict</th></tr></thead>
+              <tbody id="rosterBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="net-card">
+          <h3>Mass disbursement engine</h3>
+          <div class="net-sub">Social cash transfer · live identity mints on-chain</div>
+          <p style="color:var(--dusk); font-size:13px; margin-bottom:14px;">
+            Dispatch a welfare batch — 12 citizens verified, minted and paid live on-chain (the 2,000-wallet national
+            rollout is the proposal target). Duplicate NRCs are ghost-busted by the identity contract itself,
+            before a single ngwee moves.
+          </p>
+          <button class="btn btn-accent btn-block" id="batchBtn">Run SCT batch · 12 citizens live on-chain</button>
+          <div class="progress" style="margin-top:14px;"><div class="progress-fill" id="batchFill"></div></div>
+          <div class="progress-label" id="batchStatus">Ambient verification flow live · roster fills automatically</div>
+          <div class="log-box" id="batchLog" style="margin-top:14px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ APP 1: BANK OF ZAMBIA OBSERVER ══════════ -->
+    <section class="view" id="app4-view">
+      <div class="sec-head">
+        <span class="sec-kicker"><span class="rule"></span> <span class="label">App 1</span></span>
+        <h2>Bank of Zambia ISO 20022 Observer</h2>
+        <span class="aside">BoZ National Payment Systems Directorate · reserves held at the central bank itself — no commercial banks in the custody chain.</span>
+      </div>
+      <p class="block-sub">
+        The central bank's own supervisory node — <strong>BoZ is the direct counterparty, not a commercial bank</strong>.
+        Cryptographic proof that <strong>every 1.00 cZMW on-chain is backed 1:1 by fiat held at the Bank of Zambia</strong>,
+        with live ISO 20022 message validation — no unbacked crypto, no commercial-bank escrow, full AML/CFT traceability.
+      </p>
+
+      <div class="fleet">
+        <div class="fleet-in">
+          <div style="flex:1; min-width:260px;">
+            <span class="label">1:1 fiat reserve proof · BoZ sovereign reserve ZM88-BOZ-0092-114</span>
+            <div class="gauge" id="gauge" style="margin-top:14px;"><div class="gauge-fill"></div></div>
+            <div class="gauge-kv">
+              <span>Total cZMW circulating: <b id="kvCirc" style="color:var(--lime);">—</b></span>
+              <span>Fiat reserves (Bank of Zambia): <b id="kvReserve" style="color:var(--lime);">—</b></span>
+            </div>
+            <div class="fleet-chips" style="margin-top:16px;">
+              <span class="chip hot" id="gaugePct">—</span>
+              <span class="chip">Mint ops <b id="kvMints">—</b></span>
+              <span class="chip">Burn ops <b id="kvBurns">—</b></span>
+              <span class="chip">Held at the Bank of Zambia · zero commercial-bank custody</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="net-card" style="margin-top:16px;">
+        <h3>ISO 20022 message inspector</h3>
+        <div class="net-sub">Live national payment systems message stream · schema-validated</div>
+        <div class="iso-tabs">
+          <button class="tab on" data-iso="pacs008">pacs.008 · credit transfer</button>
+          <button class="tab" data-iso="pain001">pain.001 · payment initiation</button>
+          <button class="tab" data-iso="pacs002">pacs.002 · payment status</button>
+          <span class="tele-pill" style="margin-left:auto;">Messages <b id="isoCount">0</b></span>
+        </div>
+        <div class="net iso-grid" style="margin-top:14px;">
+          <div>
+            <div class="iso-head-row"><span class="mono" id="isoSelId">—</span><span class="pill" id="isoSelState">Validated ✓</span></div>
+            <div id="isoList"></div>
+          </div>
+          <div><pre class="xml" id="isoXml" style="max-height:420px;"></pre></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container foot-base">
+      <span>Sovereign Digital Public Infrastructure (DPI) Suite</span>
+      <span><b>GovPay Sovereign DPI</b> powered by <b>SynapticChain</b> · 100% ISO 20022 bank grade</span>
+      <span><b>LIVE — African alpha testnet settlement</b> · real on-chain transactions (SynapticChain chainId 1 testnet — not mainnet) · figures labeled "proposed" or "projected" are proposal targets</span>
+    </div>
+  </footer>
+
+  <script>
+    /*! qrcode.js — davidshimjs/qrcodejs, MIT license. Vendored inline. */
+    var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this.parsedData=[];for(var b=[],d=0,e=this.data.length;e>d;d++){var f=this.data.charCodeAt(d);f>65536?(b[0]=240|(1835008&f)>>>18,b[1]=128|(258048&f)>>>12,b[2]=128|(4032&f)>>>6,b[3]=128|63&f):f>2048?(b[0]=224|(61440&f)>>>12,b[1]=128|(4032&f)>>>6,b[2]=128|63&f):f>128?(b[0]=192|(1984&f)>>>6,b[1]=128|63&f):b[0]=f,this.parsedData=this.parsedData.concat(b)}this.parsedData.length!=this.data.length&&(this.parsedData.unshift(191),this.parsedData.unshift(187),this.parsedData.unshift(239))}function b(a,b){this.typeNumber=a,this.errorCorrectLevel=b,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function i(a,b){if(void 0==a.length)throw new Error(a.length+"/"+b);for(var c=0;c<a.length&&0==a[c];)c++;this.num=new Array(a.length-c+b);for(var d=0;d<a.length-c;d++)this.num[d]=a[d+c]}function j(a,b){this.totalCount=a,this.dataCount=b}function k(){this.buffer=[],this.length=0}function m(){return"undefined"!=typeof CanvasRenderingContext2D}function n(){var a=!1,b=navigator.userAgent;return/android/i.test(b)&&(a=!0,aMat=b.toString().match(/android ([0-9]\.[0-9])/i),aMat&&aMat[1]&&(a=parseFloat(aMat[1]))),a}function r(a,b){for(var c=1,e=s(a),f=0,g=l.length;g>=f;f++){var h=0;switch(b){case d.L:h=l[f][0];break;case d.M:h=l[f][1];break;case d.Q:h=l[f][2];break;case d.H:h=l[f][3]}if(h>=e)break;c++}if(c>l.length)throw new Error("Too long data");return c}function s(a){var b=encodeURI(a).toString().replace(/\%[0-9a-fA-F]{2}/g,"a");return b.length+(b.length!=a?3:0)}a.prototype={getLength:function(){return this.parsedData.length},write:function(a){for(var b=0,c=this.parsedData.length;c>b;b++)a.put(this.parsedData[b],8)}},b.prototype={addData:function(b){var c=new a(b);this.dataList.push(c),this.dataCache=null},isDark:function(a,b){if(0>a||this.moduleCount<=a||0>b||this.moduleCount<=b)throw new Error(a+","+b);return this.modules[a][b]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(a,c){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var d=0;d<this.moduleCount;d++){this.modules[d]=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[d][e]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupPositionAdjustPattern(),this.setupTimingPattern(),this.setupTypeInfo(a,c),this.typeNumber>=7&&this.setupTypeNumber(a),null==this.dataCache&&(this.dataCache=b.createData(this.typeNumber,this.errorCorrectLevel,this.dataList)),this.mapData(this.dataCache,c)},setupPositionProbePattern:function(a,b){for(var c=-1;7>=c;c++)if(!(-1>=a+c||this.moduleCount<=a+c))for(var d=-1;7>=d;d++)-1>=b+d||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&6>=c&&(0==d||6==d)||d>=0&&6>=d&&(0==c||6==c)||c>=2&&4>=c&&d>=2&&4>=d?!0:!1)},getBestMaskPattern:function(){for(var a=0,b=0,c=0;8>c;c++){this.makeImpl(!0,c);var d=f.getLostPoint(this);(0==c||a>d)&&(a=d,b=c)}return b},createMovieClip:function(a,b,c){var d=a.createEmptyMovieClip(b,c),e=1;this.make();for(var f=0;f<this.modules.length;f++)for(var g=f*e,h=0;h<this.modules[f].length;h++){var i=h*e,j=this.modules[f][h];j&&(d.beginFill(0,100),d.moveTo(i,g),d.lineTo(i+e,g),d.lineTo(i+e,g+e),d.lineTo(i,g+e),d.endFill())}return d},setupTimingPattern:function(){for(var a=8;a<this.moduleCount-8;a++)null==this.modules[a][6]&&(this.modules[a][6]=0==a%2);for(var b=8;b<this.moduleCount-8;b++)null==this.modules[6][b]&&(this.modules[6][b]=0==b%2)},setupPositionAdjustPattern:function(){for(var a=f.getPatternPosition(this.typeNumber),b=0;b<a.length;b++)for(var c=0;c<a.length;c++){var d=a[b],e=a[c];if(null==this.modules[d][e])for(var g=-2;2>=g;g++)for(var h=-2;2>=h;h++)this.modules[d+g][e+h]=-2==g||2==g||-2==h||2==h||0==g&&0==h?!0:!1}},setupTypeNumber:function(a){for(var b=f.getBCHTypeNumber(this.typeNumber),c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[Math.floor(c/3)][c%3+this.moduleCount-8-3]=d}for(var c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[c%3+this.moduleCount-8-3][Math.floor(c/3)]=d}},setupTypeInfo:function(a,b){for(var c=this.errorCorrectLevel<<3|b,d=f.getBCHTypeInfo(c),e=0;15>e;e++){var g=!a&&1==(1&d>>e);6>e?this.modules[e][8]=g:8>e?this.modules[e+1][8]=g:this.modules[this.moduleCount-15+e][8]=g}for(var e=0;15>e;e++){var g=!a&&1==(1&d>>e);8>e?this.modules[8][this.moduleCount-e-1]=g:9>e?this.modules[8][15-e-1+1]=g:this.modules[8][15-e-1]=g}this.modules[this.moduleCount-8][8]=!a},mapData:function(a,b){for(var c=-1,d=this.moduleCount-1,e=7,g=0,h=this.moduleCount-1;h>0;h-=2)for(6==h&&h--;;){for(var i=0;2>i;i++)if(null==this.modules[d][h-i]){var j=!1;g<a.length&&(j=1==(1&a[g]>>>e));var k=f.getMask(b,d,h-i);k&&(j=!j),this.modules[d][h-i]=j,e--,-1==e&&(g++,e=7)}if(d+=c,0>d||this.moduleCount<=d){d-=c,c=-c;break}}}},b.PAD0=236,b.PAD1=17,b.createData=function(a,c,d){for(var e=j.getRSBlocks(a,c),g=new k,h=0;h<d.length;h++){var i=d[h];g.put(i.mode,4),g.put(i.getLength(),f.getLengthInBits(i.mode,a)),i.write(g)}for(var l=0,h=0;h<e.length;h++)l+=e[h].dataCount;if(g.getLengthInBits()>8*l)throw new Error("code length overflow. ("+g.getLengthInBits()+">"+8*l+")");for(g.getLengthInBits()+4<=8*l&&g.put(0,4);0!=g.getLengthInBits()%8;)g.putBit(!1);for(;;){if(g.getLengthInBits()>=8*l)break;if(g.put(b.PAD0,8),g.getLengthInBits()>=8*l)break;g.put(b.PAD1,8)}return b.createBytes(g,e)},b.createBytes=function(a,b){for(var c=0,d=0,e=0,g=new Array(b.length),h=new Array(b.length),j=0;j<b.length;j++){var k=b[j].dataCount,l=b[j].totalCount-k;d=Math.max(d,k),e=Math.max(e,l),g[j]=new Array(k);for(var m=0;m<g[j].length;m++)g[j][m]=255&a.buffer[m+c];c+=k;var n=f.getErrorCorrectPolynomial(l),o=new i(g[j],n.getLength()-1),p=o.mod(n);h[j]=new Array(n.getLength()-1);for(var m=0;m<h[j].length;m++){var q=m+p.getLength()-h[j].length;h[j][m]=q>=0?p.get(q):0}}for(var r=0,m=0;m<b.length;m++)r+=b[m].totalCount;for(var s=new Array(r),t=0,m=0;d>m;m++)for(var j=0;j<b.length;j++)m<g[j].length&&(s[t++]=g[j][m]);for(var m=0;e>m;m++)for(var j=0;j<b.length;j++)m<h[j].length&&(s[t++]=h[j][m]);return s};for(var c={MODE_NUMBER:1,MODE_ALPHA_NUM:2,MODE_8BIT_BYTE:4,MODE_KANJI:8},d={L:1,M:0,Q:3,H:2},e={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7},f={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(a){for(var b=a<<10;f.getBCHDigit(b)-f.getBCHDigit(f.G15)>=0;)b^=f.G15<<f.getBCHDigit(b)-f.getBCHDigit(f.G15);return(a<<10|b)^f.G15_MASK},getBCHTypeNumber:function(a){for(var b=a<<12;f.getBCHDigit(b)-f.getBCHDigit(f.G18)>=0;)b^=f.G18<<f.getBCHDigit(b)-f.getBCHDigit(f.G18);return a<<12|b},getBCHDigit:function(a){for(var b=0;0!=a;)b++,a>>>=1;return b},getPatternPosition:function(a){return f.PATTERN_POSITION_TABLE[a-1]},getMask:function(a,b,c){switch(a){case e.PATTERN000:return 0==(b+c)%2;case e.PATTERN001:return 0==b%2;case e.PATTERN010:return 0==c%3;case e.PATTERN011:return 0==(b+c)%3;case e.PATTERN100:return 0==(Math.floor(b/2)+Math.floor(c/3))%2;case e.PATTERN101:return 0==b*c%2+b*c%3;case e.PATTERN110:return 0==(b*c%2+b*c%3)%2;case e.PATTERN111:return 0==(b*c%3+(b+c)%2)%2;default:throw new Error("bad maskPattern:"+a)}},getErrorCorrectPolynomial:function(a){for(var b=new i([1],0),c=0;a>c;c++)b=b.multiply(new i([1,g.gexp(c)],0));return b},getLengthInBits:function(a,b){if(b>=1&&10>b)switch(a){case c.MODE_NUMBER:return 10;case c.MODE_ALPHA_NUM:return 9;case c.MODE_8BIT_BYTE:return 8;case c.MODE_KANJI:return 8;default:throw new Error("mode:"+a)}else if(27>b)switch(a){case c.MODE_NUMBER:return 12;case c.MODE_ALPHA_NUM:return 11;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 10;default:throw new Error("mode:"+a)}else{if(!(41>b))throw new Error("type:"+b);switch(a){case c.MODE_NUMBER:return 14;case c.MODE_ALPHA_NUM:return 13;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 12;default:throw new Error("mode:"+a)}}},getLostPoint:function(a){for(var b=a.getModuleCount(),c=0,d=0;b>d;d++)for(var e=0;b>e;e++){for(var f=0,g=a.isDark(d,e),h=-1;1>=h;h++)if(!(0>d+h||d+h>=b))for(var i=-1;1>=i;i++)0>e+i||e+i>=b||(0!=h||0!=i)&&g==a.isDark(d+h,e+i)&&f++;f>5&&(c+=3+f-5)}for(var d=0;b-1>d;d++)for(var e=0;b-1>e;e++){var j=0;a.isDark(d,e)&&j++,a.isDark(d+1,e)&&j++,a.isDark(d,e+1)&&j++,a.isDark(d+1,e+1)&&j++,(0==j||4==j)&&(c+=3)}for(var d=0;b>d;d++)for(var e=0;b-6>e;e++)a.isDark(d,e)&&!a.isDark(d,e+1)&&a.isDark(d,e+2)&&a.isDark(d,e+3)&&a.isDark(d,e+4)&&!a.isDark(d,e+5)&&a.isDark(d,e+6)&&(c+=40);for(var e=0;b>e;e++)for(var d=0;b-6>d;d++)a.isDark(d,e)&&!a.isDark(d+1,e)&&a.isDark(d+2,e)&&a.isDark(d+3,e)&&a.isDark(d+4,e)&&!a.isDark(d+5,e)&&a.isDark(d+6,e)&&(c+=40);for(var k=0,e=0;b>e;e++)for(var d=0;b>d;d++)a.isDark(d,e)&&k++;var l=Math.abs(100*k/b/b-50)/5;return c+=10*l}},g={glog:function(a){if(1>a)throw new Error("glog("+a+")");return g.LOG_TABLE[a]},gexp:function(a){for(;0>a;)a+=255;for(;a>=256;)a-=255;return g.EXP_TABLE[a]},EXP_TABLE:new Array(256),LOG_TABLE:new Array(256)},h=0;8>h;h++)g.EXP_TABLE[h]=1<<h;for(var h=8;256>h;h++)g.EXP_TABLE[h]=g.EXP_TABLE[h-4]^g.EXP_TABLE[h-5]^g.EXP_TABLE[h-6]^g.EXP_TABLE[h-8];for(var h=0;255>h;h++)g.LOG_TABLE[g.EXP_TABLE[h]]=h;i.prototype={get:function(a){return this.num[a]},getLength:function(){return this.num.length},multiply:function(a){for(var b=new Array(this.getLength()+a.getLength()-1),c=0;c<this.getLength();c++)for(var d=0;d<a.getLength();d++)b[c+d]^=g.gexp(g.glog(this.get(c))+g.glog(a.get(d)));return new i(b,0)},mod:function(a){if(this.getLength()-a.getLength()<0)return this;for(var b=g.glog(this.get(0))-g.glog(a.get(0)),c=new Array(this.getLength()),d=0;d<this.getLength();d++)c[d]=this.get(d);for(var d=0;d<a.getLength();d++)c[d]^=g.gexp(g.glog(a.get(d))+b);return new i(c,0).mod(a)}},j.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],j.getRSBlocks=function(a,b){var c=j.getRsBlockTable(a,b);if(void 0==c)throw new Error("bad rs block @ typeNumber:"+a+"/errorCorrectLevel:"+b);for(var d=c.length/3,e=[],f=0;d>f;f++)for(var g=c[3*f+0],h=c[3*f+1],i=c[3*f+2],k=0;g>k;k++)e.push(new j(h,i));return e},j.getRsBlockTable=function(a,b){switch(b){case d.L:return j.RS_BLOCK_TABLE[4*(a-1)+0];case d.M:return j.RS_BLOCK_TABLE[4*(a-1)+1];case d.Q:return j.RS_BLOCK_TABLE[4*(a-1)+2];case d.H:return j.RS_BLOCK_TABLE[4*(a-1)+3];default:return void 0}},k.prototype={get:function(a){var b=Math.floor(a/8);return 1==(1&this.buffer[b]>>>7-a%8)},put:function(a,b){for(var c=0;b>c;c++)this.putBit(1==(1&a>>>b-c-1))},getLengthInBits:function(){return this.length},putBit:function(a){var b=Math.floor(this.length/8);this.buffer.length<=b&&this.buffer.push(0),a&&(this.buffer[b]|=128>>>this.length%8),this.length++}};var l=[[17,14,11,7],[32,26,20,14],[53,42,32,24],[78,62,46,34],[106,84,60,44],[134,106,74,58],[154,122,86,64],[192,152,108,84],[230,180,130,98],[271,213,151,119],[321,251,177,137],[367,287,203,155],[425,331,241,177],[458,362,258,194],[520,412,292,220],[586,450,322,250],[644,504,364,280],[718,560,394,310],[792,624,442,338],[858,666,482,382],[929,711,509,403],[1003,779,565,439],[1091,857,611,461],[1171,911,661,511],[1273,997,715,535],[1367,1059,751,593],[1465,1125,805,625],[1528,1190,868,658],[1628,1264,908,698],[1732,1370,982,742],[1840,1452,1030,790],[1952,1538,1112,842],[2068,1628,1168,898],[2188,1722,1228,958],[2303,1809,1283,983],[2431,1911,1351,1051],[2563,1989,1423,1093],[2699,2099,1499,1139],[2809,2213,1579,1219],[2953,2331,1663,1273]],o=function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){function g(a,b){var c=document.createElementNS("http://www.w3.org/2000/svg",a);for(var d in b)b.hasOwnProperty(d)&&c.setAttribute(d,b[d]);return c}var b=this._htOption,c=this._el,d=a.getModuleCount();Math.floor(b.width/d),Math.floor(b.height/d),this.clear();var h=g("svg",{viewBox:"0 0 "+String(d)+" "+String(d),width:"100%",height:"100%",fill:b.colorLight});h.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:xlink","http://www.w3.org/1999/xlink"),c.appendChild(h),h.appendChild(g("rect",{fill:b.colorDark,width:"1",height:"1",id:"template"}));for(var i=0;d>i;i++)for(var j=0;d>j;j++)if(a.isDark(i,j)){var k=g("use",{x:String(i),y:String(j)});k.setAttributeNS("http://www.w3.org/1999/xlink","href","#template"),h.appendChild(k)}},a.prototype.clear=function(){for(;this._el.hasChildNodes();)this._el.removeChild(this._el.lastChild)},a}(),p="svg"===document.documentElement.tagName.toLowerCase(),q=p?o:m()?function(){function a(){this._elImage.src=this._elCanvas.toDataURL("image/png"),this._elImage.style.display="block",this._elCanvas.style.display="none"}function d(a,b){var c=this;if(c._fFail=b,c._fSuccess=a,null===c._bSupportDataURI){var d=document.createElement("img"),e=function(){c._bSupportDataURI=!1,c._fFail&&_fFail.call(c)},f=function(){c._bSupportDataURI=!0,c._fSuccess&&c._fSuccess.call(c)};return d.onabort=e,d.onerror=e,d.onload=f,d.src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",void 0}c._bSupportDataURI===!0&&c._fSuccess?c._fSuccess.call(c):c._bSupportDataURI===!1&&c._fFail&&c._fFail.call(c)}if(this._android&&this._android<=2.1){var b=1/window.devicePixelRatio,c=CanvasRenderingContext2D.prototype.drawImage;CanvasRenderingContext2D.prototype.drawImage=function(a,d,e,f,g,h,i,j){if("nodeName"in a&&/img/i.test(a.nodeName))for(var l=arguments.length-1;l>=1;l--)arguments[l]=arguments[l]*b;else"undefined"==typeof j&&(arguments[1]*=b,arguments[2]*=b,arguments[3]*=b,arguments[4]*=b);c.apply(this,arguments)}}var e=function(a,b){this._bIsPainted=!1,this._android=n(),this._htOption=b,this._elCanvas=document.createElement("canvas"),this._elCanvas.width=b.width,this._elCanvas.height=b.height,a.appendChild(this._elCanvas),this._el=a,this._oContext=this._elCanvas.getContext("2d"),this._bIsPainted=!1,this._elImage=document.createElement("img"),this._elImage.style.display="none",this._el.appendChild(this._elImage),this._bSupportDataURI=null};return e.prototype.draw=function(a){var b=this._elImage,c=this._oContext,d=this._htOption,e=a.getModuleCount(),f=d.width/e,g=d.height/e,h=Math.round(f),i=Math.round(g);b.style.display="none",this.clear();for(var j=0;e>j;j++)for(var k=0;e>k;k++){var l=a.isDark(j,k),m=k*f,n=j*g;c.strokeStyle=l?d.colorDark:d.colorLight,c.lineWidth=1,c.fillStyle=l?d.colorDark:d.colorLight,c.fillRect(m,n,f,g),c.strokeRect(Math.floor(m)+.5,Math.floor(n)+.5,h,i),c.strokeRect(Math.ceil(m)-.5,Math.ceil(n)-.5,h,i)}this._bIsPainted=!0},e.prototype.makeImage=function(){this._bIsPainted&&d.call(this,a)},e.prototype.isPainted=function(){return this._bIsPainted},e.prototype.clear=function(){this._oContext.clearRect(0,0,this._elCanvas.width,this._elCanvas.height),this._bIsPainted=!1},e.prototype.round=function(a){return a?Math.floor(1e3*a)/1e3:a},e}():function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){for(var b=this._htOption,c=this._el,d=a.getModuleCount(),e=Math.floor(b.width/d),f=Math.floor(b.height/d),g=['<table style="border:0;border-collapse:collapse;">'],h=0;d>h;h++){g.push("<tr>");for(var i=0;d>i;i++)g.push('<td style="border:0;border-collapse:collapse;padding:0;margin:0;width:'+e+"px;height:"+f+"px;background-color:"+(a.isDark(h,i)?b.colorDark:b.colorLight)+';"></td>');g.push("</tr>")}g.push("</table>"),c.innerHTML=g.join("");var j=c.childNodes[0],k=(b.width-j.offsetWidth)/2,l=(b.height-j.offsetHeight)/2;k>0&&l>0&&(j.style.margin=l+"px "+k+"px")},a.prototype.clear=function(){this._el.innerHTML=""},a}();QRCode=function(a,b){if(this._htOption={width:256,height:256,typeNumber:4,colorDark:"#000000",colorLight:"#ffffff",correctLevel:d.H},"string"==typeof b&&(b={text:b}),b)for(var c in b)this._htOption[c]=b[c];"string"==typeof a&&(a=document.getElementById(a)),this._android=n(),this._el=a,this._oQRCode=null,this._oDrawing=new q(this._el,this._htOption),this._htOption.text&&this.makeCode(this._htOption.text)},QRCode.prototype.makeCode=function(a){this._oQRCode=new b(r(a,this._htOption.correctLevel),this._htOption.correctLevel),this._oQRCode.addData(a),this._oQRCode.make(),this._el.title=a,this._oDrawing.draw(this._oQRCode),this.makeImage()},QRCode.prototype.makeImage=function(){"function"==typeof this._oDrawing.makeImage&&(!this._android||this._android>=3)&&this._oDrawing.makeImage()},QRCode.prototype.clear=function(){this._oDrawing.clear()},QRCode.CorrectLevel=d}();
+  </script>
+
+  <script>
+  'use strict';
+  /* ═══════════════════════════ LIVE CHAIN ADAPTER — real alpha-testnet settlement ═══════════════════════════
+     Replaces the simulation engine. Every figure on screen is served by
+     packages/sovereign-suite-server from REAL SynapticChain African alpha
+     testnet transactions (ZraSplitRouter 0.50% TSA split · SynIdentityNFT ·
+     ISO20022Payment registry — chainId 1 testnet, never mainnet). Nothing is
+     fabricated: unknown values render as "—", a lost backend connection flips
+     the hero to "reconnecting", and no fake data is ever shown in its place. */
+  var SIM = (function () {
+    function $(id) { return document.getElementById(id); }
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+    /* ── formatting (no toLocaleString — Safari locale surprises) ── */
+    var fmt = {
+      group: function (s) { return s.replace(/\B(?=(\d{3})+(?!\d))/g, ','); },
+      num: function (n, dp) {
+        if (dp === undefined) dp = 2;
+        var neg = n < 0; n = Math.abs(n);
+        var ip = Math.floor(n).toString(), fp = dp > 0 ? '.' + padDec(n, dp) : '';
+        return (neg ? '-' : '') + fmt.group(ip) + fp;
+      },
+      kwacha: function (ngwee) { return 'K ' + fmt.num(ngwee / 100, 2); },
+      tzsh: function (cents) { return fmt.num(cents / 100, 2) + ' TZS'; },
+      bigM: function (ngwee) { // K 978.4M style · full kwacha below K 1M
+        if (!ngwee) return '—';
+        var v = ngwee / 100;
+        if (v < 1e6) return 'K ' + fmt.num(v, 2);
+        return 'K ' + fmt.num(v / 1e6, v / 1e6 < 10 ? 2 : 1) + 'M';
+      },
+      clock: function (offsetSec) {
+        var d = new Date(Date.now() - (offsetSec || 0) * 1000);
+        return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+      },
+      isoDt: function () {
+        var d = new Date();
+        return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()) +
+          'T' + pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ':' + pad(d.getUTCSeconds()) + 'Z';
+      }
+    };
+    function padDec(n, dp) {
+      var s = Math.round((n - Math.floor(n)) * Math.pow(10, dp)) + '';
+      while (s.length < dp) s = '0' + s;
+      if (s.length > dp) s = s.slice(0, dp); // rounding overflow e.g. 0.999999 → 100
+      return s;
+    }
+    function shortHash(h) { return !h ? '—' : h.slice(0, 6) + '…' + h.slice(-4); }
+
+    /* ── state (integer ngwee / cents — every value arrives from the live backend) ── */
+    var S = {
+      tsa: 0, tsaToday: 0, corridor: 0, zraCut: 0, txs: 0,
+      circulating: 0, reserves: 0, mints: 0, burns: 0, ratio: '—',
+      verified: 0, blocked: 0, saved: 0,
+      block: 0, msgCount: 0, walletZMW: 0, finalityMs: null,
+      status: 'connecting' // 'connecting' → 'live' | 'reconnecting'
+    };
+
+    /* ── event bus ── */
+    var bus = {
+      map: {},
+      on: function (t, f) { (this.map[t] = this.map[t] || []).push(f); },
+      emit: function (t, p) { (this.map[t] || []).forEach(function (f) { try { f(p); } catch (e) { /* keep ticking */ } }); }
+    };
+
+    /* ── unit bridge: the backend speaks decimal ZMW strings ("149.25"), the suite renders integer ngwee ── */
+    function ngwee(dec) { return Math.round((parseFloat(dec) || 0) * 100); }
+
+    function api(path, opts) {
+      return fetch(path, opts).then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      });
+    }
+
+    /* ── connection state: live | reconnecting — never fabricate through an outage ── */
+    function setState(st) {
+      if (S.status === st) return;
+      S.status = st;
+      var hs = $('heroStatus');
+      if (hs) hs.textContent = st === 'live'
+        ? 'LIVE · SynapticChain African alpha testnet settlement · SCBFT finality'
+        : 'LIVE TESTNET · reconnecting to settlement layer…';
+    }
+    function wentLive() { setState('live'); }
+    function down() { setState('reconnecting'); }
+
+    /* ── ISO 20022 — the XML is rendered here from REAL settlement fields ── */
+    function dateTag() { var d = new Date(); return '' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()); }
+    function clockOf(whenMs) {
+      var d = new Date(whenMs);
+      return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    }
+
+    var iso = {
+      /* p: {id, hash, amount, proceeds, cut, endToEnd, credtm, time} — decimal ZMW strings */
+      pacs008: function (p) {
+        return {
+          type: 'pacs008', id: p.id, time: p.time || clockOf(Date.now()),
+          xml: '<?xml version="1.0" encoding="UTF-8"?>\n' +
+'<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08">\n' +
+'  <FIToFICstmrCdtTrf>\n' +
+'    <GrpHdr>\n' +
+'      <MsgId>' + p.id + '</MsgId>\n' +
+'      <CreDtTm>' + (p.credtm || fmt.isoDt()) + '</CreDtTm>\n' +
+'      <NbOfTxs>1</NbOfTxs>\n' +
+'      <SttlmMtd>INGA</SttlmMtd>\n' +
+'    </GrpHdr>\n' +
+'    <CdtTrfTxInf>\n' +
+'      <PmtId>\n' +
+'        <InstrId>GN-' + p.hash.slice(2, 10).toUpperCase() + '</InstrId>\n' +
+'        <EndToEndId>' + (p.endToEnd || p.hash.slice(0, 16)) + '</EndToEndId>\n' +
+'      </PmtId>\n' +
+'      <IntrBkSttlmAmt Ccy="ZMW">' + (p.proceeds || p.amount || '0.00') + '</IntrBkSttlmAmt>\n' +
+'      <InstgAgt><FinInstnId><Nm>Sovereign GovPay Rail (ZM)</Nm></FinInstnId></InstgAgt>\n' +
+'      <InstdAgt><FinInstnId><Nm>SynapticChain SCBFT Corridor Node (TZ)</Nm></FinInstnId></InstdAgt>\n' +
+'      <SpltInf>\n' +
+'        <SovrnCutRate>0.0050</SovrnCutRate>\n' +
+'        <SovrnCutAmt Ccy="ZMW">' + (p.cut || '0.00') + '</SovrnCutAmt>\n' +
+'        <BnfcryAcct>ZRA-TSA-01</BnfcryAcct>\n' +
+'      </SpltInf>\n' +
+'    </CdtTrfTxInf>\n' +
+'  </FIToFICstmrCdtTrf>\n' +
+'</Document>'
+        };
+      },
+      /* pacs.002 RJCT — a real on-chain rejection (ISO registry reject_payment) */
+      pacs002Rejected: function (rec) {
+        return {
+          type: 'pacs002', id: rec.message_id, time: clockOf(Date.now()),
+          xml: '<?xml version="1.0" encoding="UTF-8"?>\n' +
+'<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.002.001.10">\n' +
+'  <FIToFIPmtStsRpt>\n' +
+'    <GrpHdr>\n' +
+'      <MsgId>' + rec.message_id + '</MsgId>\n' +
+'      <CreDtTm>' + fmt.isoDt() + '</CreDtTm>\n' +
+'    </GrpHdr>\n' +
+'    <TxInfAndSts>\n' +
+'      <OrgnlInstrId>' + (rec.fields && rec.fields.OrgnlInstrId ? rec.fields.OrgnlInstrId : rec.message_id) + '</OrgnlInstrId>\n' +
+'      <OrgnlEndToEndId>' + (rec.tx_hash || '').slice(0, 16) + '</OrgnlEndToEndId>\n' +
+'      <TxSts>RJCT</TxSts>\n' +
+'      <StsRsnInf>\n' +
+'        <Rsn><Prtry>' + (rec.fields && rec.fields.RsnInf ? rec.fields.RsnInf : 'REJECTED BY REGISTRY') + '</Prtry></Rsn>\n' +
+'      </StsRsnInf>\n' +
+'    </TxInfAndSts>\n' +
+'  </FIToFIPmtStsRpt>\n' +
+'</Document>'
+        };
+      },
+      /* pain.001 single payment initiation — a real ISO registry initiate_payment (MCDSS SCT) */
+      pain001Single: function (rec) {
+        var amt = rec.amount_zmw || '200.00';
+        return {
+          type: 'pain001', id: rec.message_id, time: clockOf(Date.now()),
+          xml: '<?xml version="1.0" encoding="UTF-8"?>\n' +
+'<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09">\n' +
+'  <CstmrCdtTrfInitn>\n' +
+'    <GrpHdr>\n' +
+'      <MsgId>' + rec.message_id + '</MsgId>\n' +
+'      <CreDtTm>' + fmt.isoDt() + '</CreDtTm>\n' +
+'      <NbOfTxs>1</NbOfTxs>\n' +
+'      <CtrlSum>' + amt + '</CtrlSum>\n' +
+'      <InitgPty><Nm>Ministry of Community Development (GRZ)</Nm></InitgPty>\n' +
+'    </GrpHdr>\n' +
+'    <PmtInf>\n' +
+'      <PmtInfId>SCT-1</PmtInfId>\n' +
+'      <PmtMtd>TRF</PmtMtd>\n' +
+'      <Dbtr><Nm>GRZ Single Treasury Account</Nm></Dbtr>\n' +
+'      <CdtTrfTxInf>\n' +
+'        <PmtId><EndToEndId>INRIS-' + (rec.tx_hash || '').slice(0, 12).toUpperCase() + '</EndToEndId></PmtId>\n' +
+'        <Amt><InstdAmt Ccy="ZMW">' + amt + '</InstdAmt></Amt>\n' +
+'        <Cdtr><Nm>INRIS-verified citizen wallet ' + (rec.creditor ? shortHash(rec.creditor) : '') + '</Nm></Cdtr>\n' +
+'        <IdntyAttst>SynIdentityNFT · soulbound · INRIS-verified on-chain</IdntyAttst>\n' +
+'      </CdtTrfTxInf>\n' +
+'    </PmtInf>\n' +
+'  </CstmrCdtTrfInitn>\n' +
+'</Document>'
+        };
+      },
+      /* status report for a confirmed credit transfer — finality from the real receipt */
+      pacs002: function (ref, hash, finalityMs) {
+        var id = ref.indexOf('SYN-ZMW-TZS') === 0 ? ref.replace('SYN-ZMW-TZS', 'SYN-STS') : 'SYN-STS-' + dateTag() + '-1';
+        return {
+          type: 'pacs002', id: id, time: clockOf(Date.now()),
+          xml: '<?xml version="1.0" encoding="UTF-8"?>\n' +
+'<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.002.001.10">\n' +
+'  <FIToFIPmtStsRpt>\n' +
+'    <GrpHdr>\n' +
+'      <MsgId>' + id + '</MsgId>\n' +
+'      <CreDtTm>' + fmt.isoDt() + '</CreDtTm>\n' +
+'    </GrpHdr>\n' +
+'    <TxInfAndSts>\n' +
+'      <OrgnlInstrId>' + ref + '</OrgnlInstrId>\n' +
+'      <OrgnlEndToEndId>' + (hash ? hash.slice(0, 16) : '') + '</OrgnlEndToEndId>\n' +
+'      <TxSts>ACSC</TxSts>\n' +
+'      <StsRsnInf>\n' +
+'        <Rsn><Prtry>SCBFT-FINALIZED-' + (finalityMs ? fmt.num(finalityMs, 0) : '') + 'MS</Prtry></Rsn>\n' +
+'      </StsRsnInf>\n' +
+'    </TxInfAndSts>\n' +
+'  </FIToFIPmtStsRpt>\n' +
+'</Document>'
+        };
+      },
+      /* INRIS social-cash-transfer batch — real on-chain identity mints + nullifier rejections */
+      pain001: function (batch) {
+        return {
+          type: 'pain001', id: 'MCDSS-SCT-' + dateTag() + '-' + batch.count, time: clockOf(Date.now()),
+          xml: '<?xml version="1.0" encoding="UTF-8"?>\n' +
+'<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09">\n' +
+'  <CstmrCdtTrfInitn>\n' +
+'    <GrpHdr>\n' +
+'      <MsgId>MCDSS-SCT-' + dateTag() + '-' + batch.count + '</MsgId>\n' +
+'      <CreDtTm>' + fmt.isoDt() + '</CreDtTm>\n' +
+'      <NbOfTxs>' + fmt.group('' + batch.count) + '</NbOfTxs>\n' +
+'      <CtrlSum>' + fmt.num(batch.total / 100, 2) + '</CtrlSum>\n' +
+'      <InitgPty><Nm>Ministry of Community Development (GRZ)</Nm></InitgPty>\n' +
+'    </GrpHdr>\n' +
+'    <PmtInf>\n' +
+'      <PmtInfId>SCT-BATCH-' + batch.count + '</PmtInfId>\n' +
+'      <PmtMtd>TRF</PmtMtd>\n' +
+'      <Dbtr><Nm>GRZ Single Treasury Account</Nm></Dbtr>\n' +
+'      <CdtTrfTxInf>\n' +
+'        <PmtId><EndToEndId>INRIS-' + batch.sample.nrc.replace('/', '') + '</EndToEndId></PmtId>\n' +
+'        <Amt><InstdAmt Ccy="ZMW">' + fmt.num(batch.sample.amt / 100, 2) + '</InstdAmt></Amt>\n' +
+'        <Cdtr><Nm>' + batch.sample.name + '</Nm></Cdtr>\n' +
+'        <SclrtId>' + batch.sample.nrc + '</SclrtId>\n' +
+'        <IdntyAttst>SynIdentityNFT · soulbound · INRIS-verified on-chain</IdntyAttst>\n' +
+'      </CdtTrfTxInf>\n' +
+'    </PmtInf>\n' +
+'  </CstmrCdtTrfInitn>\n' +
+'</Document>'
+        };
+      }
+    };
+
+    /* ── settlement ring: /api/txs → the SAME event the ZRA stream, TSA counter and BoZ inspector consume ── */
+    var seenTx = {};
+    /* FIFO trim for the dedupe maps — evicted hashes are far older than the
+     * 200-deep server ring, so nothing re-renders. */
+    function trimSeen(map, cap) {
+      var keys = Object.keys(map);
+      if (keys.length <= cap) return;
+      for (var i = 0; i < keys.length - Math.floor(cap / 2); i++) delete map[keys[i]];
+    }
+    function applyTx(t) {
+      var ev = {
+        origin: t.origin === 'customs' ? 'customs' : 'wallet',
+        entity: t.entity || 'Corridor settlement',
+        amount: ngwee(t.amount_zmw), zra: ngwee(t.zra_zmw),
+        hash: t.hash, time: t.time || clockOf(Date.now())
+      };
+      S.tsaToday += ev.zra;
+      S.corridor += ev.amount;
+      bus.emit('tx', ev);
+    }
+    function pollTxs() {
+      api('/api/txs?limit=50').then(function (j) {
+        wentLive();
+        var list = (j && j.txs) || [];
+        for (var i = list.length - 1; i >= 0; i--) { // oldest first → newest lands on top
+          var t = list[i];
+          if (!t || !t.hash || seenTx[t.hash]) continue;
+          seenTx[t.hash] = true;
+          applyTx(t);
+        }
+        if (j.finality_ms_last != null) {
+          S.finalityMs = j.finality_ms_last;
+          $('finalityMs').textContent = fmt.num(j.finality_ms_last, 2) + 'ms';
+        }
+        trimSeen(seenTx, 40000);
+      }).catch(down);
+    }
+
+    /* ── ISO feed: /api/iso records (pay-derived pacs.008 + ISO20022Payment registry entries) ── */
+    var seenIso = {};
+    function applyIsoRecord(rec) {
+      var f = rec.fields || {};
+      var type = rec.message_type || 'pacs.008';
+      if (type === 'pain.001') {
+        S.msgCount += 1;
+        bus.emit('iso', iso.pain001Single(rec));
+        return;
+      }
+      if (type === 'pacs.002' && rec.status === 'REJECTED') {
+        S.msgCount += 1;
+        bus.emit('iso', iso.pacs002Rejected(rec));
+        return;
+      }
+      var msg = iso.pacs008({
+        id: rec.message_id,
+        hash: rec.tx_hash || rec.hash || '',
+        amount: rec.amount_zmw,
+        proceeds: f.IntrBkSttlmAmt || rec.amount_zmw,
+        cut: f.SovrnCutAmt || rec.zra_zmw || '0.00',
+        endToEnd: f.EndToEndId,
+        credtm: f.CreDtTm,
+        time: rec.created_at ? clockOf(Date.parse(rec.created_at)) : clockOf(Date.now())
+      });
+      S.msgCount += 2; // the credit transfer + its status report
+      bus.emit('iso', msg);
+      bus.emit('iso', iso.pacs002(msg.id, rec.tx_hash || '', S.finalityMs));
+    }
+    function pollIso() {
+      api('/api/iso?limit=60').then(function (j) {
+        wentLive();
+        var list = (j && j.iso) || [];
+        for (var i = list.length - 1; i >= 0; i--) {
+          var rec = list[i];
+          var key = rec.message_id + '|' + (rec.tx_hash || '');
+          if (!rec.message_id || seenIso[key]) continue;
+          seenIso[key] = true;
+          applyIsoRecord(rec);
+        }
+        trimSeen(seenIso, 8000);
+      }).catch(down);
+    }
+
+    /* ── central bank figures: /api/reserve (real total supply, BoZ vault, mint count) ── */
+    function pollReserve() {
+      api('/api/reserve').then(function (j) {
+        wentLive();
+        S.circulating = ngwee(j.circulating_zmw);
+        S.reserves = ngwee(j.reserve_vault_zmw);
+        S.mints = j.mints || 0; S.burns = j.burns || 0;
+        S.ratio = j.ratio_pct;
+        bus.emit('reserve', {});
+      }).catch(down);
+    }
+
+    /* ── chain telemetry: /api/status (height, TSA, router payment count, wallet, measured finality) ── */
+    function pollStatus() {
+      api('/api/status').then(function (j) {
+        wentLive();
+        S.block = j.block_height || 0;
+        S.tsa = ngwee(j.tsa.zmw_balance);
+        S.zraCut = S.tsa; // the TSA balance IS the sovereign cut collected to date
+        S.txs = parseInt(j.payment_count, 10) || 0;
+        S.walletZMW = ngwee(j.wallet_zmw);
+        if (j.last_finality_ms != null) {
+          S.finalityMs = j.last_finality_ms;
+          $('finalityMs').textContent = fmt.num(j.last_finality_ms, 2) + 'ms';
+          $('statLag').textContent = fmt.num(j.last_finality_ms / 1000, 2) + 's';
+        }
+        $('meshNum').textContent = '#' + fmt.group('' + S.block);
+        bus.emit('status', j);
+      }).catch(down);
+    }
+
+    function boot() {
+      pollStatus(); setInterval(pollStatus, 5000);   // real height · measured finality
+      pollReserve(); setInterval(pollReserve, 10000); // BoZ reserve proof
+      pollTxs(); setInterval(pollTxs, 1200);          // settlement stream
+      pollIso(); setInterval(pollIso, 5000);          // ISO 20022 message feed
+    }
+
+    return {
+      S: S, fmt: fmt, bus: bus, iso: iso, $: $,
+      shortHash: shortHash, ngwee: ngwee, api: api, boot: boot, trimSeen: trimSeen
+    };
+  })();
+
+  /* ═══════════════════════════ TABS ═══════════════════════════ */
+  (function () {
+    var tabs = document.querySelectorAll('.tab[data-app]');
+    var views = {
+      app1: SIM.$('app1-view'), app2: SIM.$('app2-view'),
+      app3: SIM.$('app3-view'), app4: SIM.$('app4-view')
+    };
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () {
+        tabs.forEach(function (o) {
+          o.classList.toggle('on', o === t);
+          o.setAttribute('aria-selected', o === t ? 'true' : 'false');
+        });
+        Object.keys(views).forEach(function (k) { views[k].hidden = (k !== t.dataset.app); });
+      });
+    });
+  })();
+
+  /* ═══════════════════════════ APP 2 — ZRA TREASURY (tab 2) ═══════════════════════════ */
+  var App1 = (function () {
+    var body = SIM.$('txBody');
+    var shownTsa = SIM.S.tsa;
+    var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function rowHTML(ev) {
+      return '<tr class="row-in' + (ev.origin === 'wallet' ? ' wallet-row' : '') + '">' +
+        '<td class="time">' + ev.time + '</td>' +
+        '<td class="entity">' + ev.entity + '</td>' +
+        '<td class="amt">' + SIM.fmt.kwacha(ev.amount) + '</td>' +
+        '<td class="amt fern">+' + SIM.fmt.kwacha(ev.zra) + '</td>' +
+        '<td class="hash">' + SIM.shortHash(ev.hash) + '</td>' +
+        '<td><span class="pill">TSA cleared</span></td></tr>';
+    }
+    function addRow(ev) {
+      body.insertAdjacentHTML('afterbegin', rowHTML(ev));
+      while (body.children.length > 24) body.removeChild(body.lastChild);
+    }
+    function renderTiles() {
+      if (SIM.S.status !== 'live') return; // no fabricated tiles before real data lands
+      var S = SIM.S, fmt = SIM.fmt;
+      SIM.$('statCorridor').textContent = fmt.bigM(S.corridor);
+      SIM.$('statZraCut').textContent = fmt.bigM(S.zraCut);
+      SIM.$('statTsaRate').textContent = fmt.bigM(S.zraCut);
+      SIM.$('statTxs').textContent = fmt.group('' + S.txs);
+      SIM.$('tsaToday').textContent = '+' + fmt.kwacha(S.tsaToday) + ' today · 100% automated';
+      SIM.$('statBlocked2').textContent = fmt.group('' + S.blocked);
+    }
+    function tick() {
+      if (SIM.S.status !== 'live') { requestAnimationFrame(tick); return; } // hold "—" until real data
+      // eased counter toward live TSA balance
+      var diff = SIM.S.tsa - shownTsa;
+      if (Math.abs(diff) > 0.5) shownTsa += diff * 0.16;
+      else shownTsa = SIM.S.tsa;
+      SIM.$('tsaBalance').textContent = SIM.fmt.kwacha(Math.round(shownTsa));
+      requestAnimationFrame(tick);
+    }
+    SIM.bus.on('tx', function (ev) { addRow(ev); renderTiles(); });
+    SIM.bus.on('inris', function () { SIM.$('statBlocked2').textContent = SIM.fmt.group('' + SIM.S.blocked); });
+    SIM.bus.on('status', renderTiles); // tiles refresh on every real /api/status poll
+
+    return {
+      init: function () {
+        // no fabricated seed rows — the ring backfills from /api/txs within a poll cycle
+        if (!REDUCED) requestAnimationFrame(tick);
+        else SIM.$('tsaBalance').textContent = SIM.fmt.kwacha(SIM.S.tsa);
+        setInterval(function () { // reduced-motion fallback keeps value fresh
+          if (REDUCED && SIM.S.status === 'live') { SIM.$('tsaBalance').textContent = SIM.fmt.kwacha(SIM.S.tsa); }
+        }, 1000);
+      }
+    };
+  })();
+
+  /* ═══════════════════════════ APP 3 — GOVPAY WALLET (tab 3) ═══════════════════════════ */
+  var App2 = (function () {
+    var RATE = 105.289; // ZMW → TZS reference FX rate (display only — settlement is on-chain ZMW)
+    var USD_RATE = 26.83; // ZMW → USD reference FX rate (display only)
+    var S = SIM.S, fmt = SIM.fmt;
+    var amt = SIM.$('sendAmt'), sendBtn = SIM.$('sendBtn');
+    var qr = null, busy = false;
+
+    function ngwee() { return Math.round((parseFloat(amt.value) || 0) * 100); }
+    function fees(ng) {
+      var zra = Math.round(ng * 0.005), infra = Math.round(ng * 0.0075);
+      var agent = Math.round(ng * 0.015) - zra - infra;
+      return { zra: zra, infra: infra, agent: agent, total: zra + infra + agent };
+    }
+    function recompute() {
+      var ng = ngwee();
+      var ok = ng >= 100 && ng <= 5000000;
+      var f = fees(Math.max(ng, 0));
+      SIM.$('recvOut').value = ng > 0 ? fmt.tzsh(Math.round(ng * RATE)) : '—';
+      SIM.$('feeTotal').textContent = fmt.num(f.total / 100, 2) + ' ZMW';
+      SIM.$('feeZra').textContent = fmt.num(f.zra / 100, 2) + ' ZMW';
+      SIM.$('feeMargin').textContent = fmt.num(f.infra / 100, 2) + ' ZMW';
+      SIM.$('feeAgent').textContent = fmt.num(f.agent / 100, 2) + ' ZMW';
+      SIM.$('saveLine').textContent = fmt.num(Math.max(0, Math.round(ng * 0.06)) / 100, 2) + ' ZMW';
+      var hint = SIM.$('amtHint');
+      if (!ok) {
+        hint.textContent = 'Enter an amount between K 1.00 and K 50,000.00.';
+        hint.classList.add('error'); sendBtn.disabled = true;
+      } else {
+        hint.textContent = 'ZRA TSA receives 0.50% of every settlement automatically.';
+        hint.classList.remove('error'); sendBtn.disabled = busy;
+      }
+    }
+    function balances() {
+      if (SIM.S.status !== 'live') return; // hold "—" until the real wallet balance lands
+      SIM.$('balCZMW').textContent = fmt.num(SIM.S.walletZMW / 100, 2);
+      SIM.$('balCTZS').textContent = fmt.num(Math.round(SIM.S.walletZMW * RATE) / 100, 2);
+      SIM.$('balSUSD').textContent = fmt.num(SIM.S.walletZMW / USD_RATE / 100, 2);
+    }
+    function setProgress(pct, label) {
+      SIM.$('progWrap').hidden = false;
+      SIM.$('progFill').style.width = pct + '%';
+      SIM.$('progLabel').textContent = label;
+    }
+    function send() {
+      if (busy) return;
+      var ng = ngwee(); if (ng < 100) return;
+      busy = true; sendBtn.disabled = true; sendBtn.textContent = 'Settling…';
+      // phase labels narrate the REAL broadcast→receipt journey the backend runs
+      var steps = [
+        [15, 'Ed25519 enclave signing…'],
+        [45, 'SCBFT consensus · 2,048 lanes…'],
+        [80, 'ZRA 0.50% split executing…']
+      ];
+      var si = 0;
+      var anim = setInterval(function () {
+        if (si < steps.length) { setProgress(steps[si][0], steps[si][1]); si += 1; }
+      }, 400);
+      SIM.api('/api/send', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          amount_zmw: fmt.num(ng / 100, 2),
+          entity: 'Sovereign GovPay · Citizen remittance'
+        })
+      }).then(function (r) {
+        clearInterval(anim);
+        finish(ng, r);
+      }).catch(function (err) {
+        clearInterval(anim);
+        setProgress(100, 'Settlement failed — ' + (err && err.message ? err.message : 'backend unreachable'));
+        busy = false; sendBtn.disabled = false; sendBtn.textContent = 'Execute sovereign settlement';
+      });
+    }
+    function finish(ng, r) {
+      SIM.S.walletZMW -= ng; // the next /api/status poll corrects this with the chain value
+      setProgress(100, 'Finalized ✓ · ' + fmt.num(r.finality_ms || 0, 0) + 'ms chain finality');
+
+      // receipt — every field from the REAL settlement (same tx the ZRA stream and BoZ inspector see)
+      SIM.$('rFinality').textContent = fmt.num(r.finality_ms || 0, 2) + 'ms';
+      SIM.$('rHash').textContent = SIM.shortHash(r.tx_hash);
+      SIM.$('rHash').title = r.explorer_url || r.tx_hash;
+      SIM.$('rZra').textContent = '+' + fmt.kwacha(SIM.ngwee(r.zra_zmw));
+      SIM.$('rAmt').textContent = fmt.tzsh(Math.round(ng * RATE));
+      SIM.$('rXml').textContent = SIM.iso.pacs008({
+        id: r.iso_message_id, hash: r.tx_hash,
+        amount: r.amount_zmw, proceeds: r.payee_zmw, cut: r.zra_zmw,
+        endToEnd: r.tx_hash.slice(0, 16)
+      }).xml;
+      SIM.$('receipt').hidden = false;
+      balances();
+      if (qr) { qr.clear(); qr.makeCode('GOVPAY|MERCHANT:#8891|CURRENCY:ZMW|REF:' + r.tx_hash.slice(2, 10).toUpperCase()); }
+
+      setTimeout(function () {
+        busy = false; sendBtn.disabled = false;
+        sendBtn.textContent = 'Execute sovereign settlement';
+      }, 900);
+    }
+
+    return {
+      init: function () {
+        // balance renders from the REAL server wallet (bus 'status' → balances()); no seeded figure
+        SIM.bus.on('status', balances);
+        amt.addEventListener('input', recompute);
+        sendBtn.addEventListener('click', send);
+        recompute();
+        try {
+          qr = new QRCode(SIM.$('qrBox'), {
+            text: 'GOVPAY|MERCHANT:#8891|AMOUNT:K150.00|CURRENCY:ZMW|RAIL:MTN-MOMO,AIRTEL-MONEY,CARD',
+            width: 176, height: 176,
+            colorDark: '#0d2b24', colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        } catch (e) { /* QR optional — never break the demo */ }
+      }
+    };
+  })();
+
+  /* ═══════════════════════════ APP 4 — INRIS GHOST-BUSTER (tab 4) ═══════════════════════════ */
+  var App3 = (function () {
+    var roster = SIM.$('rosterBody');
+    var log = SIM.$('batchLog');
+    var batchBtn = SIM.$('batchBtn');
+    var running = false;
+    var fmt = SIM.fmt, S = SIM.S;
+
+    function renderStats() {
+      SIM.$('statVerified').textContent = fmt.group('' + S.verified);
+      SIM.$('statBlocked').textContent = fmt.group('' + S.blocked);
+      SIM.$('statSaved').textContent = fmt.bigM(S.saved);
+    }
+    function addRoster(ev) {
+      var html = '<tr class="row-in' + (ev.dup ? ' dup-row' : '') + '">' +
+        '<td class="entity">' + ev.name + '</td>' +
+        '<td>' + ev.nrc + '</td>' +
+        '<td class="time">' + ev.district + '</td>' +
+        '<td>' + (ev.dup ? '<span class="pill bad">Duplicate blocked</span>'
+                         : '<span class="pill">Verified</span>') + '</td></tr>';
+      roster.insertAdjacentHTML('afterbegin', html);
+      while (roster.children.length > 15) roster.removeChild(roster.lastChild);
+    }
+    function runBatch() {
+      if (running) return;
+      running = true; batchBtn.disabled = true;
+      log.textContent = '';
+      roster.textContent = '';
+      var COUNT = 12, shown = 0, sample = null; // sample = a real PAID citizen for the pain.001
+      SIM.$('batchStatus').textContent = 'Dispatching batch · 12 citizens minting on-chain…';
+
+      function logLine(html) {
+        log.insertAdjacentHTML('afterbegin', '<div class="log-line row-in">' + html + '</div>');
+        while (log.children.length > 14) log.removeChild(log.lastChild);
+      }
+      function onCitizen(ev) {
+        shown += 1;
+        var ok = ev.verdict === 'PAID';
+        addRoster({ name: ev.name, nrc: ev.nrc, district: ev.district, dup: !ok });
+        if (ok) sample = ev;
+        logLine('<span>' + ev.name + ' · ' + ev.nrc + ' · ' + ev.district + '</span>' +
+          (ok
+            ? '<span class="ok">PAID ✓ ' + (ev.tx_hash ? SIM.shortHash(ev.tx_hash) : '') + '</span>'
+            : '<span class="bad">' + (ev.verdict === 'GHOST-BUSTED' ? 'GHOST-BUSTED ✕' : 'BLOCKED ✕') + '</span>'));
+        SIM.$('batchFill').style.width = Math.round((shown / COUNT) * 92) + '%'; // reserve the tail for the revert proof
+        SIM.$('batchStatus').textContent = 'Minting sovereign identities on-chain · ' + shown + ' / ' + COUNT;
+      }
+      function onRevertProof(p) {
+        logLine('<span>CONTRACT REVERT PROOF — duplicate-nullifier admin_mint refused by the identity contract' +
+          (p && p.tx_hash ? ' (' + SIM.shortHash(p.tx_hash) + ')' : '') + '</span>' +
+          '<span class="bad">reverted ✓ identity_granted false</span>');
+      }
+      function onSummary(s) {
+        if (s && s.error) {
+          SIM.$('batchStatus').textContent = 'Batch failed — ' + s.error;
+          running = false; batchBtn.disabled = false;
+          return;
+        }
+        S.verified += s.paid; S.blocked += s.blocked;
+        S.saved += SIM.ngwee(s.projected_saved_zmw);
+        renderStats();
+        SIM.$('batchFill').style.width = '100%';
+        SIM.$('batchStatus').textContent = 'Batch complete · ' + fmt.group('' + s.paid) + ' paid on-chain · ' +
+          fmt.group('' + s.blocked) + ' ghosts blocked · savings ' + fmt.kwacha(SIM.ngwee(s.projected_saved_zmw)) + ' (projected)';
+        logLine('<span>BATCH SUMMARY</span><span class="ok">' + fmt.group('' + s.paid) + ' paid · ' +
+          fmt.group('' + s.blocked) + ' blocked · saved ' + fmt.kwacha(SIM.ngwee(s.projected_saved_zmw)) + ' (projected at K 200/benefit)</span>');
+        if (sample) {
+          SIM.bus.emit('iso', SIM.iso.pain001({
+            count: s.paid, total: s.paid * 20000,
+            sample: { name: sample.name, nrc: sample.nrc, amt: 20000 }
+          }));
+          SIM.S.msgCount += 1;
+        }
+        running = false; batchBtn.disabled = false;
+      }
+      function handleBlock(block) {
+        var name = 'message', data = '';
+        block.split('\n').forEach(function (ln) {
+          if (ln.indexOf('event: ') === 0) name = ln.slice(7).trim();
+          else if (ln.indexOf('data: ') === 0) data += ln.slice(6);
+        });
+        var payload = null;
+        try { payload = data ? JSON.parse(data) : null; } catch (e) { /* keep ticking */ }
+        if (name === 'citizen') onCitizen(payload);
+        else if (name === 'revert_proof') onRevertProof(payload);
+        else if (name === 'summary') onSummary(payload);
+      }
+
+      fetch('/api/inris/batch', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ count: COUNT, include_duplicate: true, prove_revert: true })
+      }).then(function (r) {
+        if (!r.ok || !r.body) throw new Error('batch request failed (HTTP ' + r.status + ')');
+        var reader = r.body.getReader(), dec = new TextDecoder(), buf = '';
+        (function pump() {
+          return reader.read().then(function (m) {
+            if (m.done) return;
+            buf += dec.decode(m.value, { stream: true });
+            var parts = buf.split('\n\n');
+            buf = parts.pop();
+            parts.forEach(handleBlock);
+            return pump();
+          });
+        })();
+      }).catch(function (err) {
+        SIM.$('batchStatus').textContent = 'Batch failed — ' + (err && err.message ? err.message : 'backend unreachable');
+        running = false; batchBtn.disabled = false;
+      });
+    }
+
+    SIM.bus.on('inris', function (ev) { addRoster(ev); renderStats(); });
+
+    /* ── ambient feed: /api/inris/feed — the roster stays live like every other view ── */
+    var seenFeed = {};
+    function pollFeed() {
+      SIM.api('/api/inris/feed').then(function (j) {
+        if (!j || !j.ok) return;
+        var list = j.recent || [];
+        var added = 0;
+        // oldest → newest so the newest row lands on top (addRoster prepends)
+        for (var i = list.length - 1; i >= 0; i--) {
+          var r = list[i];
+          var key = r.nrc + '|' + r.at;
+          if (seenFeed[key]) continue;
+          seenFeed[key] = true;
+          addRoster({
+            name: r.name || 'INRIS Citizen',
+            nrc: r.nrc,
+            district: r.district || '—',
+            dup: r.verdict !== 'PAID'
+          });
+          added++;
+        }
+        trimSeen(seenFeed, 4000);
+        // server truth wins — totals are cumulative from the ghost ledger
+        if (typeof j.verified === 'number') S.verified = j.verified;
+        if (typeof j.blocked === 'number') S.blocked = j.blocked;
+        S.saved = S.blocked * 20000; // K 200/benefit projected, ngwee
+        renderStats();
+        if (added > 0 && !running) {
+          SIM.$('batchStatus').textContent = 'Ambient verification flow live \u00b7 ' +
+            fmt.group('' + S.verified) + ' beneficiaries verified on-chain \u00b7 ' +
+            fmt.group('' + S.blocked) + ' ghosts busted';
+        }
+      }).catch(function () { /* transient — the next poll recovers */ });
+    }
+
+    return {
+      init: function () {
+        renderStats();
+        batchBtn.addEventListener('click', runBatch);
+        // no fabricated seed rows — the roster fills from REAL on-chain identity mints
+        pollFeed(); setInterval(pollFeed, 5000);
+      }
+    };
+  })();
+
+  /* ═══════════════════════════ APP 1 — BOZ OBSERVER (tab 1) ═══════════════════════════ */
+  var App4 = (function () {
+    var fmt = SIM.fmt;
+    var CAP = 20;
+    var store = { pacs008: [], pain001: [], pacs002: [] };
+    var current = 'pacs008';
+    var selected = null; // message object
+    var list = SIM.$('isoList');
+
+    function renderGauge() {
+      if (SIM.S.status !== 'live') return; // hold "—" until the real reserve proof lands
+      SIM.$('kvCirc').textContent = fmt.num(SIM.S.circulating / 100, 2);
+      SIM.$('kvReserve').textContent = fmt.kwacha(SIM.S.reserves);
+      SIM.$('kvMints').textContent = fmt.group('' + SIM.S.mints);
+      SIM.$('kvBurns').textContent = fmt.group('' + SIM.S.burns);
+      SIM.$('gaugePct').textContent = SIM.S.ratio + '% collateralized';
+    }
+    function pulseGauge() {
+      var g = SIM.$('gauge');
+      g.classList.remove('pulse');
+      void g.offsetWidth; // restart animation
+      g.classList.add('pulse');
+    }
+    function itemHTML(msg) {
+      return '<button class="iso-item row-in' + (selected === msg ? ' sel' : '') + '" data-msgid="' + msg.id + '">' +
+        '<span class="msg-id">' + msg.id + '</span>' +
+        '<span class="pill">' + msg.type + '</span>' +
+        '<span class="msg-time">' + msg.time + '</span></button>';
+    }
+    function renderXml() {
+      if (!selected) { SIM.$('isoXml').textContent = ''; SIM.$('isoSelId').textContent = '—'; return; }
+      SIM.$('isoXml').textContent = selected.xml;
+      SIM.$('isoSelId').textContent = selected.id;
+      SIM.$('isoSelState').textContent = 'Validated ✓';
+    }
+    function renderList() {
+      var items = store[current].slice(0, 12);
+      list.innerHTML = items.map(itemHTML).join('') ||
+        '<div class="iso-head-row"><span class="mono">No messages yet…</span></div>';
+      if (items.length && store[current].indexOf(selected) === -1) select(items[0]);
+      if (!items.length) { selected = null; renderXml(); }
+    }
+    function select(msg) {
+      selected = msg;
+      list.querySelectorAll('.iso-item').forEach(function (el) {
+        el.classList.toggle('sel', el.dataset.msgid === msg.id);
+      });
+      renderXml();
+    }
+    function addMsg(msg) {
+      var arr = store[msg.type];
+      arr.unshift(msg);
+      if (arr.length > CAP) arr.pop();
+      SIM.$('isoCount').textContent = fmt.group('' + SIM.S.msgCount);
+      if (msg.type === current) {
+        list.insertAdjacentHTML('afterbegin', itemHTML(msg));
+        while (list.querySelectorAll('.iso-item').length > 12) {
+          var last = list.querySelector('.iso-item:last-child');
+          if (!last) break;
+          list.removeChild(last);
+        }
+        if (!selected || selected === store[msg.type][1]) select(msg);
+      }
+    }
+
+    SIM.bus.on('iso', addMsg);
+    SIM.bus.on('reserve', function () { renderGauge(); pulseGauge(); });
+
+    return {
+      init: function () {
+        renderGauge();
+        // no seeded messages — the inspector backfills from REAL /api/iso records within a poll cycle
+        SIM.$('isoCount').textContent = fmt.group('' + SIM.S.msgCount);
+        renderList();
+
+        document.querySelectorAll('.tab[data-iso]').forEach(function (t) {
+          t.addEventListener('click', function () {
+            document.querySelectorAll('.tab[data-iso]').forEach(function (o) { o.classList.toggle('on', o === t); });
+            current = t.dataset.iso;
+            selected = null;
+            renderList();
+          });
+        });
+        list.addEventListener('click', function (e) {
+          var btn = e.target.closest('.iso-item');
+          if (!btn) return;
+          var msg = store[current].filter(function (m) { return m.id === btn.dataset.msgid; })[0];
+          if (msg) select(msg);
+        });
+      }
+    };
+  })();
+
+  /* ═══════════════════════════ BOOT ═══════════════════════════ */
+  document.addEventListener('DOMContentLoaded', function () {
+    App2.init(); App4.init(); App1.init(); App3.init();
+    SIM.boot();
+  });
+  </script>
+</body>
+</html>

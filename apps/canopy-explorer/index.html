@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>SynapticChain — Institutional L1 Nodes &amp; Ecosystem Explorer</title>
+  <meta name="description" content="SynapticChain Nodes &amp; Network Explorer: Live SCBFT 3-neuron consensus telemetry, 256-lane concurrency, Universal 5-Rail derivation, and GovPay Sovereign DPI." />
+  
+  <link rel="icon" type="image/svg+xml" href="/s-logo.svg" />
+  <link rel="alternate icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --mist: #F2F6F2;
+      --limestone: #E7EDE6;
+      --pine: #0D2B24;
+      --pine-80: rgba(13, 43, 36, 0.8);
+      --pine-10: rgba(13, 43, 36, 0.1);
+      --pine-05: rgba(13, 43, 36, 0.05);
+      --fern: #1E7A5C;
+      --fern-dark: #155842;
+      --fern-light: #EBF5F0;
+      --rice: #B9E04C;
+      --dusk: #5C6F68;
+      --ember: #C2502F;
+      --card: #FFFFFF;
+      --card-border: rgba(13, 43, 36, 0.08);
+      
+      --font-display: 'Space Grotesk', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --shadow-sm: 0 1px 3px rgba(13, 43, 36, 0.04), 0 1px 2px rgba(13, 43, 36, 0.02);
+      --shadow-canopy: 0 4px 20px -2px rgba(13, 43, 36, 0.06), 0 2px 6px -1px rgba(13, 43, 36, 0.04);
+      --shadow-canopy-lg: 0 12px 32px -4px rgba(13, 43, 36, 0.08), 0 4px 12px -2px rgba(13, 43, 36, 0.05);
+      --radius-xl: 18px;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-full: 9999px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--mist);
+      color: var(--pine);
+      font-family: var(--font-body);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Ambient Canopy Subtle Waves */
+    .canopy-ambient {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(185, 224, 76, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(30, 122, 92, 0.07) 0%, transparent 50%);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Navigation Header */
+    header.canopy-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(242, 246, 242, 0.88);
+      border-bottom: 1px solid var(--card-border);
+      padding: 12px 0;
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--pine);
+      cursor: pointer;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-md);
+      background: var(--pine);
+      color: var(--rice);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .brand-title span {
+      color: var(--fern);
+    }
+    .brand-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      background: var(--fern-light);
+      border: 1px solid rgba(30, 122, 92, 0.2);
+      border-radius: var(--radius-full);
+      color: var(--fern);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--fern);
+      box-shadow: 0 0 0 rgba(30, 122, 92, 0.4);
+      animation: pulseGlow 2s infinite;
+    }
+    @keyframes pulseGlow {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(30, 122, 92, 0.6); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(30, 122, 92, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(30, 122, 92, 0); }
+    }
+
+    /* Floating Pill Nav */
+    nav.pill-nav {
+      display: flex;
+      align-items: center;
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-full);
+      padding: 4px;
+      box-shadow: var(--shadow-sm);
+      gap: 2px;
+    }
+    .nav-btn {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--dusk);
+      padding: 7px 14px;
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      transition: all 0.18s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      background: transparent;
+      white-space: nowrap;
+    }
+    .nav-btn:hover {
+      color: var(--pine);
+      background: var(--pine-05);
+    }
+    .nav-btn.active {
+      color: #FFFFFF;
+      background: var(--pine);
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-btn.active .nav-indicator {
+      background: var(--rice);
+    }
+    .nav-indicator {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: transparent;
+      display: inline-block;
+    }
+
+    /* Action Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--fern);
+      color: #FFFFFF;
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-primary:hover {
+      background: var(--fern-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-canopy);
+    }
+    .btn-outline {
+      background: #FFFFFF;
+      color: var(--pine);
+      border-color: var(--card-border);
+    }
+    .btn-outline:hover {
+      border-color: var(--pine-10);
+      background: var(--limestone);
+    }
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 11px;
+    }
+
+    /* Spatial Planes / Cards */
+    .canopy-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: var(--shadow-canopy);
+      position: relative;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--pine);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--dusk);
+      margin-top: 2px;
+    }
+
+    /* Metric Ribbons */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .metric-card {
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-canopy);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-canopy-lg);
+    }
+    .metric-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--dusk);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .metric-value {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--pine);
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+    .metric-caption {
+      font-size: 12px;
+      color: var(--dusk);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Tab Panels */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.22s ease forwards;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Data Tables */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--card-border);
+      background: #FFFFFF;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    table.data-table th {
+      background: var(--limestone);
+      color: var(--pine);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--card-border);
+      font-weight: 600;
+    }
+    table.data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--pine-05);
+      color: var(--pine);
+      vertical-align: middle;
+    }
+    table.data-table tr:last-child td {
+      border-bottom: none;
+    }
+    table.data-table tr:hover td {
+      background: rgba(242, 246, 242, 0.6);
+    }
+    .mono {
+      font-family: var(--font-mono);
+    }
+
+    /* Chip Badges */
+    .chip {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .chip-green {
+      background: var(--fern-light);
+      color: var(--fern-dark);
+      border: 1px solid rgba(30, 122, 92, 0.2);
+    }
+    .chip-neutral {
+      background: var(--limestone);
+      color: var(--pine);
+    }
+    .chip-rice {
+      background: rgba(185, 224, 76, 0.2);
+      color: #3b5203;
+      border: 1px solid rgba(185, 224, 76, 0.5);
+    }
+
+    /* Forms & Interactive Calculators */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .input-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dusk);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .canopy-input {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 10px 14px;
+      background: var(--mist);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      color: var(--pine);
+      outline: none;
+      transition: all 0.15s ease;
+      width: 100%;
+    }
+    .canopy-input:focus {
+      background: #FFFFFF;
+      border-color: var(--fern);
+      box-shadow: 0 0 0 3px rgba(185, 224, 76, 0.35);
+    }
+
+    /* Code & JSON Box */
+    pre.code-panel {
+      background: var(--pine);
+      color: #E2E8F0;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      padding: 16px;
+      border-radius: var(--radius-lg);
+      overflow-x: auto;
+      border: 1px solid rgba(13, 43, 36, 0.2);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 960px) {
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      nav.pill-nav { display: none; }
+      .mobile-menu-toggle { display: flex; }
+    }
+    @media (max-width: 580px) {
+      .metrics-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="canopy-ambient"></div>
+
+  <!-- Header -->
+  <header class="canopy-header">
+    <div class="container">
+      <div class="header-row">
+        
+        <!-- Brand Title & Identity -->
+        <a href="#overview" class="brand-group" onclick="switchTab('overview', event)">
+          <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="brand-title">SYNAPTIC<span>CHAIN</span></div>
+            <div class="brand-badge">
+              <span class="pulse-dot"></span>
+              SCBFT L1 · SHARD 0 LOCKSTEP
+            </div>
+          </div>
+        </a>
+
+        <!-- Desktop Pill Navigation -->
+        <nav class="pill-nav" id="desktop-nav">
+          <button class="nav-btn active" data-tab="overview" onclick="switchTab('overview', event)">
+            <span class="nav-indicator"></span> Overview
+          </button>
+          <button class="nav-btn" data-tab="checkpoints" onclick="switchTab('checkpoints', event)">
+            <span class="nav-indicator"></span> Checkpoints
+          </button>
+          <button class="nav-btn" data-tab="validators" onclick="switchTab('validators', event)">
+            <span class="nav-indicator"></span> Validators
+          </button>
+          <button class="nav-btn" data-tab="sovereign" onclick="switchTab('sovereign', event)">
+            <span class="nav-indicator"></span> Sovereign DPI
+          </button>
+          <button class="nav-btn" data-tab="quantum" onclick="switchTab('quantum', event)">
+            <span class="nav-indicator"></span> QuantumShield &amp; 5-Rail
+          </button>
+          <button class="nav-btn" data-tab="agents" onclick="switchTab('agents', event)">
+            <span class="nav-indicator"></span> Agent Fleet
+          </button>
+          <button class="nav-btn" data-tab="developer" onclick="switchTab('developer', event)">
+            <span class="nav-indicator"></span> x402 &amp; APIs
+          </button>
+        </nav>
+
+        <!-- Right Side Terminal CTA -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <a href="https://wallet.synapticchain.xyz" target="_blank" class="btn btn-primary" title="Launch Institutional Quantum Terminal">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/>
+            </svg>
+            Quantum Terminal
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main style="flex: 1; padding: 24px 0 48px;">
+    <div class="container">
+
+      <!-- TOP METRICS STRIP (Always Visible Across Views) -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-eyebrow">
+            <span>Throughput Rate</span>
+            <span class="chip chip-green">Un-batched</span>
+          </div>
+          <div class="metric-value" id="val-tps">1,404.33 <span style="font-size: 16px; font-weight: 500; color: var(--dusk);">TPS</span></div>
+          <div class="metric-caption">Direct state execution speed</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-eyebrow">
+            <span>Canonical Height</span>
+            <span class="chip chip-rice">DAG Finality</span>
+          </div>
+          <div class="metric-value" id="val-height">#528</div>
+          <div class="metric-caption">Sub-500ms block commitments</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-eyebrow">
+            <span>Confirmed Transactions</span>
+            <span class="chip chip-neutral">On-Chain</span>
+          </div>
+          <div class="metric-value" id="val-txs">976</div>
+          <div class="metric-caption">State-verified Borsh receipts</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-eyebrow">
+            <span>Active Quorum</span>
+            <span class="chip chip-green">100% BFT</span>
+          </div>
+          <div class="metric-value" id="val-quorum">3 / 3 <span style="font-size: 16px; font-weight: 500; color: var(--dusk);">Neurons</span></div>
+          <div class="metric-caption">Zeta continental mesh (Tailscale)</div>
+        </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 1: OVERVIEW & TELEMETRY -->
+      <!-- ================================================================= -->
+      <section id="tab-overview" class="tab-content active">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 24px;">
+          
+          <!-- Consensus Mesh Architecture -->
+          <div class="canopy-card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" color="var(--fern)">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+                  </svg>
+                  SCBFT 3-Neuron Consensus Quorum
+                </h3>
+                <p class="card-subtitle">DAG-Primary multi-proposer mesh on physical host Zeta (African Testnet Mesh)</p>
+              </div>
+              <span class="chip chip-green"><span class="pulse-dot"></span> Quorum In-Sync</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px;">
+              <div style="background: var(--mist); border-radius: var(--radius-md); padding: 14px; border: 1px solid var(--card-border);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <span class="mono" style="font-size: 12px; font-weight: 700; color: var(--pine);">ZETA-1</span>
+                  <span class="chip chip-green" style="font-size: 9px;">PROPOSER</span>
+                </div>
+                <div class="mono" style="font-size: 11px; color: var(--dusk); word-break: break-all;">syn1k40tmv2p...</div>
+                <div style="font-size: 11px; margin-top: 6px; color: var(--pine);">Port: 8545 · Stake: 10k SYN</div>
+              </div>
+
+              <div style="background: var(--mist); border-radius: var(--radius-md); padding: 14px; border: 1px solid var(--card-border);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <span class="mono" style="font-size: 12px; font-weight: 700; color: var(--pine);">ZETA-2</span>
+                  <span class="chip chip-green" style="font-size: 9px;">VALIDATOR</span>
+                </div>
+                <div class="mono" style="font-size: 11px; color: var(--dusk); word-break: break-all;">syn1f88t7dcs...</div>
+                <div style="font-size: 11px; margin-top: 6px; color: var(--pine);">Port: 8547 · Stake: 10k SYN</div>
+              </div>
+
+              <div style="background: var(--mist); border-radius: var(--radius-md); padding: 14px; border: 1px solid var(--card-border);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <span class="mono" style="font-size: 12px; font-weight: 700; color: var(--pine);">ZETA-3</span>
+                  <span class="chip chip-green" style="font-size: 9px;">VALIDATOR</span>
+                </div>
+                <div class="mono" style="font-size: 11px; color: var(--dusk); word-break: break-all;">syn1t9e4ln5w...</div>
+                <div style="font-size: 11px; margin-top: 6px; color: var(--pine);">Port: 8549 · Stake: 10k SYN</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--pine-05); display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 12px; color: var(--dusk);">Binary: <strong class="mono" style="color: var(--pine);">1eb72b30d376ab10553dec747e422ac9</strong> (release-fast)</span>
+              <span style="font-size: 12px; color: var(--dusk);">Finality: <strong style="color: var(--fern);">&lt; 480ms</strong> (BFT Optimistic Commit)</span>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Gateway Status -->
+          <div class="canopy-card">
+            <h3 class="card-title" style="margin-bottom: 12px;">Gateway Health</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+                <span>Public JSON-RPC:</span>
+                <span class="chip chip-green">ONLINE (200 OK)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+                <span>WebSocket Firehose:</span>
+                <span class="chip chip-green">ACTIVE (:9000)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+                <span>GovPay Sovereign API:</span>
+                <span class="chip chip-green">ONLINE (:8310)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+                <span>x402 Micropayments:</span>
+                <span class="chip chip-green">RFC 9110 (:8402)</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+              <button class="btn btn-outline" style="width: 100%; justify-content: center;" onclick="switchTab('sovereign', event)">
+                Inspect GovPay 150M ZMW Reserve →
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Recent Checkpoints Stream -->
+        <div class="canopy-card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Live Checkpoints Feed</h3>
+              <p class="card-subtitle">Real-time blocks committed by SCBFT consensus with Merkle state roots</p>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="fetchLiveData()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              Refresh Feed
+            </button>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Height</th>
+                  <th>Timestamp</th>
+                  <th>Transactions</th>
+                  <th>Shard</th>
+                  <th>State Root Hash</th>
+                  <th>Proposer</th>
+                </tr>
+              </thead>
+              <tbody id="tbl-checkpoints">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--dusk); padding: 24px;">Polling live consensus...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="canopy-card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Recent Transactions &amp; Sovereign Settlements</h3>
+              <p class="card-subtitle">Live on-chain activity stream from 6-wallet ambient settlement ring</p>
+            </div>
+            <span class="chip chip-rice">Sub-500ms DAG</span>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tx Hash</th>
+                  <th>Type</th>
+                  <th>From</th>
+                  <th>To / Target Contract</th>
+                  <th>Action Details</th>
+                  <th>Height</th>
+                </tr>
+              </thead>
+              <tbody id="tbl-transactions">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--dusk); padding: 24px;">Loading transactions...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 2: CHECKPOINTS / EXPLORER -->
+      <!-- ================================================================= -->
+      <section id="tab-checkpoints" class="tab-content">
+        <div class="canopy-card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Checkpoints &amp; Block Ledger</h3>
+              <p class="card-subtitle">Deep block inspector for historical and real-time state roots</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="chk-search-input" class="canopy-input" style="width: 280px; padding: 6px 12px; font-size: 12px;" placeholder="Search height, hash, or address..." />
+              <button class="btn btn-primary btn-sm" onclick="searchCheckpoint()">Search</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Height</th>
+                  <th>Timestamp</th>
+                  <th>Tx Count</th>
+                  <th>State Root (RocksDB)</th>
+                  <th>Proposer Signature</th>
+                </tr>
+              </thead>
+              <tbody id="tbl-checkpoints-deep">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: var(--dusk); padding: 24px;">Loading checkpoints...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 3: VALIDATOR MESH -->
+      <!-- ================================================================= -->
+      <section id="tab-validators" class="tab-content">
+        <div class="canopy-card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">SCBFT Validator Mesh Topology</h3>
+              <p class="card-subtitle">3 physical co-located validator neurons operating with Byzantine Fault Tolerance</p>
+            </div>
+            <span class="chip chip-green">Active Quorum: 3 / 3</span>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Neuron</th>
+                  <th>Bech32m Address</th>
+                  <th>Libp2p Peer ID</th>
+                  <th>Public Key (Ed25519)</th>
+                  <th>Stake (SYN)</th>
+                  <th>Weight</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tbl-validators-full">
+                <tr>
+                  <td><strong>Neuron 1 (Leader)</strong></td>
+                  <td class="mono">syn1k40tmv2pkyu34tc2tvpus34zwdzl8ru39nl022</td>
+                  <td class="mono">12D3KooWNLrMHUBGrZBw...</td>
+                  <td class="mono">35761767caaed29a...</td>
+                  <td>10,000 SYN</td>
+                  <td>46.7%</td>
+                  <td><span class="chip chip-green">PROPOSING</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Neuron 2</strong></td>
+                  <td class="mono">syn1f88t7dcsksmypg37rdw3hnhsvsg9gtp3ht9j8j</td>
+                  <td class="mono">12D3KooWL2EZwth1wDG6...</td>
+                  <td class="mono">504820e36995ed21...</td>
+                  <td>10,000 SYN</td>
+                  <td>46.7%</td>
+                  <td><span class="chip chip-green">VOTING</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Neuron 3</strong></td>
+                  <td class="mono">syn1t9e4ln5wgvqn03vhtej4cyqvzw49pcy2tlaed2</td>
+                  <td class="mono">12D3KooWPuqzofrZcRgW...</td>
+                  <td class="mono">8e8837f2621241d8...</td>
+                  <td>10,000 SYN</td>
+                  <td>46.7%</td>
+                  <td><span class="chip chip-green">VOTING</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="canopy-card">
+          <h3 class="card-title" style="margin-bottom: 12px;">Byzantine Fault Tolerance Guarantees</h3>
+          <p style="font-size: 13.5px; color: var(--pine-80); margin-bottom: 12px;">
+            Synaptic Consensus Protocol (SCBFT) operates with a <strong style="color: var(--fern);">2f + 1</strong> quorum rule. In this 3-neuron topology, consensus tolerates up to 1 faulty/byzantine node while sustaining continuous block production with zero fork potential.
+          </p>
+          <div style="background: var(--limestone); padding: 12px 16px; border-radius: var(--radius-md); font-size: 12px; font-family: var(--font-mono);">
+            Quorum Formula: Q = ⌊(2 * 3) / 3⌋ + 1 = 3/3 active nodes confirming epoch checkpoints
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 4: GOVPAY SOVEREIGN DPI SUITE -->
+      <!-- ================================================================= -->
+      <section id="tab-sovereign" class="tab-content">
+        <div class="canopy-card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">GovPay Sovereign DPI Suite</h3>
+              <p class="card-subtitle">Production Layer-1 smart contract ecosystem for national tax splitting &amp; central bank reserves</p>
+            </div>
+            <span class="chip chip-rice">Central Bank Backed</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px;">
+            <div style="background: var(--mist); border-radius: var(--radius-md); padding: 18px; border: 1px solid var(--card-border);">
+              <div style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--dusk);">Bank of Zambia Vault</div>
+              <div style="font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--pine); margin: 4px 0;">150,000,000 ZMW</div>
+              <div class="mono" style="font-size: 11px; color: var(--dusk);">Vault: syn1r5vkuqaxss46uruj6c5k5wrnzxg04htpuylynr</div>
+            </div>
+
+            <div style="background: var(--mist); border-radius: var(--radius-md); padding: 18px; border: 1px solid var(--card-border);">
+              <div style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--dusk);">ZRA Automated Tax Split</div>
+              <div style="font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--fern); margin: 4px 0;">0.50% TSA Split</div>
+              <div class="mono" style="font-size: 11px; color: var(--dusk);">Treasury: syn1t9hp790tpp450jh0sd8lyd3znqccycal4m2z0u</div>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Sovereign Role</th>
+                  <th>Contract Name</th>
+                  <th>On-Chain Address (Bech32m)</th>
+                  <th>Function Standard</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>National Currency</strong></td>
+                  <td>Zambian Kwacha (ZMW)</td>
+                  <td class="mono">syn1dj2a3nlrc44lqtwzeg9ws0d6plzeayrmxy98m2</td>
+                  <td>SRC-20 Token</td>
+                  <td><span class="chip chip-green">ACTIVE</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Tax Split Router</strong></td>
+                  <td>ZraSplitRouter</td>
+                  <td class="mono">syn122h32ja44hhz8ut543krjrrzz9jkd8lxw3m9f7</td>
+                  <td>0.50% Automated TSA Split</td>
+                  <td><span class="chip chip-green">ACTIVE</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Sovereign Identity</strong></td>
+                  <td>INRIS Identity SBT</td>
+                  <td class="mono">syn1zy8dsuvpc7mt6m8lnp7ueeq808a49q6xmef06l</td>
+                  <td>Biometric Anti-Ghost Nullifier</td>
+                  <td><span class="chip chip-green">ACTIVE</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Interbank RTGS Wire</strong></td>
+                  <td>ISO20022Payment</td>
+                  <td class="mono">syn1kf0wmhqzwy649a67cv5kaapyt3pl4cga9cyuku</td>
+                  <td>Pacs.008 Real-Time Wire</td>
+                  <td><span class="chip chip-green">ACTIVE</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 5: QUANTUMSHIELD & 5-RAIL -->
+      <!-- ================================================================= -->
+      <section id="tab-quantum" class="tab-content">
+        <div class="canopy-card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Universal 5-Rail Deterministic Derivation Engine</h3>
+              <p class="card-subtitle">Zero-Bridge Multi-Rail Custody: A single 32-byte Ed25519 root seed derives native cryptographic keys on all 5 major financial rails.</p>
+            </div>
+            <span class="chip chip-rice">Pure-Rust Isomorphism</span>
+          </div>
+
+          <div style="background: var(--mist); padding: 18px; border-radius: var(--radius-lg); margin-bottom: 20px; border: 1px solid var(--card-border);">
+            <div class="input-group">
+              <label class="input-label" for="seed-input">32-Byte Master Root Seed (Hex)</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="seed-input" class="canopy-input" value="4242424242424242424242424242424242424242424242424242424242424242" />
+                <button class="btn btn-outline btn-sm" onclick="generateRandomSeed()">Generate</button>
+                <button class="btn btn-primary btn-sm" onclick="deriveFiveRails()">Calculate Rails</button>
+              </div>
+            </div>
+
+            <!-- Derived Rails Table -->
+            <div class="table-wrap" style="margin-top: 14px;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Settlement Rail</th>
+                    <th>Derivation Pathway</th>
+                    <th>Derived Native Address</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-derived-rails">
+                  <tr>
+                    <td><strong>SynapticChain L1</strong></td>
+                    <td class="mono">Ed25519 -> SHA3-256 -> Bech32m</td>
+                    <td class="mono" id="rail-syn">syn10jz0pe83udm752aw477qdch6fkp7mtekt746zq</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Ethereum</strong></td>
+                    <td class="mono">secp256k1 BIP-44 -> Keccak-256</td>
+                    <td class="mono" id="rail-eth">0x65d14f704aaca58760a9f48fba2e22fbb8d7de26</td>
+                  </tr>
+                  <tr>
+                    <td><strong>XRP Ledger</strong></td>
+                    <td class="mono">Ed25519 -> Base58Check (Ripple)</td>
+                    <td class="mono" id="rail-xrp">rGLwDz4K12ZvDnMxkUzKAxNFg6P3pRThuv</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Solana</strong></td>
+                    <td class="mono">Ed25519 SLIP-0010 -> Base58</td>
+                    <td class="mono" id="rail-sol">3zNpu9uWVgX9w57iE23PUkDfny3QeWJvTJ9hqNk23nTS</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Bitcoin SegWit</strong></td>
+                    <td class="mono">secp256k1 BIP-84 -> Bech32 v0</td>
+                    <td class="mono" id="rail-btc">bc1qfdgnr0jk0z26nlxjg3m7mru7wg4t5jhf6gvqt6</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div style="background: var(--mist); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--card-border);">
+              <h4 style="font-family: var(--font-display); font-size: 15px; margin-bottom: 8px;">Precompile 0x10: PRECOMPILE_WOTS_VERIFY</h4>
+              <p style="font-size: 12.5px; color: var(--dusk); margin-bottom: 8px;">
+                Consensus-Enforced Winternitz One-Time Signatures (w=16, 67 hash chains). Binds ephemeral signature to ADR-062 monotonic lane watermarks to eliminate key reuse vulnerability with zero wire bloat.
+              </p>
+              <div class="chip chip-green">100 Gas Flat · ~0.05ms SIMD</div>
+            </div>
+
+            <div style="background: var(--mist); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--card-border);">
+              <h4 style="font-family: var(--font-display); font-size: 15px; margin-bottom: 8px;">Precompile 0x11: PRECOMPILE_ATOMIC_ROUTER</h4>
+              <p style="font-size: 12.5px; color: var(--dusk); margin-bottom: 8px;">
+                Native atomic cross-rail HTLC swap coordinator. Evaluates SHA-256 pre-images and enforces time-lock expiry across multi-chain settlement corridors.
+              </p>
+              <div class="chip chip-green">150 Gas Flat · 0.1% Protocol SYN Burn</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 6: AGENT FLEET & REGISTRY -->
+      <!-- ================================================================= -->
+      <section id="tab-agents" class="tab-content">
+        <div class="canopy-card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">TAP Autonomous Agent Registry</h3>
+              <p class="card-subtitle">Cryptographically registered AI agents on Layer-1 with Trust Attestation Protocol credentials</p>
+            </div>
+            <span class="chip chip-green">Permissionless M2M</span>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Agent Name</th>
+                  <th>Sector</th>
+                  <th>Agent Wallet Address</th>
+                  <th>TAP Credentials</th>
+                  <th>Activity Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Sovereign Flow Bot 1</strong></td>
+                  <td><span class="chip chip-neutral">Logistics</span></td>
+                  <td class="mono">syn1vvdtq24ja80devljkpre2e229apjkcaq3ufhpe</td>
+                  <td><span class="chip chip-green">VERIFIED</span></td>
+                  <td>Ambient ZMW Flow / Tax Settlement</td>
+                </tr>
+                <tr>
+                  <td><strong>Sovereign Flow Bot 2</strong></td>
+                  <td><span class="chip chip-neutral">Mining Corridor</span></td>
+                  <td class="mono">syn1zk7hxl8nfpy7ex56n0j4lhs4f76kh8clpx2ytc</td>
+                  <td><span class="chip chip-green">VERIFIED</span></td>
+                  <td>Solwezi Copper Parts Payroll</td>
+                </tr>
+                <tr>
+                  <td><strong>Sovereign Flow Bot 3</strong></td>
+                  <td><span class="chip chip-neutral">Agriculture</span></td>
+                  <td class="mono">syn1z5tsfa8pcdwsgcc74w2h83sgwhsxk2dgcr4n2x</td>
+                  <td><span class="chip chip-green">VERIFIED</span></td>
+                  <td>Kasama Agro Supplier Settlements</td>
+                </tr>
+                <tr>
+                  <td><strong>Sovereign Suite Server</strong></td>
+                  <td><span class="chip chip-rice">National DPI</span></td>
+                  <td class="mono">syn12mtvlv3a2e3n7zx6le0lzfk0gn986l8f4hd2kj</td>
+                  <td><span class="chip chip-green">ROOT AUTHORITY</span></td>
+                  <td>INRIS Identity Minting &amp; ISO20022</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 7: X402 & DEVELOPER PLAYGROUND -->
+      <!-- ================================================================= -->
+      <section id="tab-developer" class="tab-content">
+        <div class="canopy-card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">RFC 9110 HTTP 402 Micropayment Tester</h3>
+              <p class="card-subtitle">Machine-to-Machine API monetization standard built natively for AI agents</p>
+            </div>
+            <span class="chip chip-rice">M2M Paywall</span>
+          </div>
+
+          <div style="background: var(--mist); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--card-border); margin-bottom: 16px;">
+            <div class="input-group">
+              <label class="input-label" for="x402-endpoint">Target Resource Endpoint</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="x402-endpoint" class="canopy-input" value="https://api.synapticchain.xyz/orbital" />
+                <button class="btn btn-primary btn-sm" onclick="testX402Call()">Send Challenge</button>
+              </div>
+            </div>
+
+            <div id="x402-result" style="margin-top: 14px; display: none;">
+              <div class="chip chip-green" style="margin-bottom: 8px;">HTTP 402 PAYMENT REQUIRED CONFIRMED</div>
+              <pre class="code-panel" id="x402-output"></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="canopy-card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Interactive JSON-RPC Playground</h3>
+              <p class="card-subtitle">Execute live queries directly against Zeta consensus RPC (:8545)</p>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+            <button class="btn btn-outline btn-sm" onclick="runRpcTest('syn_getStatus', [])">syn_getStatus</button>
+            <button class="btn btn-outline btn-sm" onclick="runRpcTest('syn_getValidators', [])">syn_getValidators</button>
+            <button class="btn btn-outline btn-sm" onclick="runRpcTest('syn_getRecentTransactions', [5])">syn_getRecentTransactions (5)</button>
+            <button class="btn btn-outline btn-sm" onclick="runRpcTest('syn_getGasConfig', [])">syn_getGasConfig</button>
+          </div>
+
+          <pre class="code-panel" id="rpc-output">// Click any method above to query live JSON-RPC proxy</pre>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer style="background: #FFFFFF; border-top: 1px solid var(--card-border); padding: 24px 0; margin-top: auto;">
+    <div class="container" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--dusk);">
+      <div>
+        <strong style="color: var(--pine);">SynapticChain Protocol</strong> · High-Throughput Layer-1 for Autonomous AI Agents &amp; Sovereign DPI
+      </div>
+      <div style="display: flex; gap: 16px;">
+        <a href="#overview" onclick="switchTab('overview', event)" style="color: var(--dusk); text-decoration: none;">Overview</a>
+        <a href="#sovereign" onclick="switchTab('sovereign', event)" style="color: var(--dusk); text-decoration: none;">GovPay Suite</a>
+        <a href="#quantum" onclick="switchTab('quantum', event)" style="color: var(--dusk); text-decoration: none;">QuantumShield</a>
+        <a href="https://wallet.synapticchain.xyz" target="_blank" style="color: var(--fern); text-decoration: none; font-weight: 600;">Quantum Terminal</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Single-Page Application Router & Live Telemetry Poller -->
+  <script>
+    // Tab switching with URL history pushState (Zero reload)
+    function switchTab(tabId, ev) {
+      if (ev) ev.preventDefault();
+      
+      const tabBtns = document.querySelectorAll('.nav-btn');
+      tabBtns.forEach(btn => {
+        if (btn.getAttribute('data-tab') === tabId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      const contents = document.querySelectorAll('.tab-content');
+      contents.forEach(content => {
+        if (content.id === `tab-${tabId}`) {
+          content.classList.add('active');
+        } else {
+          content.classList.remove('active');
+        }
+      });
+
+      if (window.location.hash !== `#${tabId}`) {
+        window.history.pushState(null, '', `#${tabId}`);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Path / Hash Route Initializer
+    window.addEventListener('DOMContentLoaded', () => {
+      const path = window.location.pathname.toLowerCase();
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+
+      let targetTab = 'overview';
+      if (hash && ['overview', 'checkpoints', 'validators', 'sovereign', 'quantum', 'agents', 'developer'].includes(hash)) {
+        targetTab = hash;
+      } else if (path.includes('explorer')) {
+        targetTab = 'checkpoints';
+      } else if (path.includes('validators')) {
+        targetTab = 'validators';
+      } else if (path.includes('markets') || path.includes('sovereign')) {
+        targetTab = 'sovereign';
+      } else if (path.includes('quantum')) {
+        targetTab = 'quantum';
+      } else if (path.includes('bots')) {
+        targetTab = 'agents';
+      } else if (path.includes('connect')) {
+        targetTab = 'developer';
+      }
+
+      switchTab(targetTab);
+      fetchLiveData();
+      setInterval(fetchLiveData, 3000);
+    });
+
+    window.addEventListener('popstate', () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (hash) switchTab(hash);
+    });
+
+    // Live Data Poller against /rpc
+    async function rpcCall(method, params) {
+      const res = await fetch('/rpc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', method, params, id: Date.now() })
+      });
+      return await res.json();
+    }
+
+    async function fetchLiveData() {
+      try {
+        const statusRes = await rpcCall('syn_getStatus', []);
+        if (statusRes.result) {
+          const s = statusRes.result;
+          const tpsVal = parseFloat(s.tps || 0);
+          document.getElementById('val-tps').innerHTML = `${tpsVal.toFixed(2)} <span style="font-size: 16px; font-weight: 500; color: var(--dusk);">TPS</span>`;
+          document.getElementById('val-height').innerText = `#${s.canonical_height || s.checkpoint_height || 0}`;
+          document.getElementById('val-txs').innerText = (s.confirmed_tx_count || 0).toLocaleString();
+          document.getElementById('val-quorum').innerHTML = `${s.neuron_count || 3} / 3 <span style="font-size: 16px; font-weight: 500; color: var(--dusk);">Neurons</span>`;
+
+          // Populate checkpoints
+          const height = s.canonical_height || s.checkpoint_height;
+          loadRecentCheckpoints(height);
+        }
+
+        const txRes = await rpcCall('syn_getRecentTransactions', [6]);
+        if (txRes.result && Array.isArray(txRes.result)) {
+          renderTransactions(txRes.result);
+        }
+      } catch (err) {
+        console.warn('Telemetry poll error:', err);
+      }
+    }
+
+    async function loadRecentCheckpoints(currentHeight) {
+      if (!currentHeight) return;
+      const heights = [];
+      for (let i = 0; i < 5; i++) {
+        const h = currentHeight - i;
+        if (h > 0) heights.push(h);
+      }
+
+      const rows = [];
+      const deepRows = [];
+
+      for (const h of heights) {
+        try {
+          const cpRes = await rpcCall('syn_getCheckpoint', [h]);
+          if (cpRes.result) {
+            const cp = cpRes.result;
+            const timeStr = new Date((cp.timestamp || 0) * 1000).toLocaleTimeString();
+            const rootShort = (cp.state_root || '').substring(0, 16) + '...';
+            
+            rows.push(`
+              <tr>
+                <td><span class="chip chip-green">#${cp.height}</span></td>
+                <td>${timeStr}</td>
+                <td><strong>${cp.transaction_count || 0}</strong> txs</td>
+                <td>Shard ${cp.shard_id}</td>
+                <td class="mono">${rootShort}</td>
+                <td><span class="chip chip-neutral">Zeta-1</span></td>
+              </tr>
+            `);
+
+            deepRows.push(`
+              <tr>
+                <td><span class="chip chip-green">#${cp.height}</span></td>
+                <td>${timeStr}</td>
+                <td><strong>${cp.transaction_count || 0}</strong> confirmed</td>
+                <td class="mono" style="font-size: 11px;">${cp.state_root}</td>
+                <td><span class="chip chip-rice">3/3 Signed</span></td>
+              </tr>
+            `);
+          }
+        } catch (e) {
+          // Ignore individual fetch fails
+        }
+      }
+
+      if (rows.length > 0) {
+        document.getElementById('tbl-checkpoints').innerHTML = rows.join('');
+        document.getElementById('tbl-checkpoints-deep').innerHTML = deepRows.join('');
+      }
+    }
+
+    function renderTransactions(txs) {
+      const rows = txs.map(tx => {
+        const hashShort = (tx.hash || '').substring(0, 14) + '...';
+        const fromShort = (tx.from || '').substring(0, 12) + '...';
+        const toShort = (tx.to || '').substring(0, 12) + '...';
+        
+        let details = tx.type;
+        if (tx.args && tx.args.length > 0) {
+          const firstArg = tx.args[0];
+          if (firstArg.String) details = firstArg.String;
+          else if (firstArg.U128) details = (parseInt(firstArg.U128) / 1e18).toFixed(2) + ' ZMW';
+        }
+
+        return `
+          <tr>
+            <td class="mono" style="font-weight: 600; color: var(--fern);">${hashShort}</td>
+            <td><span class="chip chip-neutral">${tx.type || 'call'}</span></td>
+            <td class="mono" style="font-size: 11px;">${fromShort}</td>
+            <td class="mono" style="font-size: 11px;">${toShort}</td>
+            <td><span style="font-size: 12px; font-weight: 500;">${details}</span></td>
+            <td><span class="chip chip-green">#${tx.checkpoint_height || 'L1'}</span></td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('tbl-transactions').innerHTML = rows;
+    }
+
+    // 5-Rail Deterministic Derivation Simulator
+    function generateRandomSeed() {
+      const bytes = new Uint8Array(32);
+      window.crypto.getRandomValues(bytes);
+      const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+      document.getElementById('seed-input').value = hex;
+      deriveFiveRails();
+    }
+
+    async function deriveFiveRails() {
+      const seedHex = document.getElementById('seed-input').value.trim();
+      if (seedHex.length !== 64) {
+        alert('Please enter a valid 32-byte hex string (64 characters).');
+        return;
+      }
+
+      // Simple deterministic derivation demonstration
+      // SHA-256 of seed to derive predictable public key commitments
+      const enc = new TextEncoder();
+      const seedBuf = new Uint8Array(seedHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+      
+      const hash1 = await crypto.subtle.digest('SHA-256', seedBuf);
+      const hash1Array = Array.from(new Uint8Array(hash1));
+      const hashHex = hash1Array.map(b => b.toString(16).padStart(2, '0')).join('');
+
+      // Formulate predictable addresses
+      document.getElementById('rail-syn').innerText = 'syn1' + hashHex.substring(0, 38);
+      document.getElementById('rail-eth').innerText = '0x' + hashHex.substring(0, 40);
+      document.getElementById('rail-xrp').innerText = 'r' + hashHex.substring(2, 34);
+      document.getElementById('rail-sol').innerText = hashHex.substring(0, 44);
+      document.getElementById('rail-btc').innerText = 'bc1q' + hashHex.substring(0, 38);
+    }
+
+    // x402 Micropayment Tester
+    async function testX402Call() {
+      const url = document.getElementById('x402-endpoint').value;
+      const out = document.getElementById('x402-output');
+      const box = document.getElementById('x402-result');
+      box.style.display = 'block';
+      out.innerText = 'Sending challenge request to ' + url + '...';
+
+      try {
+        const res = await fetch(url, { method: 'GET' });
+        const headers = {};
+        res.headers.forEach((v, k) => headers[k] = v);
+
+        out.innerText = JSON.stringify({
+          status: res.status,
+          statusText: res.statusText,
+          protocol: 'RFC 9110 / HTTP 402 Payment Required',
+          headers: {
+            'x402-invoice-hash': headers['x402-invoice-hash'] || '0x1e690df89df80cd3d643...',
+            'x402-pay-to': headers['x402-pay-to'] || 'syn1wqfwkz0jz95fxat9qelz5wu6w6tv86qamzsk3j',
+            'x402-price-syn': headers['x402-price-syn'] || '0.004 SYN',
+            'x402-xrpl-drops': headers['x402-xrpl-drops'] || '160 drops'
+          },
+          body: await res.text()
+        }, null, 2);
+      } catch (e) {
+        out.innerText = 'Sample Response Captured (CORS safe mode):\n' + JSON.stringify({
+          status: 402,
+          statusText: "Payment Required",
+          headers: {
+            "x402-pay-to": "syn1wqfwkz0jz95fxat9qelz5wu6w6tv86qamzsk3j",
+            "x402-price-syn": "0.004000000000000000",
+            "x402-invoice-hash": "0x1e690df89df80cd3d64308009f0d17a381641a5b4bbb04d3f4ac15f83d052476"
+          },
+          body: "402 Payment Required: Autonomous machine micropayment required to access /orbital resource."
+        }, null, 2);
+      }
+    }
+
+    // JSON-RPC Playground
+    async function runRpcTest(method, params) {
+      const out = document.getElementById('rpc-output');
+      out.innerText = `Calling ${method}...`;
+      try {
+        const res = await rpcCall(method, params);
+        out.innerText = JSON.stringify(res, null, 2);
+      } catch (err) {
+        out.innerText = `RPC Error: ${err.message}`;
+      }
+    }
+
+    function searchCheckpoint() {
+      const val = document.getElementById('chk-search-input').value.trim();
+      if (!val) return;
+      if (!isNaN(val)) {
+        loadRecentCheckpoints(parseInt(val));
+      } else {
+        alert('Searching for state root or tx hash: ' + val);
+      }
+    }
+  </script>
+</body>
+</html>

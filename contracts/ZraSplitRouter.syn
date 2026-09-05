@@ -1,0 +1,114 @@
+// ============================================================================
+// ZraSplitRouter — one-tx sovereign settlement with automated ZRA TSA split
+// ============================================================================
+// Powers the Zambia Sovereign DPI Suite. Pulls pre-approved ZMW from the payer
+// and forwards 99.5% to the payee and 0.5% to the Single Treasury Account
+// inside the same transaction — the automated sovereign cut is enforced by
+// protocol, not collected by reconciliation afterward.
+//
+// Every demo payment is a single `pay` call, so the suite's frontend can
+// filter the chain stream on `to == ZraSplitRouter` (native transfers carry
+// no memo; call args do — the `entity` string names the trader/citizen).
+// ============================================================================
+
+contract ZraSplitRouter {
+    state zmw_token: Address;
+    state treasury: Address;   // ZRA Single Treasury Account
+    state admin: Address;
+    state fee_bps: u64;        // 50 = 0.50%
+    state paused: bool;
+    state payment_count: u64;
+    state total_routed: u128;
+    state total_fees: u128;
+
+    const FEE_DENOMINATOR: u64 = 10000;
+
+    event Routed(payer: Address, payee: Address, entity: String, amount: u128, fee: u128, seq: u64);
+
+    #[writes(zmw_token, treasury, admin, fee_bps, paused,
+             payment_count, total_routed, total_fees)]
+    pub fn init(token: Address, tsa: Address, fee: u64) {
+        require!(token != Address::zero(), "Invalid token");
+        require!(tsa != Address::zero(), "Invalid treasury");
+        require!(fee <= 1000, "Fee too high"); // max 10%
+        self.zmw_token = token;
+        self.treasury = tsa;
+        self.admin = msg.sender;
+        self.fee_bps = fee;
+        self.paused = false;
+        self.payment_count = 0;
+        self.total_routed = 0;
+        self.total_fees = 0;
+    }
+
+    // One-tx settlement: pull ZMW from the payer's pre-approved allowance and
+    // forward proceeds + TSA cut in the same call. No escrow — the router
+    // never holds custody; both legs are real token Transfer events.
+    #[reads(paused, zmw_token, treasury, fee_bps,
+            payment_count, total_routed, total_fees)]
+    #[writes(payment_count, total_routed, total_fees)]
+    pub fn pay(amount: u128, payee: Address, entity: String) {
+        require!(self.paused == false, "Paused");
+        require!(amount > 0, "Zero amount");
+        require!(entity.len() > 0, "Entity required");
+        let fee = (amount * (self.fee_bps as u128)) / (FEE_DENOMINATOR as u128);
+        let proceeds = amount - fee;
+        let seq = self.payment_count + 1;
+        call_contract(self.zmw_token, "transfer_from", msg.sender, payee, proceeds);
+        call_contract(self.zmw_token, "transfer_from", msg.sender, self.treasury, fee);
+        self.payment_count = seq;
+        self.total_routed = self.total_routed + amount;
+        self.total_fees = self.total_fees + fee;
+        emit Routed(msg.sender, payee, entity, amount, fee, seq);
+    }
+
+    #[reads(payment_count, total_routed, total_fees)]
+    pub fn get_payment_count() -> u64 {
+        return self.payment_count;
+    }
+
+    #[reads(total_routed)]
+    pub fn get_total_routed() -> u128 {
+        return self.total_routed;
+    }
+
+    #[reads(total_fees)]
+    pub fn get_total_fees() -> u128 {
+        return self.total_fees;
+    }
+
+    #[reads(fee_bps)]
+    pub fn get_fee_bps() -> u64 {
+        return self.fee_bps;
+    }
+
+    #[reads(treasury)]
+    pub fn get_treasury() -> Address {
+        return self.treasury;
+    }
+
+    #[reads(zmw_token)]
+    pub fn get_token() -> Address {
+        return self.zmw_token;
+    }
+
+    #[reads(admin)]
+    pub fn get_admin() -> Address {
+        return self.admin;
+    }
+
+    #[reads(paused, admin)]
+    #[writes(paused)]
+    pub fn set_paused(paused_state: bool) {
+        require!(msg.sender == self.admin, "Not admin");
+        self.paused = paused_state;
+    }
+
+    #[reads(admin, fee_bps)]
+    #[writes(fee_bps)]
+    pub fn set_fee_bps(new_fee: u64) {
+        require!(msg.sender == self.admin, "Not admin");
+        require!(new_fee <= 1000, "Fee too high");
+        self.fee_bps = new_fee;
+    }
+}

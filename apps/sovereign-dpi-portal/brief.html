@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Zambia Sovereign DPI Suite — Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pine: #0d2b24; --pine-soft: #14403a; --mist: #f2f6f2; --card: #ffffff;
+    --fern: #1e7a5c; --lime: #7fb069; --dusk: #5c6b64; --border: #dde5de;
+    --hairline: #eef2ee;
+  }
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; color: var(--pine); background: #fff; font-size: 10.5pt; line-height: 1.5; }
+  .page { width: 210mm; height: 297mm; padding: 14mm 15mm; background: var(--mist); position: relative; page-break-after: always; overflow: hidden; }
+  .page:last-child { page-break-after: avoid; }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 24pt; line-height: 1.1; letter-spacing: -0.01em; }
+  h2 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14pt; margin: 0 0 6pt; }
+  h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 11pt; }
+  .kicker { font-family: 'JetBrains Mono', monospace; font-size: 8pt; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fern); margin-bottom: 8pt; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .lead { font-size: 11pt; color: #24352e; max-width: 155mm; margin-top: 8pt; }
+  .band { background: var(--pine); color: rgba(242,246,242,0.92); border-radius: 6pt; padding: 10pt 12pt; margin: 10pt 0; }
+  .band b { color: var(--lime); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7pt; margin: 8pt 0; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 6pt; padding: 10pt 11pt; }
+  .card .num { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--fern); letter-spacing: 0.1em; }
+  .card h3 { margin: 2pt 0 4pt; }
+  .card p { font-size: 9pt; color: #33443c; }
+  .try { margin-top: 4pt; padding: 5pt 8pt; background: #eaf3ec; border-left: 3pt solid var(--fern); border-radius: 3pt; font-size: 8.8pt; color: #1c3a30; }
+  .try b { font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; letter-spacing: 0.08em; color: var(--fern); }
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8pt; margin: 8pt 0; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 6pt; padding: 8pt 10pt; }
+  .stat .v { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 13pt; color: var(--fern); }
+  .stat .k { font-size: 8pt; color: var(--dusk); margin-top: 2pt; line-height: 1.35; }
+  table { width: 100%; table-layout: fixed; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 6pt; overflow: hidden; font-size: 9.3pt; }
+  th { font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mist); background: var(--pine); text-align: left; padding: 5pt 9pt; }
+  td { padding: 5pt 9pt; border-bottom: 1px solid var(--hairline); color: #33443c; vertical-align: top; line-height: 1.38; }
+  tr:last-child td { border-bottom: none; }
+  td.m { font-family: 'JetBrains Mono', monospace; color: var(--fern); font-weight: 700; }
+  .foot { position: absolute; bottom: 10mm; left: 15mm; right: 15mm; font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; color: var(--dusk); display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 5pt; }
+  .diagram { margin: 7pt 0; }
+  .note { background: #fff8e6; border: 1px solid #eedb9a; border-radius: 5pt; padding: 6pt 10pt; font-size: 8.5pt; color: #5c4d1e; margin: 7pt 0; }
+  ul { padding-left: 12pt; font-size: 9.5pt; color: #33443c; }
+  li { margin-bottom: 3pt; }
+  li b { color: var(--pine); }
+</style>
+</head>
+<body>
+
+<!-- ══════════ PAGE 1 ══════════ -->
+<div class="page">
+  <div class="kicker">Smart Zambia Institute · Zambia Revenue Authority · Ministry of Finance · Bank of Zambia</div>
+  <h1>Zambia Sovereign DPI Suite</h1>
+  <div class="lead" style="margin-bottom:2pt;">A field guide to the four-app demonstration — <b>what you are looking at, how to drive it, and what the technology achieves.</b></div>
+  <div class="band mono" style="font-size:8.5pt; margin-top:8pt;">LIVE DEMO → <b>govpay.synapticchain.xyz</b> · presented by <b>GovPay Sovereign DPI</b>  powered by <b>SynapticChain</b> (Abdul Shazz)</div>
+
+  <h2 style="margin-top:14pt;">What you are looking at</h2>
+  <p class="lead" style="font-size:10pt; margin-top:0;">One web page, four sovereign applications, one shared truth. A citizen sends money in the wallet; the revenue authority sees the treasury credit; the central bank sees the message and the reserves — <b>in the same second, with the same reference</b>. Nothing is copy-pasted between screens: every number on every tab is produced by one settlement event. And the counterparty throughout is the <b>Bank of Zambia itself</b> — this is central bank infrastructure, not a local-bank product.</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="num">APP 1</div>
+      <h3>Bank of Zambia Observer</h3>
+      <p>The central bank’s own supervisory node — deliberately the first tab you see. Every digital Kwacha in circulation is shown against its reserve held at the Bank of Zambia itself — 1:1, at all times, no commercial-bank escrow — plus the raw ISO 20022 message stream, schema-validated on every message.</p>
+      <div class="try"><b>LOOK FOR</b> — the solvency gauge holding 100.00% through mint/burn events, and the message inspector (pacs.008 / pain.001 / pacs.002) carrying the ZRA split inside the payment itself.</div>
+    </div>
+    <div class="card">
+      <div class="num">APP 2</div>
+      <h3>ZRA Treasury &amp; Customs</h3>
+      <p>The Treasury Single Account as a live ledger. Every cross-border settlement streams in with the automated 0.50% sovereign cut already split off and cleared — no forms, no reconciliation, no leak.</p>
+      <div class="try"><b>LOOK FOR</b> — the settlement stream ticking every few seconds; the TSA balance animating upward on each credit; “TSA CLEARED” on every row.</div>
+    </div>
+    <div class="card">
+      <div class="num">APP 3</div>
+      <h3>GovPay Citizen & Merchant Wallet</h3>
+      <p>The citizen and trader experience — a Kwacha wallet that pays across the border at mobile-money speed, priced at 1.5% total instead of 7–10% bank wires. Familiar rails on the surface (MTN MoMo · Airtel Money · card); sovereign settlement underneath.</p>
+      <div class="try"><b>TRY THIS</b> — type an amount, watch the ZRA/GovPay/agent split recompute live, press SEND: a settlement receipt with finality, reference hash, QR and bank-grade ISO 20022 message.</div>
+    </div>
+    <div class="card">
+      <div class="num">APP 4</div>
+      <h3>INRIS Ghost-Buster SCT</h3>
+      <p>Social cash transfer the way BoI/MCDSS wish it worked: every beneficiary verified against the national registry before payment. Duplicates — the ghost payroll that drains social programs — are blocked at source.</p>
+      <div class="try"><b>TRY THIS</b> — press RUN SCT BATCH (2,000 wallets): payments stream in green “PAID” and duplicate NRCs are stopped in red, while the savings counter ticks up.</div>
+    </div>
+  </div>
+
+  <div class="band" style="font-size:9.5pt;">
+    <b>The one thing to watch:</b> send money in App 3 (the wallet), then switch to App 2 — the same transaction reference appears as the highlighted top row of the ZRA stream, with its +K treasury credit. Switch back to App 1 — the same payment arrives as a schema-validated ISO 20022 message. <b>Revenue, proof and oversight move together because they are one event, not three systems.</b>
+  </div>
+
+  <div class="foot"><span>ZAMBIA SOVEREIGN DPI SUITE · FIELD GUIDE</span><span>PAGE 1 / 3</span></div>
+</div>
+
+<!-- ══════════ PAGE 2 ══════════ -->
+<div class="page">
+  <div class="kicker">What the technology achieves</div>
+  <h2 style="margin-top:0;">Outcomes for Zambia</h2>
+
+  <div class="stat-row">
+    <div class="stat"><div class="v">0.50%</div><div class="k">of every settlement captured for the TSA automatically, at source — revenue that cannot leak</div></div>
+    <div class="stat"><div class="v">135.68ms</div><div class="k">cross-border settlement finality, Nakonde–Tunduma corridor — versus 3 days by bank wire</div></div>
+    <div class="stat"><div class="v">1.5%</div><div class="k">total cost (ZRA 0.50 · GovPay 0.75 · agent 0.25) versus 7–10% on informal corridors today</div></div>
+    <div class="stat"><div class="v">K 73.6M</div><div class="k">recovered in the demonstration period by blocking 18,420 ghost beneficiaries before payment</div></div>
+  </div>
+
+  <h2>The machinery underneath</h2>
+  <table>
+    <tr><th style="width:30%;">Layer</th><th style="width:44%;">What it is</th><th style="width:26%;">Why it matters to GRZ</th></tr>
+    <tr><td><b>SynapticChain L1</b> — sovereign settlement</td><td>A national digital public infrastructure ledger. Transactions are final in one step — no chargebacks, no reversals, no correspondent chain.</td><td class="m">Sub-150ms finality, zero user gas fees</td></tr>
+    <tr><td><b>ISO 20022 native</b></td><td>Every payment is carried as a standard interbank message (pacs.008 / pain.001 / pacs.002) — the same format ZRA, BoZ and commercial banks already use. The sovereign split travels inside the payment.</td><td class="m">Drops into existing bank rails</td></tr>
+    <tr><td><b>Automated revenue split</b></td><td>The 0.50% treasury cut is enforced by protocol on every transaction and credited to the TSA account in the same event — not collected by reconciliation afterward.</td><td class="m">Collection cost → zero</td></tr>
+    <tr><td><b>Identity-verified transfers</b></td><td>Beneficiaries hold a soulbound identity (NRC-anchored). INRIS re-verifies against the registry before every disbursement.</td><td class="m">Ghosts eliminated at source</td></tr>
+    <tr><td><b>1:1 collateralized currency</b></td><td>Circulating digital Kwacha is minted and burned only against movement in the Bank of Zambia’s own reserve account — the central bank is the direct counterparty, no commercial bank in between.</td><td class="m">No monetary-policy risk</td></tr>
+    <tr><td><b>Parallel lanes</b></td><td>2,048 concurrent signing lanes (Ed25519, hardware-secured) let a whole corridor — traders, agents, remitters — settle without queueing.</td><td class="m">National-scale throughput</td></tr>
+  </table>
+
+  <h2 style="margin-top:8pt;">How a payment actually moves</h2>
+  <div class="diagram">
+    <svg viewBox="0 0 720 120" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+      <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1e7a5c"/></marker></defs>
+      <style>
+        .n { fill: #ffffff; stroke: #dde5de; rx: 6; }
+        .t { font-size: 11px; fill: #0d2b24; font-weight: 600; }
+        .s { font-size: 8.5px; fill: #5c6b64; }
+        .b { fill: #0d2b24; }
+        .bt { font-size: 11px; fill: #f2f6f2; font-weight: 600; }
+        .bs { font-size: 8.5px; fill: #9fc7b4; }
+        .a { stroke: #1e7a5c; stroke-width: 1.6; fill: none; marker-end: url(#ar); }
+      </style>
+      <rect class="n" x="2" y="30" width="118" height="58" rx="8"/>
+      <text class="t" x="14" y="52">Citizen / trader</text>
+      <text class="s" x="14" y="68">scans merchant QR or</text>
+      <text class="s" x="14" y="79">sends to Tanzania</text>
+      <rect class="n" x="152" y="30" width="130" height="58" rx="8"/>
+      <text class="t" x="164" y="52">GovPay Citizen & Merchant Wallet</text>
+      <text class="s" x="164" y="68">MTN MoMo · Airtel Money · card</text>
+      <text class="s" x="164" y="79">— rails people already know</text>
+      <rect class="b" x="314" y="30" width="140" height="58" rx="8"/>
+      <text class="bt" x="330" y="52">SynapticChain settlement</text>
+      <text class="bs" x="330" y="68">one event, &lt;150ms finality:</text>
+      <text class="bs" x="330" y="79">split · ledger · ISO 20022 message</text>
+      <rect class="n" x="486" y="6" width="118" height="50" rx="8"/>
+      <text class="t" x="496" y="26">ZRA Treasury</text>
+      <text class="s" x="496" y="41">0.50% auto-credited</text>
+      <rect class="n" x="486" y="64" width="118" height="50" rx="8"/>
+      <text class="t" x="496" y="84">Bank of Zambia</text>
+      <text class="s" x="496" y="99">sees message + reserves</text>
+      <line class="a" x1="122" y1="59" x2="148" y2="59"/>
+      <line class="a" x1="284" y1="59" x2="310" y2="59"/>
+      <line class="a" x1="456" y1="50" x2="482" y2="32"/>
+      <line class="a" x1="456" y1="68" x2="482" y2="86"/>
+      <text class="s" x="616" y="34" style="fill:#1e7a5c; font-weight:700">same second,</text>
+      <text class="s" x="616" y="45" style="fill:#1e7a5c; font-weight:700">same reference</text>
+    </svg>
+  </div>
+
+  <div class="note"><b>This suite settles REAL transactions on the live SynapticChain African alpha testnet (chainId 1 — not mainnet).</b> Every payment in the demo is a genuine on-chain settlement through the ZraSplitRouter contract (0.50% TSA split), every INRIS identity is a real soulbound NFT mint, and every ISO 20022 message is generated from the actual transaction payload. The demo needs the network — because it is the network. Figures labeled "proposed" or "projected" (GovPay margin, agent fees, savings) are the proposal's commercial targets, not settled amounts.</div>
+
+  <div class="foot"><span>ZAMBIA SOVEREIGN DPI SUITE · FIELD GUIDE</span><span>PAGE 2 / 3</span></div>
+</div>
+
+<!-- ══════════ PAGE 3 ══════════ -->
+<div class="page">
+  <div class="kicker">From demonstration to deployment</div>
+  <h2 style="margin-top:0;">The path after this room</h2>
+  <table>
+    <tr><th style="width:22%;">Stage</th><th>What happens</th><th style="width:30%;">What GRZ puts in</th></tr>
+    <tr><td><b>Pilot</b> (weeks)</td><td>One real corridor — Nakonde–Tunduma. The GovPay wallet fronts MTN MoMo / Airtel Money via an AzamPay bridge so citizens pay the way they already pay; SynapticChain settles underneath; ZRA receives the automated split on live volume.</td><td>One checkpoint + one treasury account + beneficiary registry read access</td></tr>
+    <tr><td><b>Scale</b> (months)</td><td>Additional corridors, SCT disbursement via INRIS verification for MCDSS programs, BoZ observer node promotion into supervisory infrastructure.</td><td>Program-level MOUs; registry integration</td></tr>
+    <tr><td><b>Sovereign DPI</b></td><td>The suite's four apps become four permanent institutions: automated revenue, inclusive instant payments, ghost-proof social spending, and real-time central bank oversight.</td><td>National DPI policy framework</td></tr>
+  </table>
+
+  <h2 style="margin-top:8pt;">The pitch in one paragraph</h2>
+  <div class="band" style="font-size:10.5pt; line-height:1.6;">Zambia's problem is not money — it is <b>leakage, delay and proof</b>. Money crosses borders at 7–10% and takes days; social programs pay ghosts; the treasury sees revenue only after costly reconciliation. This suite shows all three fixed by one infrastructure: every payment carries its treasury split, its registry check and its central-bank visibility <b>inside the payment itself</b> — settled in well under one second (54–400ms in our live tests), presented to citizens through the mobile-money rails they already trust.</div>
+
+  <h2 style="margin-top:8pt;">Figures used in the demonstration</h2>
+  <ul>
+    <li><b>Live-measured (real on-chain state, alpha testnet):</b> every settlement is a real ZraSplitRouter transaction; the TSA balance, the 0.50% split, the router payment count, the BoZ reserve vault and the measured finality (54–400ms across our test settlements) are read live from the chain. INRIS batches mint genuine soulbound identity NFTs and the contract itself rejects duplicate nullifiers on-chain — the demo shows the real revert.</li>
+    <li><b>Proposal targets (not yet settled volume):</b> corridor volume at scale; GovPay margin 0.75% and agent 0.25% (only the ZRA 0.50% settles on-chain today); savings at K 200 per ghost eliminated; disbursement throughput 10,000 wallets/second; ZMW→TZS at reference rate 105.289. These are the commercial targets of the GovPay sovereign proposal.</li>
+    <li><b>Central bank:</b> 150,000,000.00 digital Kwacha minted against K 150,000,000.00 held at the Bank of Zambia (sovereign reserve account ZM88-BOZ-0092-114) — the 1:1 reserve is live on-chain; circulation grows only with new minted, reserved issuance. Reserves sit at the central bank itself — not at commercial banks.</li>
+  </ul>
+
+  <div class="band mono" style="font-size:8.5pt; margin-top:8pt;">EXPERIENCE IT NOW → <b>govpay.synapticchain.xyz</b> — works on any device, no installation, no account</div>
+
+  <div class="foot"><span>GOVPAY SOVEREIGN DPI POWERED BY SYNAPTICCHAIN · 100% ISO 20022 BANK GRADE</span><span>PAGE 3 / 3</span></div>
+</div>
+
+</body>
+</html>

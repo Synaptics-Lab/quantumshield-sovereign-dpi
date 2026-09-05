@@ -1,0 +1,222 @@
+// ============================================================================
+// SynIdentityNFT — Soulbound identity token for African truth-in-business KYC
+// ============================================================================
+// Based on SynNFT. Each human/device pair gets one non-transferable token.
+// The token URI holds the identity metadata; a nullifier hash prevents
+// duplicate mints of the same underlying identity commitment.
+// ============================================================================
+
+contract SynIdentityNFT {
+    state name: String;
+    state symbol: String;
+    state owners: Map<u64, Address>;
+    state token_uris: Map<u64, String>;
+    state balances: Map<Address, u64>;
+    state total_supply: u64;
+    state paused: bool;
+    state admin: Address;
+    state mint_price: u128;
+
+    // One identity token per wallet address.
+    state address_to_token: Map<Address, u64>;
+
+    // Nullifier registry: hash(IMEI + phone + biometric + country + salt).
+    // Prevents the same real-world identity from minting twice.
+    state nullifiers: Map<String, bool>;
+
+    // Revocation registry. A revoked token still exists but is_invalid == true.
+    state revoked: Map<u64, bool>;
+
+    // Verification tier: 0 = pending, 1 = device/phone, 2 = biometric,
+    // 3 = carrier/MNO attested, 4 = government ID verified.
+    state verification_level: Map<u64, u8>;
+
+    // Contract version marker (also changes deployment address).
+    state version: u64;
+
+    // Minted registry: avoids compiler bug with Address::zero() comparison
+    // inside functions with three or more arguments.
+    state minted: Map<u64, bool>;
+
+    event Transfer(from: Address, to: Address, token_id: u64);
+    event Minted(to: Address, token_id: u64, nullifier: String, uri: String);
+    event Revoked(token_id: u64, reason: String);
+    event Restored(token_id: u64);
+    event VerificationUpgraded(token_id: u64, new_level: u8);
+
+    #[writes(name, symbol, total_supply, paused, admin, mint_price, owners, token_uris, balances, address_to_token, nullifiers, revoked, verification_level, minted, version)]
+    pub fn init(collection_name: String, collection_symbol: String, price: u128) {
+        self.name = collection_name;
+        self.symbol = collection_symbol;
+        self.total_supply = 0;
+        self.paused = false;
+        self.admin = msg.sender;
+        self.mint_price = price;
+        self.version = 2;
+    }
+
+    // Mint a soulbound identity NFT. The caller provides the metadata URI and a
+    // nullifier hash that must be unique across the collection.
+    #[reads(paused, mint_price, total_supply, owners, balances, nullifiers, address_to_token, minted)]
+    #[writes(total_supply, balances, owners, token_uris, address_to_token, nullifiers, revoked, verification_level, minted)]
+    pub fn mint(token_id: u64, uri: String, nullifier: String) {
+        require!(self.paused == false, "Paused");
+        require!(msg.value >= self.mint_price, "Insufficient payment");
+        require!(self.minted[token_id] == false, "Token already minted");
+        require!(self.nullifiers[nullifier] == false, "Identity nullifier already used");
+        require!(self.address_to_token[msg.sender] == 0, "Address already has identity");
+        require!(nullifier.len() > 0, "Nullifier required");
+        require!(uri.len() > 0, "URI required");
+
+        let minter = msg.sender;
+        self.owners[token_id] = minter;
+        self.token_uris[token_id] = uri;
+        self.balances[minter] = self.balances[minter] + 1;
+        self.address_to_token[minter] = token_id;
+        self.nullifiers[nullifier] = true;
+        self.revoked[token_id] = false;
+        self.verification_level[token_id] = 1 as u8; // device/phone tier by default
+        self.minted[token_id] = true;
+        self.total_supply = self.total_supply + 1;
+
+        emit Minted(minter, token_id, nullifier, uri);
+    }
+
+    // Admin-only mint to a target address. Used by the KYC backend to issue
+    // verified identities without requiring the user to pay gas. Sets the
+    // verification level to 4 (government ID verified).
+    #[reads(admin, paused, total_supply, owners, balances, nullifiers, address_to_token, minted)]
+    #[writes(total_supply, balances, owners, token_uris, address_to_token, nullifiers, revoked, verification_level, minted)]
+    pub fn admin_mint(to: Address, token_id: u64, uri: String, nullifier: String) {
+        require!(msg.sender == self.admin, "Not admin");
+        require!(self.paused == false, "Paused");
+        require!(self.minted[token_id] == false, "Token already minted");
+        require!(self.nullifiers[nullifier] == false, "Identity nullifier already used");
+        require!(self.address_to_token[to] == 0, "Address already has identity");
+        require!(nullifier.len() > 0, "Nullifier required");
+        require!(uri.len() > 0, "URI required");
+
+        self.owners[token_id] = to;
+        self.token_uris[token_id] = uri;
+        self.balances[to] = self.balances[to] + 1;
+        self.address_to_token[to] = token_id;
+        self.nullifiers[nullifier] = true;
+        self.revoked[token_id] = false;
+        self.verification_level[token_id] = 4 as u8; // government ID verified
+        self.minted[token_id] = true;
+        self.total_supply = self.total_supply + 1;
+
+        emit Minted(to, token_id, nullifier, uri);
+    }
+
+    // Soulbound: transfers are permanently disabled.
+    #[reads(owners)]
+    #[writes(owners, balances)]
+    pub fn transfer_from(from: Address, to: Address, token_id: u64) {
+        require!(false, "Soulbound: identity tokens are non-transferable");
+    }
+
+    #[reads(owners)]
+    pub fn owner_of(token_id: u64) -> Address {
+        return self.owners[token_id];
+    }
+
+    #[reads(token_uris)]
+    pub fn token_uri(token_id: u64) -> String {
+        return self.token_uris[token_id];
+    }
+
+    #[reads(balances)]
+    pub fn balance_of(account: Address) -> u64 {
+        return self.balances[account];
+    }
+
+    #[reads(address_to_token)]
+    pub fn token_id_of(account: Address) -> u64 {
+        return self.address_to_token[account];
+    }
+
+    #[reads(owners, revoked, address_to_token)]
+    pub fn has_valid_identity(account: Address) -> bool {
+        let token_id = self.address_to_token[account];
+        let owns_identity = self.owners[token_id] == account;
+        let not_revoked = self.revoked[token_id] == false;
+        return token_id != 0 && owns_identity && not_revoked;
+    }
+
+    #[reads(revoked)]
+    pub fn is_revoked(token_id: u64) -> bool {
+        return self.revoked[token_id];
+    }
+
+    #[reads(verification_level)]
+    pub fn get_verification_level(token_id: u64) -> u8 {
+        return self.verification_level[token_id];
+    }
+
+    #[reads(nullifiers)]
+    pub fn is_nullifier_used(nullifier: String) -> bool {
+        return self.nullifiers[nullifier];
+    }
+
+    #[reads(name)]
+    pub fn get_name() -> String {
+        return self.name;
+    }
+
+    #[reads(symbol)]
+    pub fn get_symbol() -> String {
+        return self.symbol;
+    }
+
+    #[reads(total_supply)]
+    pub fn get_total_supply() -> u64 {
+        return self.total_supply;
+    }
+
+    // Admin: revoke an identity token (e.g., fraud detected).
+    #[reads(owners, admin, minted)]
+    #[writes(revoked)]
+    pub fn revoke(token_id: u64, reason: String) {
+        require!(msg.sender == self.admin, "Not admin");
+        require!(self.minted[token_id], "Token does not exist");
+        self.revoked[token_id] = true;
+        emit Revoked(token_id, reason);
+    }
+
+    // Admin: restore a revoked identity token.
+    #[reads(owners, admin, minted)]
+    #[writes(revoked)]
+    pub fn restore(token_id: u64) {
+        require!(msg.sender == self.admin, "Not admin");
+        require!(self.minted[token_id], "Token does not exist");
+        self.revoked[token_id] = false;
+        emit Restored(token_id);
+    }
+
+    // Admin: upgrade the verification tier of an identity.
+    #[reads(owners, admin, minted, verification_level)]
+    #[writes(verification_level)]
+    pub fn upgrade_verification(token_id: u64, new_level: u8) {
+        require!(msg.sender == self.admin, "Not admin");
+        require!(self.minted[token_id], "Token does not exist");
+        require!(new_level > self.verification_level[token_id], "Level must increase");
+        self.verification_level[token_id] = new_level;
+        emit VerificationUpgraded(token_id, new_level);
+    }
+
+    #[reads(paused, admin)]
+    #[writes(paused)]
+    pub fn set_paused(paused_state: bool) {
+        require!(msg.sender == self.admin, "Not admin");
+        self.paused = paused_state;
+    }
+
+    #[reads(admin)]
+    #[writes(admin)]
+    pub fn transfer_admin(new_admin: Address) {
+        require!(msg.sender == self.admin, "Not admin");
+        require!(new_admin != Address::zero(), "Invalid admin");
+        self.admin = new_admin;
+    }
+}

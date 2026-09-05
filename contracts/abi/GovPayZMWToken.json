@@ -1,0 +1,17 @@
+{
+  "contract": "GovPayZMWToken",
+  "standard": "SRC-20",
+  "functions": [
+    { "name": "init", "inputs": [{ "name": "token_name", "type": "String" }, { "name": "token_symbol", "type": "String" }, { "name": "token_decimals", "type": "u8" }, { "name": "initial_supply", "type": "u128" }], "outputs": [] },
+    { "name": "balance_of", "inputs": [{ "name": "account", "type": "Address" }], "outputs": [{ "type": "u128" }] },
+    { "name": "allowance", "inputs": [{ "name": "owner_addr", "type": "Address" }, { "name": "spender", "type": "Address" }], "outputs": [{ "type": "u128" }] },
+    { "name": "transfer", "inputs": [{ "name": "to", "type": "Address" }, { "name": "amount", "type": "u128" }], "outputs": [{ "type": "bool" }] },
+    { "name": "transfer_from", "inputs": [{ "name": "from", "type": "Address" }, { "name": "to", "type": "Address" }, { "name": "amount", "type": "u128" }], "outputs": [{ "type": "bool" }] },
+    { "name": "approve", "inputs": [{ "name": "spender", "type": "Address" }, { "name": "amount", "type": "u128" }], "outputs": [{ "type": "bool" }] },
+    { "name": "mint", "inputs": [{ "name": "to", "type": "Address" }, { "name": "amount", "type": "u128" }], "outputs": [{ "type": "bool" }] }
+  ],
+  "events": [
+    { "name": "Transfer", "inputs": [{ "name": "from", "type": "Address" }, { "name": "to", "type": "Address" }, { "name": "amount", "type": "u128" }] },
+    { "name": "Approval", "inputs": [{ "name": "owner", "type": "Address" }, { "name": "spender", "type": "Address" }, { "name": "amount", "type": "u128" }] }
+  ]
+}

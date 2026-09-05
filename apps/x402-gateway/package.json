@@ -1,0 +1,14 @@
+{
+  "name": "synaptic-x402-gateway",
+  "version": "1.0.0",
+  "description": "RFC 9110 HTTP 402 Payment Required Gateway & Autonomous Agent Client for SynapticChain",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "agent": "node client_agent.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}

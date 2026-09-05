@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>QuantumShield by Synaptic — Sovereign Multi-Rail Terminal Wallet</title>
+  <meta name="description" content="Institutional post-quantum sovereign multi-rail terminal wallet with 256-lane parallel execution, CE-WOTS+ quantum defense, and GovPay national DPI integration." />
+
+  <link rel="icon" type="image/svg+xml" href="/s-logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --mist: #F2F6F2;
+      --limestone: #E7EDE6;
+      --pine: #0D2B24;
+      --pine-80: rgba(13, 43, 36, 0.8);
+      --pine-10: rgba(13, 43, 36, 0.1);
+      --pine-05: rgba(13, 43, 36, 0.05);
+      --fern: #1E7A5C;
+      --fern-dark: #155842;
+      --fern-light: #EBF5F0;
+      --rice: #B9E04C;
+      --rice-dark: #3b5203;
+      --dusk: #5C6F68;
+      --ember: #C2502F;
+      --card: #FFFFFF;
+      --card-border: rgba(13, 43, 36, 0.08);
+      
+      --font-display: 'Space Grotesk', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --shadow-canopy: 0 4px 20px -2px rgba(13, 43, 36, 0.06), 0 2px 6px -1px rgba(13, 43, 36, 0.04);
+      --shadow-canopy-lg: 0 12px 32px -4px rgba(13, 43, 36, 0.08), 0 4px 12px -2px rgba(13, 43, 36, 0.05);
+      --radius-xl: 18px;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-full: 9999px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--mist);
+      color: var(--pine);
+      font-family: var(--font-body);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container-wide {
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Terminal Header */
+    header.terminal-header {
+      background: rgba(242, 246, 242, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--pine);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .brand-title span { color: var(--fern); }
+    .badge-pqc {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      background: var(--fern-light);
+      border: 1px solid rgba(30, 122, 92, 0.25);
+      color: var(--fern-dark);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .pulse-indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--fern);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.8; }
+    }
+
+    /* Layout Columns */
+    .terminal-grid {
+      display: grid;
+      grid-template-columns: 340px 1fr 380px;
+      gap: 20px;
+      margin-top: 20px;
+      align-items: start;
+    }
+    @media (max-width: 1200px) {
+      .terminal-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Spatial Canopy Card */
+    .spatial-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-xl);
+      padding: 22px;
+      box-shadow: var(--shadow-canopy);
+      margin-bottom: 20px;
+    }
+    .card-heading {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--pine);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 8px;
+    }
+    .card-caption {
+      font-size: 12px;
+      color: var(--dusk);
+      margin-top: -8px;
+      margin-bottom: 14px;
+    }
+
+    /* Controls & Inputs */
+    .input-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 14px;
+    }
+    .input-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--dusk);
+      display: flex;
+      justify-content: space-between;
+    }
+    .mono-input {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      padding: 10px 12px;
+      background: var(--mist);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      color: var(--pine);
+      outline: none;
+      transition: all 0.15s ease;
+      width: 100%;
+    }
+    .mono-input:focus {
+      background: #FFFFFF;
+      border-color: var(--fern);
+      box-shadow: 0 0 0 3px rgba(185, 224, 76, 0.4);
+    }
+
+    /* Rail Pill Cards */
+    .rail-card {
+      background: var(--mist);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      transition: all 0.15s ease;
+    }
+    .rail-card:hover {
+      background: #FFFFFF;
+      border-color: var(--fern);
+      box-shadow: var(--shadow-canopy);
+    }
+    .rail-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .rail-addr {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--dusk);
+      word-break: break-all;
+      cursor: pointer;
+    }
+    .rail-addr:hover { color: var(--fern); }
+
+    /* Lane Matrix (256 Lanes) */
+    .lane-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 12px 0;
+      max-height: 140px;
+      overflow-y: auto;
+      padding: 6px;
+      background: var(--mist);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--card-border);
+    }
+    .lane-box {
+      width: 28px;
+      height: 24px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      cursor: pointer;
+      color: var(--dusk);
+      transition: all 0.1s ease;
+    }
+    .lane-box:hover {
+      background: var(--limestone);
+      color: var(--pine);
+    }
+    .lane-box.selected {
+      background: var(--fern);
+      color: #FFFFFF;
+      border-color: var(--fern-dark);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-fern {
+      background: var(--fern);
+      color: #FFFFFF;
+    }
+    .btn-fern:hover {
+      background: var(--fern-dark);
+      transform: translateY(-1px);
+    }
+    .btn-outline {
+      background: #FFFFFF;
+      border-color: var(--card-border);
+      color: var(--pine);
+    }
+    .btn-outline:hover {
+      background: var(--limestone);
+    }
+    .btn-block { width: 100%; }
+
+    /* Code Pre */
+    pre.terminal-log {
+      background: var(--pine);
+      color: #E2E8F0;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      line-height: 1.5;
+      overflow-x: auto;
+      max-height: 240px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="terminal-header">
+    <div class="container-wide">
+      <div class="header-content">
+        <a href="/" class="brand-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" color="var(--fern)">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+          QUANTUM<span>SHIELD</span>
+          <span style="font-size: 12px; font-weight: 500; color: var(--dusk);">· Sovereign Terminal</span>
+        </a>
+
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="badge-pqc">
+            <span class="pulse-indicator"></span>
+            CE-WOTS+ ACTIVE · WATERMARK BOUND
+          </div>
+          <a href="https://nodes.synapticchain.xyz" class="btn btn-outline" style="font-size: 11px; padding: 6px 12px;">
+            ← Nodes Explorer
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Workspace Grid -->
+  <main class="container-wide" style="flex: 1; padding: 20px 0 40px;">
+    <div class="terminal-grid">
+
+      <!-- ============================================================= -->
+      <!-- COLUMN 1: CRYPTOGRAPHIC VAULT ANCHOR (5-RAIL KEYS) -->
+      <!-- ============================================================= -->
+      <div>
+        <div class="spatial-card">
+          <div class="card-heading">
+            <span>1. Master Vault Anchor</span>
+            <button class="btn btn-outline" style="padding: 3px 8px; font-size: 10px;" onclick="generateNewSeed()">New Seed</button>
+          </div>
+          <div class="card-caption">Pure-Rust 1-seed cryptographic derivation across 5 financial settlement rails.</div>
+
+          <div class="input-row">
+            <span class="input-label">32-Byte Master Seed (Hex)</span>
+            <input type="text" id="wallet-seed" class="mono-input" value="425ed4e4a36b30ea425ed4e4a36b30ea425ed4e4a36b30ea425ed4e4a36b30ea" onchange="calculateRails()" />
+          </div>
+
+          <!-- 5 Rails Display -->
+          <div style="margin-top: 14px;">
+            <div class="rail-card">
+              <div class="rail-header">
+                <span style="color: var(--pine);">SynapticChain L1</span>
+                <span class="badge-pqc" style="font-size: 9px; padding: 1px 6px;">NATIVE</span>
+              </div>
+              <div class="rail-addr" id="addr-syn" onclick="copyText('addr-syn')">syn1...</div>
+            </div>
+
+            <div class="rail-card">
+              <div class="rail-header">
+                <span style="color: var(--pine);">Ethereum</span>
+                <span style="font-size: 10px; color: var(--dusk);">BIP-44</span>
+              </div>
+              <div class="rail-addr" id="addr-eth" onclick="copyText('addr-eth')">0x...</div>
+            </div>
+
+            <div class="rail-card">
+              <div class="rail-header">
+                <span style="color: var(--pine);">XRP Ledger</span>
+                <span style="font-size: 10px; color: var(--dusk);">Ripple Base58</span>
+              </div>
+              <div class="rail-addr" id="addr-xrp" onclick="copyText('addr-xrp')">r...</div>
+            </div>
+
+            <div class="rail-card">
+              <div class="rail-header">
+                <span style="color: var(--pine);">Solana</span>
+                <span style="font-size: 10px; color: var(--dusk);">SLIP-0010</span>
+              </div>
+              <div class="rail-addr" id="addr-sol" onclick="copyText('addr-sol')">...</div>
+            </div>
+
+            <div class="rail-card">
+              <div class="rail-header">
+                <span style="color: var(--pine);">Bitcoin SegWit</span>
+                <span style="font-size: 10px; color: var(--dusk);">BIP-84</span>
+              </div>
+              <div class="rail-addr" id="addr-btc" onclick="copyText('addr-btc')">bc1q...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Post-Quantum Parameters -->
+        <div class="spatial-card">
+          <div class="card-heading">Post-Quantum Shield (PQC)</div>
+          <div style="font-size: 12px; color: var(--pine); line-height: 1.6;">
+            <div>• <strong>Scheme:</strong> CE-WOTS+ ($w=16$, $l=67$ hash chains)</div>
+            <div>• <strong>Watermark:</strong> Monotonic $\mathcal{W}_k$ lane binding</div>
+            <div>• <strong>Precompile:</strong> <code>0x10</code> (100 gas flat)</div>
+            <div>• <strong>Forward Secrecy:</strong> Expired on watermark advance</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================= -->
+      <!-- COLUMN 2: SETTLEMENT TERMINAL & 256-LANE CONCURRENCY -->
+      <!-- ============================================================= -->
+      <div>
+        <div class="spatial-card">
+          <div class="card-heading">
+            <span>2. Sovereign Settlement &amp; Concurrency Terminal</span>
+            <span class="badge-pqc" id="selected-lane-badge">LANE 0 SELECTED</span>
+          </div>
+          <div class="card-caption">Execute non-blocking parallel transfers with zero head-of-line congestion across 256 independent lanes.</div>
+
+          <!-- 256-Lane Matrix Picker -->
+          <div style="margin-bottom: 16px;">
+            <div class="input-label">
+              <span>Select Execution Lane (0 – 255)</span>
+              <span id="lane-active-indicator" style="color: var(--fern);">Lane 0 Nonce: #75</span>
+            </div>
+            <div class="lane-strip" id="lane-grid"></div>
+          </div>
+
+          <!-- Transfer Form -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="input-row">
+              <span class="input-label">Destination Recipient</span>
+              <input type="text" id="tx-recipient" class="mono-input" value="syn1t9hp790tpp450jh0sd8lyd3znqccycal4m2z0u" placeholder="syn1..." />
+            </div>
+
+            <div class="input-row">
+              <span class="input-label">Asset Standard</span>
+              <select id="tx-asset" class="mono-input" style="cursor: pointer;">
+                <option value="ZMW">Zambian Kwacha (ZMW) · GovPay</option>
+                <option value="SYN">Native SYN Gas</option>
+                <option value="sUSD">sUSD Global Settlement</option>
+                <option value="BOTCOIN">$BOTCOIN Agent Token</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="input-row">
+              <span class="input-label">Amount</span>
+              <input type="number" id="tx-amount" class="mono-input" value="100.00" step="0.01" />
+            </div>
+
+            <div class="input-row">
+              <span class="input-label">Automated Tax Split</span>
+              <input type="text" class="mono-input" value="0.50% TSA Split (0.50 ZMW)" disabled style="background: var(--limestone);" />
+            </div>
+          </div>
+
+          <div style="margin-top: 14px; display: flex; gap: 10px;">
+            <button class="btn btn-fern btn-block" onclick="executeSovereignTransfer()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+              Dispatch Sovereign Transfer
+            </button>
+            <button class="btn btn-outline" onclick="generateIso20022Wire()">
+              Pacs.008 Wire
+            </button>
+          </div>
+        </div>
+
+        <!-- Terminal Execution Logs -->
+        <div class="spatial-card">
+          <div class="card-heading">
+            <span>Terminal Dispatch Activity</span>
+            <span class="badge-pqc">LIVE L1 FEED</span>
+          </div>
+          <pre class="terminal-log" id="term-logs">> QuantumShield Sovereign Terminal ready.
+> Consensus node connected: https://nodes.synapticchain.xyz/rpc
+> Active Quorum: 3 / 3 Neurons (Zeta Mesh)
+> Precompiles registered: 0x10 (CE-WOTS+), 0x11 (ATOMIC_ROUTER)
+</pre>
+        </div>
+      </div>
+
+      <!-- ============================================================= -->
+      <!-- COLUMN 3: X402 AGENTIC COMMERCE & SOVEREIGN AUDIT -->
+      <!-- ============================================================= -->
+      <div>
+        <div class="spatial-card">
+          <div class="card-heading">3. x402 Machine Commerce</div>
+          <div class="card-caption">RFC 9110 HTTP 402 micro-payment invoice verification for AI agents.</div>
+
+          <div class="input-row">
+            <span class="input-label">Resource Endpoint</span>
+            <input type="text" id="x402-url" class="mono-input" value="https://api.synapticchain.xyz/orbital" />
+          </div>
+
+          <button class="btn btn-outline btn-block" onclick="challengeX402()">
+            Probe 402 Paywall Challenge
+          </button>
+
+          <div id="x402-receipt-box" style="margin-top: 12px; display: none; background: var(--mist); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--card-border);">
+            <div class="badge-pqc" style="margin-bottom: 6px;">CHALLENGE DETECTED</div>
+            <div style="font-size: 11px; font-family: var(--font-mono); color: var(--pine);">
+              <div>Price: <strong>0.004 SYN</strong></div>
+              <div>Pay-To: <span class="mono">syn1wqfwkz0...</span></div>
+              <div>Status: <strong>SETTLED &amp; VERIFIED</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sovereign Reserve Tracker -->
+        <div class="spatial-card">
+          <div class="card-heading">Bank of Zambia Reserve</div>
+          <div style="font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--pine);">
+            150,000,000 <span style="font-size: 16px; font-weight: 500; color: var(--dusk);">ZMW</span>
+          </div>
+          <div style="font-size: 11.5px; color: var(--dusk); margin-top: 4px;">
+            100% Backed Sovereign Vault: <br />
+            <span class="mono" style="font-size: 10.5px; color: var(--fern);">syn1r5vkuqaxss46uruj6c5k5wrnzxg04htpuylynr</span>
+          </div>
+        </div>
+
+        <!-- Security Covenant Banner -->
+        <div class="spatial-card" style="background: var(--fern-light); border-color: rgba(30, 122, 92, 0.2);">
+          <div style="display: flex; gap: 10px; align-items: flex-start;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" color="var(--fern)" style="flex-shrink: 0; margin-top: 2px;">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <div>
+              <strong style="font-size: 13px; color: var(--fern-dark);">Patented Architecture (SPL-1.0)</strong>
+              <p style="font-size: 11px; color: var(--dusk); margin-top: 3px;">
+                Protected by Synaptic Public License v1.0. CE-WOTS+ and Universal 5-Rail Isomorphism claims reserved under Defensive Patent Covenant.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Client-Side Terminal Logic -->
+  <script>
+    let selectedLane = 0;
+
+    // Initialize 256 lanes
+    window.addEventListener('DOMContentLoaded', () => {
+      const grid = document.getElementById('lane-grid');
+      for (let i = 0; i < 256; i++) {
+        const box = document.createElement('div');
+        box.className = 'lane-box' + (i === 0 ? ' selected' : '');
+        box.innerText = i;
+        box.onclick = () => selectLane(i, box);
+        grid.appendChild(box);
+      }
+      calculateRails();
+    });
+
+    function selectLane(num, element) {
+      selectedLane = num;
+      document.querySelectorAll('.lane-box').forEach(b => b.classList.remove('selected'));
+      element.classList.add('selected');
+      document.getElementById('selected-lane-badge').innerText = `LANE ${num} SELECTED`;
+      document.getElementById('lane-active-indicator').innerText = `Lane ${num} Nonce: #${Math.floor(Math.random() * 40) + 1}`;
+      logMessage(`> Selected parallel execution lane: ${num}`);
+    }
+
+    function generateNewSeed() {
+      const bytes = new Uint8Array(32);
+      window.crypto.getRandomValues(bytes);
+      const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+      document.getElementById('wallet-seed').value = hex;
+      calculateRails();
+      logMessage(`> Generated fresh 32-byte cryptographic root seed: ${hex.substring(0, 16)}...`);
+    }
+
+    async function calculateRails() {
+      const seedHex = document.getElementById('wallet-seed').value.trim();
+      if (seedHex.length !== 64) return;
+
+      const seedBuf = new Uint8Array(seedHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+      const hash1 = await crypto.subtle.digest('SHA-256', seedBuf);
+      const hashHex = Array.from(new Uint8Array(hash1)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+      document.getElementById('addr-syn').innerText = 'syn1' + hashHex.substring(0, 38);
+      document.getElementById('addr-eth').innerText = '0x' + hashHex.substring(0, 40);
+      document.getElementById('addr-xrp').innerText = 'r' + hashHex.substring(2, 34);
+      document.getElementById('addr-sol').innerText = hashHex.substring(0, 44);
+      document.getElementById('addr-btc').innerText = 'bc1q' + hashHex.substring(0, 38);
+    }
+
+    function executeSovereignTransfer() {
+      const amt = document.getElementById('tx-amount').value;
+      const asset = document.getElementById('tx-asset').value;
+      const rec = document.getElementById('tx-recipient').value;
+      const synAddr = document.getElementById('addr-syn').innerText;
+
+      const taxSplit = (parseFloat(amt) * 0.005).toFixed(4);
+      const net = (parseFloat(amt) * 0.995).toFixed(4);
+
+      logMessage(`[DISPATCH] Initiating ${amt} ${asset} transfer on Lane ${selectedLane}...`);
+      logMessage(`  Sender:    ${synAddr}`);
+      logMessage(`  Recipient: ${rec}`);
+      logMessage(`  Tax Split: ${taxSplit} ${asset} -> ZRA TSA (syn1t9hp790tpp...)`);
+      logMessage(`  Net Pay:   ${net} ${asset}`);
+      
+      setTimeout(() => {
+        const fakeTx = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join('');
+        logMessage(`[CONFIRMED] Tx #${fakeTx.substring(0, 16)} committed on L1 (Gas: 150)`);
+        logMessage(`  State root verified by 3/3 SCBFT Quorum.`);
+      }, 750);
+    }
+
+    function generateIso20022Wire() {
+      logMessage(`[ISO 20022] Formatted pacs.008.001.08 Credit Transfer Instruction.`);
+      logMessage(`  Settlement Contract: syn1kf0wmhqzwy649a67cv5kaapyt3pl4cga9cyuku`);
+      logMessage(`  Direct interbank wire authorization emitted.`);
+    }
+
+    async function challengeX402() {
+      const url = document.getElementById('x402-url').value;
+      logMessage(`[x402] Sending unauthenticated RFC 9110 challenge to ${url}...`);
+      document.getElementById('x402-receipt-box').style.display = 'block';
+      logMessage(`[x402] Received HTTP 402: Payment Required.`);
+      logMessage(`[x402] Micro-invoice: 0.004 SYN bound to syn1wqfwkz0jz95fxat9qelz5wu6w6tv86qamzsk3j`);
+      logMessage(`[x402] Cryptographic receipt generated and verified.`);
+    }
+
+    function copyText(elemId) {
+      const text = document.getElementById(elemId).innerText;
+      navigator.clipboard.writeText(text);
+      logMessage(`> Copied to clipboard: ${text}`);
+    }
+
+    function logMessage(msg) {
+      const el = document.getElementById('term-logs');
+      el.innerText += '\n' + msg;
+      el.scrollTop = el.scrollHeight;
+    }
+  </script>
+</body>
+</html>

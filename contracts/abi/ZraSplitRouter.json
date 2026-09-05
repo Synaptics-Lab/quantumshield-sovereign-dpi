@@ -1,0 +1,17 @@
+{
+  "contract": "ZraSplitRouter",
+  "category": "Sovereign DPI Revenue Collection",
+  "functions": [
+    { "name": "init", "inputs": [{ "name": "token", "type": "Address" }, { "name": "tsa", "type": "Address" }, { "name": "fee", "type": "u64" }], "outputs": [] },
+    { "name": "pay", "inputs": [{ "name": "amount", "type": "u128" }, { "name": "payee", "type": "Address" }, { "name": "entity", "type": "String" }], "outputs": [] },
+    { "name": "get_payment_count", "inputs": [], "outputs": [{ "type": "u64" }] },
+    { "name": "get_total_routed", "inputs": [], "outputs": [{ "type": "u128" }] },
+    { "name": "get_total_fees", "inputs": [], "outputs": [{ "type": "u128" }] },
+    { "name": "get_fee_bps", "inputs": [], "outputs": [{ "type": "u64" }] },
+    { "name": "get_treasury", "inputs": [], "outputs": [{ "type": "Address" }] },
+    { "name": "get_token", "inputs": [], "outputs": [{ "type": "Address" }] }
+  ],
+  "events": [
+    { "name": "Routed", "inputs": [{ "name": "payer", "type": "Address" }, { "name": "payee", "type": "Address" }, { "name": "entity", "type": "String" }, { "name": "amount", "type": "u128" }, { "name": "fee", "type": "u128" }, { "name": "seq", "type": "u64" }] }
+  ]
+}

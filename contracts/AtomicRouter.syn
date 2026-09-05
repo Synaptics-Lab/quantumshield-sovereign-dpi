@@ -1,0 +1,152 @@
+// ============================================================================
+// AtomicRouter.syn — Universal Cross-Rail Atomic Swap Engine
+// Complies with all SynapticLang compiler/VM constraints:
+//   - No `!` operator; use `== false` and `== true`.
+//   - No early `return` inside `if` blocks.
+//   - No `if/else` blocks containing state writes.
+//   - Parallel scalar maps for robust serialization.
+// ============================================================================
+
+contract AtomicRouter {
+    state owner: Address;
+    state burn_rate_bps: u128;
+    state total_swaps: u64;
+    state total_syn_burned: u128;
+
+    // Parallel scalar maps keyed by swap_id (String hex of hash_lock)
+    state swap_exists: Map<String, bool>;
+    state swap_sender: Map<String, Address>;
+    state swap_recipient: Map<String, Address>;
+    state swap_amount: Map<String, u128>;
+    state swap_deadline: Map<String, u64>;
+    state swap_dest_chain: Map<String, u32>; // 1 = Solana, 2 = XRPL, 3 = Bitcoin
+    state swap_claimed: Map<String, bool>;
+    state swap_refunded: Map<String, bool>;
+    state swap_preimage: Map<String, String>;
+
+    event SwapInitiated { swap_id: String, sender: Address, recipient: Address, amount: u128, dest_chain: u32, deadline: u64 }
+    event SwapClaimed { swap_id: String, recipient: Address, amount_paid: u128, syn_burned: u128, preimage: String }
+    event SwapRefunded { swap_id: String, sender: Address, amount_returned: u128 }
+
+    #[writes(owner, burn_rate_bps, total_swaps, total_syn_burned)]
+    pub fn init() {
+        self.owner = msg.sender;
+        self.burn_rate_bps = 10; // 0.10% protocol burn rate
+        self.total_swaps = 0;
+        self.total_syn_burned = 0;
+    }
+
+    #[reads(swap_exists, total_swaps)]
+    #[writes(swap_exists, swap_sender, swap_recipient, swap_amount, swap_deadline, swap_dest_chain, swap_claimed, swap_refunded, total_swaps)]
+    pub fn initiate_swap(
+        swap_id: String,
+        recipient: Address,
+        deadline_blocks: u64,
+        dest_chain: u32,
+        amount: u128
+    ) -> bool {
+        require!(amount > 0, "Amount must be positive");
+        let exists: bool = self.swap_exists[swap_id];
+        require!(exists == false, "Swap already exists");
+
+        self.swap_exists[swap_id] = true;
+        self.swap_sender[swap_id] = msg.sender;
+        self.swap_recipient[swap_id] = recipient;
+        self.swap_amount[swap_id] = amount;
+        self.swap_deadline[swap_id] = deadline_blocks;
+        self.swap_dest_chain[swap_id] = dest_chain;
+        self.swap_claimed[swap_id] = false;
+        self.swap_refunded[swap_id] = false;
+
+        let cur_total: u64 = self.total_swaps;
+        self.total_swaps = cur_total + 1;
+
+        emit SwapInitiated {
+            swap_id: swap_id,
+            sender: msg.sender,
+            recipient: recipient,
+            amount: amount,
+            dest_chain: dest_chain,
+            deadline: deadline_blocks
+        };
+        return true;
+    }
+
+    #[reads(swap_exists, swap_claimed, swap_refunded, swap_recipient, swap_amount, burn_rate_bps, total_syn_burned)]
+    #[writes(swap_claimed, swap_preimage, total_syn_burned)]
+    pub fn claim_swap(swap_id: String, preimage: String) -> bool {
+        let exists: bool = self.swap_exists[swap_id];
+        require!(exists == true, "Swap does not exist");
+
+        let claimed: bool = self.swap_claimed[swap_id];
+        require!(claimed == false, "Swap already claimed");
+
+        let refunded: bool = self.swap_refunded[swap_id];
+        require!(refunded == false, "Swap already refunded");
+
+        self.swap_claimed[swap_id] = true;
+        self.swap_preimage[swap_id] = preimage;
+
+        let recipient: Address = self.swap_recipient[swap_id];
+        let amount: u128 = self.swap_amount[swap_id];
+        let burn_bps: u128 = self.burn_rate_bps;
+        let burn_fee: u128 = (amount * burn_bps) / 10000;
+        let payout: u128 = amount - burn_fee;
+
+        transfer(recipient, payout);
+        transfer(Address::zero(), burn_fee);
+
+        let cur_burned: u128 = self.total_syn_burned;
+        self.total_syn_burned = cur_burned + burn_fee;
+
+        emit SwapClaimed {
+            swap_id: swap_id,
+            recipient: recipient,
+            amount_paid: payout,
+            syn_burned: burn_fee,
+            preimage: preimage
+        };
+        return true;
+    }
+
+    #[reads(swap_exists, swap_claimed, swap_refunded, swap_sender, swap_amount)]
+    #[writes(swap_refunded)]
+    pub fn refund_swap(swap_id: String) -> bool {
+        let exists: bool = self.swap_exists[swap_id];
+        require!(exists == true, "Swap does not exist");
+
+        let claimed: bool = self.swap_claimed[swap_id];
+        require!(claimed == false, "Cannot refund claimed swap");
+
+        let refunded: bool = self.swap_refunded[swap_id];
+        require!(refunded == false, "Already refunded");
+
+        self.swap_refunded[swap_id] = true;
+        let sender: Address = self.swap_sender[swap_id];
+        let amount: u128 = self.swap_amount[swap_id];
+
+        transfer(sender, amount);
+
+        emit SwapRefunded {
+            swap_id: swap_id,
+            sender: sender,
+            amount_returned: amount
+        };
+        return true;
+    }
+
+    #[reads(swap_exists)]
+    pub fn is_swap_active(swap_id: String) -> bool {
+        self.swap_exists[swap_id]
+    }
+
+    #[reads(total_swaps)]
+    pub fn get_total_swaps() -> u64 {
+        self.total_swaps
+    }
+
+    #[reads(total_syn_burned)]
+    pub fn get_total_burned() -> u128 {
+        self.total_syn_burned
+    }
+}
