@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <title>SynapticChain — Institutional L1 Nodes &amp; Ecosystem Explorer</title>
-  <meta name="description" content="SynapticChain Nodes &amp; Network Explorer: Live SCBFT 3-neuron consensus telemetry, 256-lane concurrency, Universal 5-Rail derivation, and GovPay Sovereign DPI." />
+  <meta name="description" content="SynapticChain Nodes &amp; Network Explorer: Live DAG-Primary 3-neuron consensus telemetry, 256-lane concurrency, Universal 5-Rail derivation, and GovPay Sovereign DPI." />
   
   <link rel="icon" type="image/svg+xml" href="/s-logo.svg" />
   <link rel="alternate icon" href="/favicon.ico" />
@@ -511,6 +511,164 @@
       .card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
       .card-header > span { align-self: flex-start; }
     }
+
+    /* Clickable Link Styling */
+    .clickable-link {
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+    }
+    .clickable-link:hover {
+      color: var(--fern) !important;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    td .clickable-link:hover {
+      color: var(--fern) !important;
+    }
+
+    /* Canopy Interactive Inspector Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 43, 36, 0.48);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-dialog {
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 24px 64px -8px rgba(13, 43, 36, 0.25), 0 8px 24px -4px rgba(13, 43, 36, 0.12);
+      width: 100%;
+      max-width: 820px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(16px) scale(0.98);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    .modal-backdrop.active .modal-dialog {
+      transform: translateY(0) scale(1);
+    }
+    .modal-header {
+      padding: 18px 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      background: #FAFCF9;
+    }
+    .modal-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .modal-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-md);
+      background: var(--fern-light);
+      color: var(--fern);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--pine);
+      line-height: 1.2;
+    }
+    .modal-subtitle {
+      font-size: 12px;
+      color: var(--dusk);
+      margin-top: 2px;
+    }
+    .modal-close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--dusk);
+      transition: background 0.15s, color 0.15s;
+    }
+    .modal-close-btn:hover {
+      background: var(--limestone);
+      color: var(--pine);
+    }
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .modal-grid-2col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 640px) {
+      .modal-grid-2col { grid-template-columns: 1fr; }
+    }
+    .modal-field-box {
+      background: var(--mist);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+    }
+    .modal-field-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      color: var(--dusk);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-field-val {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--pine);
+      word-break: break-all;
+    }
+    .modal-footer {
+      padding: 12px 24px;
+      border-top: 1px solid var(--card-border);
+      background: #FAFCF9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--dusk);
+    }
   </style>
 </head>
 <body>
@@ -647,7 +805,7 @@
                   <span class="mono" style="font-size: 12px; font-weight: 700; color: var(--pine);">ZETA-1</span>
                   <span class="chip chip-green" style="font-size: 9px;">PROPOSER</span>
                 </div>
-                <div class="mono" style="font-size: 11px; color: var(--dusk); word-break: break-all;">syn1k40tmv2p...</div>
+                <div class="mono clickable-link" onclick="openAddressModal('syn1k40tmv2pkyu34tc2tvpus34zwdzl8ru39nl022')" style="font-size: 11px; color: var(--fern); font-weight: 600; word-break: break-all;" title="Inspect Proposer Zeta-1">syn1k40tmv2p...</div>
                 <div style="font-size: 11px; margin-top: 6px; color: var(--pine);">Port: 8545 · Stake: 10k SYN</div>
               </div>
 
@@ -656,7 +814,7 @@
                   <span class="mono" style="font-size: 12px; font-weight: 700; color: var(--pine);">ZETA-2</span>
                   <span class="chip chip-green" style="font-size: 9px;">VALIDATOR</span>
                 </div>
-                <div class="mono" style="font-size: 11px; color: var(--dusk); word-break: break-all;">syn1f88t7dcs...</div>
+                <div class="mono clickable-link" onclick="openAddressModal('syn1f88t7dcsksmypg37rdw3hnhsvsg9gtp3ht9j8j')" style="font-size: 11px; color: var(--fern); font-weight: 600; word-break: break-all;" title="Inspect Validator Zeta-2">syn1f88t7dcs...</div>
                 <div style="font-size: 11px; margin-top: 6px; color: var(--pine);">Port: 8547 · Stake: 10k SYN</div>
               </div>
 
@@ -665,7 +823,7 @@
                   <span class="mono" style="font-size: 12px; font-weight: 700; color: var(--pine);">ZETA-3</span>
                   <span class="chip chip-green" style="font-size: 9px;">VALIDATOR</span>
                 </div>
-                <div class="mono" style="font-size: 11px; color: var(--dusk); word-break: break-all;">syn1t9e4ln5w...</div>
+                <div class="mono clickable-link" onclick="openAddressModal('syn1t9e4ln5wgvqn03vhtej4cyqvzw49pcy2tlaed2')" style="font-size: 11px; color: var(--fern); font-weight: 600; word-break: break-all;" title="Inspect Validator Zeta-3">syn1t9e4ln5w...</div>
                 <div style="font-size: 11px; margin-top: 6px; color: var(--pine);">Port: 8549 · Stake: 10k SYN</div>
               </div>
             </div>
@@ -784,7 +942,7 @@
               <p class="card-subtitle">Deep block inspector for historical and real-time state roots</p>
             </div>
             <div style="display: flex; gap: 8px;">
-              <input type="text" id="chk-search-input" class="canopy-input" style="width: 280px; padding: 6px 12px; font-size: 12px;" placeholder="Search height, hash, or address..." />
+              <input type="text" id="chk-search-input" class="canopy-input" style="width: 280px; padding: 6px 12px; font-size: 12px;" placeholder="Search height, hash, or address..." onkeydown="if(event.key==='Enter') searchCheckpoint()" />
               <button class="btn btn-primary btn-sm" onclick="searchCheckpoint()">Search</button>
             </div>
           </div>
@@ -839,7 +997,12 @@
               <tbody id="tbl-validators-full">
                 <tr>
                   <td><strong>Neuron 1 (Leader)</strong></td>
-                  <td class="mono">syn1k40tmv2pkyu34tc2tvpus34zwdzl8ru39nl022</td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openAddressModal('syn1k40tmv2pkyu34tc2tvpus34zwdzl8ru39nl022')" style="color: var(--fern); font-weight: 600;" title="Inspect Neuron 1 Leader">
+                      syn1k40tmv2pkyu34tc2tvpus34zwdzl8ru39nl022
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
                   <td class="mono">12D3KooWNLrMHUBGrZBw...</td>
                   <td class="mono">35761767caaed29a...</td>
                   <td>10,000 SYN</td>
@@ -848,7 +1011,12 @@
                 </tr>
                 <tr>
                   <td><strong>Neuron 2</strong></td>
-                  <td class="mono">syn1f88t7dcsksmypg37rdw3hnhsvsg9gtp3ht9j8j</td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openAddressModal('syn1f88t7dcsksmypg37rdw3hnhsvsg9gtp3ht9j8j')" style="color: var(--fern); font-weight: 600;" title="Inspect Neuron 2 Validator">
+                      syn1f88t7dcsksmypg37rdw3hnhsvsg9gtp3ht9j8j
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
                   <td class="mono">12D3KooWL2EZwth1wDG6...</td>
                   <td class="mono">504820e36995ed21...</td>
                   <td>10,000 SYN</td>
@@ -857,7 +1025,12 @@
                 </tr>
                 <tr>
                   <td><strong>Neuron 3</strong></td>
-                  <td class="mono">syn1t9e4ln5wgvqn03vhtej4cyqvzw49pcy2tlaed2</td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openAddressModal('syn1t9e4ln5wgvqn03vhtej4cyqvzw49pcy2tlaed2')" style="color: var(--fern); font-weight: 600;" title="Inspect Neuron 3 Validator">
+                      syn1t9e4ln5wgvqn03vhtej4cyqvzw49pcy2tlaed2
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
                   <td class="mono">12D3KooWPuqzofrZcRgW...</td>
                   <td class="mono">8e8837f2621241d8...</td>
                   <td>10,000 SYN</td>
@@ -897,13 +1070,19 @@
             <div style="background: var(--mist); border-radius: var(--radius-md); padding: 18px; border: 1px solid var(--card-border);">
               <div style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--dusk);">Bank of Zambia Vault</div>
               <div style="font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--pine); margin: 4px 0;">150,000,000 ZMW</div>
-              <div class="mono" style="font-size: 11px; color: var(--dusk);">Vault: syn1r5vkuqaxss46uruj6c5k5wrnzxg04htpuylynr</div>
+              <div class="mono clickable-link" onclick="openAddressModal('syn1r5vkuqaxss46uruj6c5k5wrnzxg04htpuylynr')" style="font-size: 11px; color: var(--fern); font-weight: 600;" title="Inspect Bank of Zambia Reserve Vault">
+                Vault: syn1r5vkuqaxss46uruj6c5k5wrnzxg04htpuylynr
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </div>
             </div>
 
             <div style="background: var(--mist); border-radius: var(--radius-md); padding: 18px; border: 1px solid var(--card-border);">
               <div style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--dusk);">ZRA Automated Tax Split</div>
               <div style="font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--fern); margin: 4px 0;">0.50% TSA Split</div>
-              <div class="mono" style="font-size: 11px; color: var(--dusk);">Treasury: syn1t9hp790tpp450jh0sd8lyd3znqccycal4m2z0u</div>
+              <div class="mono clickable-link" onclick="openAddressModal('syn1t9hp790tpp450jh0sd8lyd3znqccycal4m2z0u')" style="font-size: 11px; color: var(--fern); font-weight: 600;" title="Inspect ZRA Treasury Account">
+                Treasury: syn1t9hp790tpp450jh0sd8lyd3znqccycal4m2z0u
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </div>
             </div>
           </div>
 
@@ -921,44 +1100,110 @@
               <tbody>
                 <tr>
                   <td><strong>National Currency</strong></td>
-                  <td>Zambian Kwacha (ZMW)</td>
-                  <td class="mono">syn1dj2a3nlrc44lqtwzeg9ws0d6plzeayrmxy98m2</td>
-                  <td>SRC-20 Token</td>
+                  <td>
+                    <span class="clickable-link" onclick="openContractModal('syn1dj2a3nlrc44lqtwzeg9ws0d6plzeayrmxy98m2', 'Zambian Kwacha (ZMW)', 'SRC-20 Token')" style="font-weight: 600; color: var(--pine);">
+                      Zambian Kwacha (ZMW)
+                    </span>
+                  </td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openContractModal('syn1dj2a3nlrc44lqtwzeg9ws0d6plzeayrmxy98m2', 'Zambian Kwacha (ZMW)', 'SRC-20 Token')" style="color: var(--fern); font-weight: 600;" title="Inspect ZMW Contract Execution Plan">
+                      syn1dj2a3nlrc44lqtwzeg9ws0d6plzeayrmxy98m2
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="chip chip-neutral clickable-link" onclick="openContractModal('syn1dj2a3nlrc44lqtwzeg9ws0d6plzeayrmxy98m2', 'Zambian Kwacha (ZMW)', 'SRC-20 Token')">SRC-20 Token</span>
+                  </td>
                   <td><span class="chip chip-green">ACTIVE</span></td>
                 </tr>
                 <tr>
                   <td><strong>Tax Split Router</strong></td>
-                  <td>ZraSplitRouter</td>
-                  <td class="mono">syn122h32ja44hhz8ut543krjrrzz9jkd8lxw3m9f7</td>
-                  <td>0.50% Automated TSA Split</td>
+                  <td>
+                    <span class="clickable-link" onclick="openContractModal('syn122h32ja44hhz8ut543krjrrzz9jkd8lxw3m9f7', 'ZraSplitRouter', '0.50% TSA Split Router')" style="font-weight: 600; color: var(--pine);">
+                      ZraSplitRouter
+                    </span>
+                  </td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openContractModal('syn122h32ja44hhz8ut543krjrrzz9jkd8lxw3m9f7', 'ZraSplitRouter', '0.50% TSA Split Router')" style="color: var(--fern); font-weight: 600;" title="Inspect ZraSplitRouter Contract Execution Plan">
+                      syn122h32ja44hhz8ut543krjrrzz9jkd8lxw3m9f7
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="chip chip-neutral clickable-link" onclick="openContractModal('syn122h32ja44hhz8ut543krjrrzz9jkd8lxw3m9f7', 'ZraSplitRouter', '0.50% TSA Split Router')">0.50% Automated TSA Split</span>
+                  </td>
                   <td><span class="chip chip-green">ACTIVE</span></td>
                 </tr>
                 <tr>
                   <td><strong>Sovereign Identity</strong></td>
-                  <td>INRIS Identity SBT</td>
-                  <td class="mono">syn1zy8dsuvpc7mt6m8lnp7ueeq808a49q6xmef06l</td>
-                  <td>Biometric Anti-Ghost Nullifier</td>
+                  <td>
+                    <span class="clickable-link" onclick="openContractModal('syn1zy8dsuvpc7mt6m8lnp7ueeq808a49q6xmef06l', 'INRIS Identity SBT', 'SynIdentityNFT (Soulbound)')" style="font-weight: 600; color: var(--pine);">
+                      INRIS Identity SBT
+                    </span>
+                  </td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openContractModal('syn1zy8dsuvpc7mt6m8lnp7ueeq808a49q6xmef06l', 'INRIS Identity SBT', 'SynIdentityNFT (Soulbound)')" style="color: var(--fern); font-weight: 600;" title="Inspect INRIS Identity SBT Contract Execution Plan">
+                      syn1zy8dsuvpc7mt6m8lnp7ueeq808a49q6xmef06l
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="chip chip-neutral clickable-link" onclick="openContractModal('syn1zy8dsuvpc7mt6m8lnp7ueeq808a49q6xmef06l', 'INRIS Identity SBT', 'SynIdentityNFT (Soulbound)')">Biometric Anti-Ghost Nullifier</span>
+                  </td>
                   <td><span class="chip chip-green">ACTIVE</span></td>
                 </tr>
                 <tr>
                   <td><strong>Interbank RTGS Wire</strong></td>
-                  <td>ISO20022Payment</td>
-                  <td class="mono">syn1kf0wmhqzwy649a67cv5kaapyt3pl4cga9cyuku</td>
-                  <td>Pacs.008 Real-Time Wire</td>
+                  <td>
+                    <span class="clickable-link" onclick="openContractModal('syn1kf0wmhqzwy649a67cv5kaapyt3pl4cga9cyuku', 'ISO20022Payment', 'Pacs.008 Real-Time Wire')" style="font-weight: 600; color: var(--pine);">
+                      ISO20022Payment
+                    </span>
+                  </td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openContractModal('syn1kf0wmhqzwy649a67cv5kaapyt3pl4cga9cyuku', 'ISO20022Payment', 'Pacs.008 Real-Time Wire')" style="color: var(--fern); font-weight: 600;" title="Inspect ISO20022 Payment Contract Execution Plan">
+                      syn1kf0wmhqzwy649a67cv5kaapyt3pl4cga9cyuku
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="chip chip-neutral clickable-link" onclick="openContractModal('syn1kf0wmhqzwy649a67cv5kaapyt3pl4cga9cyuku', 'ISO20022Payment', 'Pacs.008 Real-Time Wire')">Pacs.008 Real-Time Wire</span>
+                  </td>
                   <td><span class="chip chip-green">ACTIVE</span></td>
                 </tr>
                 <tr>
                   <td><strong>Synthetic USD</strong></td>
-                  <td>sUSD Stablecoin</td>
-                  <td class="mono">syn1ylzgjh6zwl2n2k7tsprs9q0yrerde3dl44nz8p</td>
-                  <td>SRC-20 Global USD</td>
+                  <td>
+                    <span class="clickable-link" onclick="openContractModal('syn1ylzgjh6zwl2n2k7tsprs9q0yrerde3dl44nz8p', 'sUSD Stablecoin', 'SRC-20 Global USD')" style="font-weight: 600; color: var(--pine);">
+                      sUSD Stablecoin
+                    </span>
+                  </td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openContractModal('syn1ylzgjh6zwl2n2k7tsprs9q0yrerde3dl44nz8p', 'sUSD Stablecoin', 'SRC-20 Global USD')" style="color: var(--fern); font-weight: 600;" title="Inspect sUSD Stablecoin Contract Execution Plan">
+                      syn1ylzgjh6zwl2n2k7tsprs9q0yrerde3dl44nz8p
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="chip chip-neutral clickable-link" onclick="openContractModal('syn1ylzgjh6zwl2n2k7tsprs9q0yrerde3dl44nz8p', 'sUSD Stablecoin', 'SRC-20 Global USD')">SRC-20 Global USD</span>
+                  </td>
                   <td><span class="chip chip-green">ACTIVE</span></td>
                 </tr>
                 <tr>
                   <td><strong>AgentFi Ecosystem</strong></td>
-                  <td>$BOTCOIN Asset</td>
-                  <td class="mono">syn1v5e37x5xrcgsn3hs4lfuyh0ent5gekv0nq4v87</td>
-                  <td>SRC-20 Agent Token</td>
+                  <td>
+                    <span class="clickable-link" onclick="openContractModal('syn1v5e37x5xrcgsn3hs4lfuyh0ent5gekv0nq4v87', '$BOTCOIN Asset', 'SRC-20 Agent Token')" style="font-weight: 600; color: var(--pine);">
+                      $BOTCOIN Asset
+                    </span>
+                  </td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openContractModal('syn1v5e37x5xrcgsn3hs4lfuyh0ent5gekv0nq4v87', '$BOTCOIN Asset', 'SRC-20 Agent Token')" style="color: var(--fern); font-weight: 600;" title="Inspect $BOTCOIN Contract Execution Plan">
+                      syn1v5e37x5xrcgsn3hs4lfuyh0ent5gekv0nq4v87
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="chip chip-neutral clickable-link" onclick="openContractModal('syn1v5e37x5xrcgsn3hs4lfuyh0ent5gekv0nq4v87', '$BOTCOIN Asset', 'SRC-20 Agent Token')">SRC-20 Agent Token</span>
+                  </td>
                   <td><span class="chip chip-green">ACTIVE</span></td>
                 </tr>
               </tbody>
@@ -1004,7 +1249,7 @@
                   <tr>
                     <td><strong>SynapticChain L1</strong></td>
                     <td class="mono">Ed25519 -> SHA3-256 -> Bech32m</td>
-                    <td class="mono" id="rail-syn">syn10jz0pe83udm752aw477qdch6fkp7mtekt746zq</td>
+                    <td class="mono clickable-link" id="rail-syn" onclick="openAddressModal(this.innerText)" style="color: var(--fern); font-weight: 600;" title="Inspect Derived L1 Address">syn10jz0pe83udm752aw477qdch6fkp7mtekt746zq</td>
                   </tr>
                   <tr>
                     <td><strong>Ethereum</strong></td>
@@ -1079,28 +1324,48 @@
                 <tr>
                   <td><strong>Sovereign Flow Bot 1</strong></td>
                   <td><span class="chip chip-neutral">Logistics</span></td>
-                  <td class="mono">syn1vvdtq24ja80devljkpre2e229apjkcaq3ufhpe</td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openAddressModal('syn1vvdtq24ja80devljkpre2e229apjkcaq3ufhpe')" style="color: var(--fern); font-weight: 600;" title="Inspect Sovereign Flow Bot 1 Wallet">
+                      syn1vvdtq24ja80devljkpre2e229apjkcaq3ufhpe
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
                   <td><span class="chip chip-green">VERIFIED</span></td>
                   <td>Ambient ZMW Flow / Tax Settlement</td>
                 </tr>
                 <tr>
                   <td><strong>Sovereign Flow Bot 2</strong></td>
                   <td><span class="chip chip-neutral">Mining Corridor</span></td>
-                  <td class="mono">syn1zk7hxl8nfpy7ex56n0j4lhs4f76kh8clpx2ytc</td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openAddressModal('syn1zk7hxl8nfpy7ex56n0j4lhs4f76kh8clpx2ytc')" style="color: var(--fern); font-weight: 600;" title="Inspect Sovereign Flow Bot 2 Wallet">
+                      syn1zk7hxl8nfpy7ex56n0j4lhs4f76kh8clpx2ytc
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
                   <td><span class="chip chip-green">VERIFIED</span></td>
                   <td>Solwezi Copper Parts Payroll</td>
                 </tr>
                 <tr>
                   <td><strong>Sovereign Flow Bot 3</strong></td>
                   <td><span class="chip chip-neutral">Agriculture</span></td>
-                  <td class="mono">syn1z5tsfa8pcdwsgcc74w2h83sgwhsxk2dgcr4n2x</td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openAddressModal('syn1z5tsfa8pcdwsgcc74w2h83sgwhsxk2dgcr4n2x')" style="color: var(--fern); font-weight: 600;" title="Inspect Sovereign Flow Bot 3 Wallet">
+                      syn1z5tsfa8pcdwsgcc74w2h83sgwhsxk2dgcr4n2x
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
                   <td><span class="chip chip-green">VERIFIED</span></td>
                   <td>Kasama Agro Supplier Settlements</td>
                 </tr>
                 <tr>
                   <td><strong>Sovereign Suite Server</strong></td>
                   <td><span class="chip chip-rice">National DPI</span></td>
-                  <td class="mono">syn12mtvlv3a2e3n7zx6le0lzfk0gn986l8f4hd2kj</td>
+                  <td>
+                    <span class="mono clickable-link" onclick="openAddressModal('syn12mtvlv3a2e3n7zx6le0lzfk0gn986l8f4hd2kj')" style="color: var(--fern); font-weight: 600;" title="Inspect Sovereign Suite Server Authority">
+                      syn12mtvlv3a2e3n7zx6le0lzfk0gn986l8f4hd2kj
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </span>
+                  </td>
                   <td><span class="chip chip-green">ROOT AUTHORITY</span></td>
                   <td>INRIS Identity Minting &amp; ISO20022</td>
                 </tr>
@@ -1294,21 +1559,21 @@
             
             rows.push(`
               <tr>
-                <td><span class="chip chip-green">#${cp.height}</span></td>
+                <td><span class="chip chip-green clickable-link" onclick="openCheckpointModal(${cp.height})" title="Inspect Checkpoint #${cp.height}">#${cp.height}</span></td>
                 <td>${timeStr}</td>
-                <td><strong>${cp.transaction_count || 0}</strong> txs</td>
+                <td><strong class="clickable-link" onclick="openCheckpointModal(${cp.height})" style="color: var(--pine);">${cp.transaction_count || 0} txs</strong></td>
                 <td>Shard ${cp.shard_id}</td>
-                <td class="mono">${rootShort}</td>
-                <td><span class="chip chip-neutral">Zeta-1</span></td>
+                <td><span class="mono clickable-link" onclick="openCheckpointModal(${cp.height})" style="color: var(--fern); font-weight: 500;" title="State Root">${rootShort}</span></td>
+                <td><span class="chip chip-neutral clickable-link" onclick="openAddressModal('syn1k40tmv2pkyu34tc2tvpus34zwdzl8ru39nl022')" title="Inspect Zeta-1">Zeta-1</span></td>
               </tr>
             `);
 
             deepRows.push(`
               <tr>
-                <td><span class="chip chip-green">#${cp.height}</span></td>
+                <td><span class="chip chip-green clickable-link" onclick="openCheckpointModal(${cp.height})" title="Inspect Checkpoint #${cp.height}">#${cp.height}</span></td>
                 <td>${timeStr}</td>
-                <td><strong>${cp.transaction_count || 0}</strong> confirmed</td>
-                <td class="mono" style="font-size: 11px;">${cp.state_root}</td>
+                <td><strong class="clickable-link" onclick="openCheckpointModal(${cp.height})" style="color: var(--pine);">${cp.transaction_count || 0} confirmed</strong></td>
+                <td><span class="mono clickable-link" onclick="openCheckpointModal(${cp.height})" style="font-size: 11px; color: var(--fern); font-weight: 500;" title="State Root">${cp.state_root}</span></td>
                 <td><span class="chip chip-rice">3/3 Signed</span></td>
               </tr>
             `);
@@ -1335,16 +1600,33 @@
           const firstArg = tx.args[0];
           if (firstArg.String) details = firstArg.String;
           else if (firstArg.U128) details = (parseInt(firstArg.U128) / 1e18).toFixed(2) + ' ZMW';
+          else if (firstArg.Address) details = (firstArg.Address.substring(0, 10) + '...');
         }
 
         return `
           <tr>
-            <td class="mono" style="font-weight: 600; color: var(--fern);">${hashShort}</td>
+            <td>
+              <span class="mono clickable-link" style="font-weight: 600; color: var(--fern);" onclick="openTransactionModal('${tx.hash}')" title="Inspect Transaction ${tx.hash}">
+                ${hashShort}
+              </span>
+            </td>
             <td><span class="chip chip-neutral">${tx.type || 'call'}</span></td>
-            <td class="mono" style="font-size: 11px;">${fromShort}</td>
-            <td class="mono" style="font-size: 11px;">${toShort}</td>
+            <td>
+              <span class="mono clickable-link" style="font-size: 11px;" onclick="openAddressModal('${tx.from}')" title="Inspect Sender ${tx.from}">
+                ${fromShort}
+              </span>
+            </td>
+            <td>
+              <span class="mono clickable-link" style="font-size: 11px;" onclick="openAddressModal('${tx.to}')" title="Inspect Target ${tx.to}">
+                ${toShort}
+              </span>
+            </td>
             <td><span style="font-size: 12px; font-weight: 500;">${details}</span></td>
-            <td><span class="chip chip-green">#${tx.checkpoint_height || 'L1'}</span></td>
+            <td>
+              <span class="chip chip-green clickable-link" onclick="openCheckpointModal(${tx.checkpoint_height || 0})" title="Inspect Checkpoint #${tx.checkpoint_height || 'L1'}">
+                #${tx.checkpoint_height || 'L1'}
+              </span>
+            </td>
           </tr>
         `;
       }).join('');
@@ -1440,11 +1722,578 @@
       const val = document.getElementById('chk-search-input').value.trim();
       if (!val) return;
       if (!isNaN(val)) {
-        loadRecentCheckpoints(parseInt(val));
+        openCheckpointModal(parseInt(val));
+      } else if (val.startsWith('syn1')) {
+        openAddressModal(val);
+      } else if (val.length === 64 || val.startsWith('0x')) {
+        openTransactionModal(val);
       } else {
-        alert('Searching for state root or tx hash: ' + val);
+        const lower = val.toLowerCase();
+        if (lower.includes('zmw')) openContractModal('syn1dj2a3nlrc44lqtwzeg9ws0d6plzeayrmxy98m2', 'Zambian Kwacha (ZMW)', 'SRC-20 Token');
+        else if (lower.includes('zra') || lower.includes('split') || lower.includes('tax')) openContractModal('syn122h32ja44hhz8ut543krjrrzz9jkd8lxw3m9f7', 'ZraSplitRouter', '0.50% TSA Split Router');
+        else if (lower.includes('inris') || lower.includes('identity') || lower.includes('sbt')) openContractModal('syn1zy8dsuvpc7mt6m8lnp7ueeq808a49q6xmef06l', 'INRIS Identity SBT', 'SynIdentityNFT (Soulbound)');
+        else if (lower.includes('iso') || lower.includes('rtgs') || lower.includes('wire')) openContractModal('syn1kf0wmhqzwy649a67cv5kaapyt3pl4cga9cyuku', 'ISO20022Payment', 'Pacs.008 Real-Time Wire');
+        else if (lower.includes('susd') || lower.includes('usd')) openContractModal('syn1ylzgjh6zwl2n2k7tsprs9q0yrerde3dl44nz8p', 'sUSD Stablecoin', 'SRC-20 Global USD');
+        else if (lower.includes('bot') || lower.includes('coin')) openContractModal('syn1v5e37x5xrcgsn3hs4lfuyh0ent5gekv0nq4v87', '$BOTCOIN Asset', 'SRC-20 Agent Token');
+        else if (lower.includes('boz') || lower.includes('vault')) openAddressModal('syn1r5vkuqaxss46uruj6c5k5wrnzxg04htpuylynr');
+        else if (lower.includes('treasury')) openAddressModal('syn1t9hp790tpp450jh0sd8lyd3znqccycal4m2z0u');
+        else {
+          alert('No on-chain match found for: ' + val);
+        }
+      }
+    }
+
+    // ------------------------------------------------------------------------
+    // Interactive On-Chain Modal Inspectors
+    // ------------------------------------------------------------------------
+    let currentModalRawData = null;
+
+    function showCanopyModal(iconHtml, title, subtitle, bodyHtml, rawData = null) {
+      currentModalRawData = rawData;
+      document.getElementById('modal-icon').innerHTML = iconHtml;
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-subtitle').textContent = subtitle;
+      document.getElementById('modal-body').innerHTML = bodyHtml;
+      document.getElementById('canopy-modal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCanopyModal() {
+      document.getElementById('canopy-modal').classList.remove('active');
+      document.body.style.overflow = '';
+      currentModalRawData = null;
+    }
+
+    function onBackdropClick(ev) {
+      if (ev.target.id === 'canopy-modal') {
+        closeCanopyModal();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.getElementById('canopy-modal') && document.getElementById('canopy-modal').classList.contains('active')) {
+        closeCanopyModal();
+      }
+    });
+
+    function copyModalContent() {
+      if (!currentModalRawData) return;
+      const str = typeof currentModalRawData === 'string' ? currentModalRawData : JSON.stringify(currentModalRawData, null, 2);
+      navigator.clipboard.writeText(str).then(() => {
+        const btn = document.getElementById('modal-copy-btn');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✓ Copied!';
+        setTimeout(() => { btn.innerHTML = orig; }, 1800);
+      });
+    }
+
+    // 1. Smart Contract Execution Plan Modal
+    async function openContractModal(address, contractName = 'Smart Contract', standard = 'SRC-20 Standard') {
+      showCanopyModal(
+        `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`,
+        contractName,
+        `Inspecting Bytecode & Static Execution Plan for ${address}`,
+        `<div style="text-align: center; padding: 40px; color: var(--dusk);">Querying contract plan &amp; L1 state...</div>`
+      );
+
+      try {
+        const [planRes, balRes] = await Promise.all([
+          rpcCall('syn_getContractPlan', [address]),
+          rpcCall('syn_getBalance', [address])
+        ]);
+
+        const balRaw = balRes.result || '0';
+        const balSyn = (parseFloat(balRaw) / 1e18).toFixed(4);
+
+        if (!planRes.result || !planRes.result.plan) {
+          document.getElementById('modal-body').innerHTML = `
+            <div class="modal-field-box">
+              <div class="modal-field-label">Address</div>
+              <div class="modal-field-val">${address}</div>
+            </div>
+            <div class="modal-field-box">
+              <div class="modal-field-label">L1 Balance</div>
+              <div class="modal-field-val">${balSyn} SYN</div>
+            </div>
+            <div style="padding: 16px; background: #FFF5F2; color: var(--ember); border-radius: var(--radius-md); font-size: 13px;">
+              No compiled execution plan found for this address. It is likely an EOA wallet or autonomous agent.
+            </div>
+          `;
+          return;
+        }
+
+        const plan = planRes.result.plan;
+        currentModalRawData = plan;
+
+        // Slots table
+        const slotsObj = (plan.state_schema && plan.state_schema.slots) || {};
+        const slotsRows = Object.entries(slotsObj).map(([name, val]) => {
+          let typeStr = 'Value';
+          if (val.slot_type) {
+            if (typeof val.slot_type === 'string') typeStr = val.slot_type;
+            else if (val.slot_type.Map) {
+              const k = val.slot_type.Map.key;
+              const v = typeof val.slot_type.Map.value === 'string' ? val.slot_type.Map.value : JSON.stringify(val.slot_type.Map.value);
+              typeStr = `Map&lt;${k}, ${v}&gt;`;
+            } else if (val.slot_type.Value) {
+              typeStr = `Value&lt;${val.slot_type.Value}&gt;`;
+            }
+          }
+          return `
+            <tr>
+              <td class="mono" style="font-weight: 600; color: var(--fern);">${name}</td>
+              <td><span class="chip chip-neutral mono" style="font-size: 11px;">${typeStr}</span></td>
+              <td class="mono" style="font-size: 10.5px; color: var(--dusk);">[${(val.prefix || []).join(', ')}]</td>
+            </tr>
+          `;
+        }).join('');
+
+        // Functions table
+        const fnsObj = plan.functions || {};
+        const fnsRows = Object.entries(fnsObj).map(([name, fn]) => {
+          const reads = (fn.reads || []).map(r => r.slot || 'state').join(', ') || 'none';
+          const writes = (fn.writes || []).map(w => w.slot || 'state').join(', ') || 'none';
+          const ticks = fn.ticks || 1;
+          return `
+            <tr>
+              <td class="mono" style="font-weight: 600; color: var(--pine);">${name}()</td>
+              <td><span class="chip chip-rice" style="font-size: 10px;">${ticks} ticks</span></td>
+              <td class="mono" style="font-size: 11px; color: var(--fern);">${reads}</td>
+              <td class="mono" style="font-size: 11px; color: var(--ember);">${writes}</td>
+            </tr>
+          `;
+        }).join('');
+
+        document.getElementById('modal-body').innerHTML = `
+          <div class="modal-grid-2col">
+            <div class="modal-field-box">
+              <div class="modal-field-label">
+                <span>Contract Address</span>
+                <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="navigator.clipboard.writeText('${address}')">Copy</button>
+              </div>
+              <div class="modal-field-val">${address}</div>
+            </div>
+            <div class="modal-field-box">
+              <div class="modal-field-label">L1 Treasury Balance</div>
+              <div class="modal-field-val" style="color: var(--fern); font-size: 16px;">${balSyn} SYN</div>
+            </div>
+          </div>
+
+          <div class="modal-grid-2col">
+            <div class="modal-field-box">
+              <div class="modal-field-label">Standard Specification</div>
+              <div class="modal-field-val"><span class="chip chip-green">${standard}</span></div>
+            </div>
+            <div class="modal-field-box">
+              <div class="modal-field-label">Bytecode Plan Version</div>
+              <div class="modal-field-val">Plan v${plan.version || 1} · Code Hash: <span class="mono" style="font-size: 11px;">${(plan.code_hash || '').substring(0, 16)}...</span></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+              <span>State Schema Slots (${Object.keys(slotsObj).length})</span>
+              <span style="font-size: 11px; font-weight: normal; color: var(--dusk);">Static Storage Layout</span>
+            </div>
+            <div class="table-wrap" style="max-height: 180px; overflow-y: auto;">
+              <table class="data-table" style="font-size: 11.5px;">
+                <thead>
+                  <tr>
+                    <th>Slot Key</th>
+                    <th>Storage Type</th>
+                    <th>Storage Prefix</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${slotsRows || '<tr><td colspan="3">No state slots declared</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+              <span>Static Entry Points &amp; Concurrency Schedule (${Object.keys(fnsObj).length})</span>
+              <span style="font-size: 11px; font-weight: normal; color: var(--dusk);">Parallel Rayon Lanes</span>
+            </div>
+            <div class="table-wrap" style="max-height: 200px; overflow-y: auto;">
+              <table class="data-table" style="font-size: 11.5px;">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Ticks</th>
+                    <th>Read Dependency</th>
+                    <th>Write Dependency</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${fnsRows || '<tr><td colspan="4">No public entry points declared</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <details style="background: var(--mist); padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--card-border);">
+              <summary style="font-size: 12px; font-weight: 600; cursor: pointer; color: var(--pine);">View Full Raw Execution Plan (JSON)</summary>
+              <pre class="code-panel" style="margin-top: 10px; max-height: 220px; overflow-y: auto; font-size: 10.5px;">${JSON.stringify(plan, null, 2)}</pre>
+            </details>
+          </div>
+        `;
+      } catch (err) {
+        document.getElementById('modal-body').innerHTML = `
+          <div style="padding: 20px; background: #FFF5F2; color: var(--ember); border-radius: var(--radius-md);">
+            <strong>RPC Inspection Error:</strong> ${err.message}
+          </div>
+        `;
+      }
+    }
+
+    // 2. Account & Address Inspector Modal
+    async function openAddressModal(address) {
+      showCanopyModal(
+        `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`,
+        'Account & Identity Inspector',
+        `Querying Layer-1 Dual-Ledger State for ${address}`,
+        `<div style="text-align: center; padding: 40px; color: var(--dusk);">Fetching account balance &amp; nonces...</div>`
+      );
+
+      try {
+        const [balRes, nonceRes, planRes] = await Promise.all([
+          rpcCall('syn_getBalance', [address]),
+          rpcCall('syn_getNonce', [address]),
+          rpcCall('syn_getContractPlan', [address]).catch(() => ({ error: true }))
+        ]);
+
+        const balRaw = balRes.result || '0';
+        const balSyn = (parseFloat(balRaw) / 1e18).toFixed(4);
+        const nonceVal = nonceRes.result !== undefined ? nonceRes.result : 0;
+        const isContract = planRes.result && planRes.result.plan;
+
+        currentModalRawData = { address, balance: balSyn + ' SYN', nonce: nonceVal, isContract: !!isContract };
+
+        document.getElementById('modal-body').innerHTML = `
+          <div class="modal-field-box">
+            <div class="modal-field-label">
+              <span>Bech32m Address</span>
+              <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="navigator.clipboard.writeText('${address}')">Copy</button>
+            </div>
+            <div class="modal-field-val">${address}</div>
+          </div>
+
+          <div class="modal-grid-2col">
+            <div class="modal-field-box">
+              <div class="modal-field-label">L1 Native Gas Balance</div>
+              <div class="modal-field-val" style="color: var(--fern); font-size: 18px;">${balSyn} SYN</div>
+            </div>
+            <div class="modal-field-box">
+              <div class="modal-field-label">256-Lane Nonce Watermark</div>
+              <div class="modal-field-val" style="font-size: 18px;">${nonceVal} <span style="font-size: 11px; color: var(--dusk); font-weight: normal;">(Gap-Tolerant)</span></div>
+            </div>
+          </div>
+
+          <div class="modal-grid-2col">
+            <div class="modal-field-box">
+              <div class="modal-field-label">Account Classification</div>
+              <div class="modal-field-val">
+                ${isContract ? '<span class="chip chip-rice">SMART CONTRACT</span>' : '<span class="chip chip-green">EOA / AUTONOMOUS AGENT</span>'}
+              </div>
+            </div>
+            <div class="modal-field-box">
+              <div class="modal-field-label">Universal Multi-Rail Derivation</div>
+              <div class="modal-field-val">
+                <span class="chip chip-neutral">Universal 5-Rail ISOMORPHIC</span>
+              </div>
+            </div>
+          </div>
+
+          ${isContract ? `
+            <div style="background: var(--limestone); padding: 14px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <strong style="color: var(--pine);">Smart Contract Plan Detected</strong>
+                <div style="font-size: 11.5px; color: var(--dusk);">This address carries an on-chain compiled execution plan.</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="openContractModal('${address}', 'Deployed Smart Contract', 'SynapticLang VM')">
+                Inspect Contract Plan →
+              </button>
+            </div>
+          ` : ''}
+
+          <div style="display: flex; gap: 10px; margin-top: 6px;">
+            <a href="https://wallet.synapticchain.xyz/quantum/" target="_blank" class="btn btn-outline btn-block" style="text-decoration: none; justify-content: center;">
+              Launch in QuantumShield Terminal
+            </a>
+          </div>
+        `;
+      } catch (err) {
+        document.getElementById('modal-body').innerHTML = `
+          <div style="padding: 20px; background: #FFF5F2; color: var(--ember); border-radius: var(--radius-md);">
+            <strong>Address Query Error:</strong> ${err.message}
+          </div>
+        `;
+      }
+    }
+
+    // 3. Transaction Proof & Receipt Modal
+    async function openTransactionModal(txHash) {
+      showCanopyModal(
+        `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`,
+        'Transaction Proof & Receipt',
+        `Consensus Finality & Receipt for ${txHash}`,
+        `<div style="text-align: center; padding: 40px; color: var(--dusk);">Fetching transaction data &amp; receipt...</div>`
+      );
+
+      try {
+        const [txRes, receiptRes] = await Promise.all([
+          rpcCall('syn_getTransaction', [txHash]),
+          rpcCall('syn_getTransactionReceipt', [txHash]).catch(() => ({ result: null }))
+        ]);
+
+        const txObj = txRes.result ? (txRes.result.value || txRes.result) : null;
+        const receipt = receiptRes ? receiptRes.result : null;
+
+        if (!txObj) {
+          document.getElementById('modal-body').innerHTML = `
+            <div style="padding: 20px; background: #FFF5F2; color: var(--ember); border-radius: var(--radius-md);">
+              Transaction ${txHash} not located on-chain.
+            </div>
+          `;
+          return;
+        }
+
+        currentModalRawData = { transaction: txObj, receipt };
+
+        const from = txObj.from || 'Unknown';
+        const to = txObj.to || 'Unknown';
+        const height = txObj.checkpoint_height || (receipt ? receipt.checkpoint_height : 'L1');
+        const gasUsed = (receipt && receipt.gas_used) ? receipt.gas_used : (txObj.gas_used || txObj.gas_limit || 0);
+        const status = (receipt && receipt.status) ? receipt.status : (txObj.status || 'Confirmed');
+
+        let argsHtml = '<span style="color: var(--dusk); font-size: 11px;">None</span>';
+        if (txObj.args && txObj.args.length > 0) {
+          argsHtml = `<pre class="code-panel" style="font-size: 11px; max-height: 120px; overflow-y: auto;">${JSON.stringify(txObj.args, null, 2)}</pre>`;
+        }
+
+        const valSigs = (receipt && receipt.validator_signatures) ? receipt.validator_signatures : [];
+        const sigsRows = valSigs.map(vs => `
+          <tr>
+            <td class="mono clickable-link" style="font-size: 11px;" onclick="openAddressModal('${vs.validator}')">${vs.validator}</td>
+            <td><span class="chip chip-rice">${((vs.weight || 0.46) * 100).toFixed(1)}%</span></td>
+            <td>${(vs.reputation || 1.0).toFixed(2)}</td>
+            <td class="mono" style="font-size: 10px; color: var(--dusk);">${(vs.signature || '').substring(0, 16)}...</td>
+          </tr>
+        `).join('');
+
+        document.getElementById('modal-body').innerHTML = `
+          <div class="modal-field-box">
+            <div class="modal-field-label">
+              <span>Transaction Hash</span>
+              <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="navigator.clipboard.writeText('${txHash}')">Copy</button>
+            </div>
+            <div class="modal-field-val" style="color: var(--fern);">${txHash}</div>
+          </div>
+
+          <div class="modal-grid-2col">
+            <div class="modal-field-box">
+              <div class="modal-field-label">Consensus Status</div>
+              <div class="modal-field-val">
+                <span class="chip chip-green">✓ ${status.toUpperCase()} (SUB-500MS FINALITY)</span>
+              </div>
+            </div>
+            <div class="modal-field-box">
+              <div class="modal-field-label">Committed Checkpoint</div>
+              <div class="modal-field-val">
+                <span class="chip chip-rice clickable-link" onclick="openCheckpointModal(${height})">#${height}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-grid-2col">
+            <div class="modal-field-box">
+              <div class="modal-field-label">Sender Account (From)</div>
+              <div class="modal-field-val mono clickable-link" onclick="openAddressModal('${from}')">${from}</div>
+            </div>
+            <div class="modal-field-box">
+              <div class="modal-field-label">Target Account / Contract (To)</div>
+              <div class="modal-field-val mono clickable-link" onclick="openAddressModal('${to}')">${to}</div>
+            </div>
+          </div>
+
+          <div class="modal-grid-2col">
+            <div class="modal-field-box">
+              <div class="modal-field-label">Execution Type / Method</div>
+              <div class="modal-field-val mono">${txObj.function || txObj.type || 'transfer'}</div>
+            </div>
+            <div class="modal-field-box">
+              <div class="modal-field-label">Gas Consumed / Limit</div>
+              <div class="modal-field-val mono">${gasUsed.toLocaleString()} / ${(txObj.gas_limit || 5000000).toLocaleString()}</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="modal-field-label" style="margin-bottom: 6px;">Call Payload &amp; Arguments</div>
+            ${argsHtml}
+          </div>
+
+          ${valSigs.length > 0 ? `
+            <div>
+              <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; margin-bottom: 8px;">
+                SC-DAG Validator Signatures (${valSigs.length})
+              </div>
+              <div class="table-wrap">
+                <table class="data-table" style="font-size: 11.5px;">
+                  <thead>
+                    <tr>
+                      <th>Validator</th>
+                      <th>Stake Weight</th>
+                      <th>Reputation</th>
+                      <th>Ed25519 Signature</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${sigsRows}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ` : ''}
+
+          <div>
+            <details style="background: var(--mist); padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--card-border);">
+              <summary style="font-size: 12px; font-weight: 600; cursor: pointer; color: var(--pine);">View Raw Transaction JSON</summary>
+              <pre class="code-panel" style="margin-top: 10px; max-height: 200px; overflow-y: auto; font-size: 10.5px;">${JSON.stringify(txObj, null, 2)}</pre>
+            </details>
+          </div>
+        `;
+      } catch (err) {
+        document.getElementById('modal-body').innerHTML = `
+          <div style="padding: 20px; background: #FFF5F2; color: var(--ember); border-radius: var(--radius-md);">
+            <strong>Transaction Receipt Error:</strong> ${err.message}
+          </div>
+        `;
+      }
+    }
+
+    // 4. Checkpoint Inspector Modal
+    async function openCheckpointModal(height) {
+      showCanopyModal(
+        `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path><path d="M15 3v18"></path></svg>`,
+        `Checkpoint #${height}`,
+        `Inspecting SC-DAG Checkpoint &amp; Merkle State Root`,
+        `<div style="text-align: center; padding: 40px; color: var(--dusk);">Fetching checkpoint state...</div>`
+      );
+
+      try {
+        const cpRes = await rpcCall('syn_getCheckpoint', [height]);
+        if (!cpRes.result) {
+          document.getElementById('modal-body').innerHTML = `
+            <div style="padding: 20px; background: #FFF5F2; color: var(--ember); border-radius: var(--radius-md);">
+              Checkpoint #${height} not found.
+            </div>
+          `;
+          return;
+        }
+
+        const cp = cpRes.result;
+        currentModalRawData = cp;
+        const timeStr = new Date((cp.timestamp || 0) * 1000).toLocaleString();
+        const txList = cp.transactions || [];
+
+        const txItems = txList.map(txh => `
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #FFFFFF; border: 1px solid var(--card-border); border-radius: var(--radius-md); margin-bottom: 6px;">
+            <span class="mono clickable-link" style="font-size: 11.5px; color: var(--fern); font-weight: 600;" onclick="openTransactionModal('${txh}')">${txh}</span>
+            <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="openTransactionModal('${txh}')">Inspect →</button>
+          </div>
+        `).join('');
+
+        document.getElementById('modal-body').innerHTML = `
+          <div class="modal-grid-2col">
+            <div class="modal-field-box">
+              <div class="modal-field-label">Checkpoint Height</div>
+              <div class="modal-field-val" style="color: var(--fern); font-size: 20px;">#${cp.height}</div>
+            </div>
+            <div class="modal-field-box">
+              <div class="modal-field-label">Block Timestamp</div>
+              <div class="modal-field-val">${timeStr}</div>
+            </div>
+          </div>
+
+          <div class="modal-field-box">
+            <div class="modal-field-label">
+              <span>Cryptographic State Root Hash (Borsh)</span>
+              <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="navigator.clipboard.writeText('${cp.state_root}')">Copy</button>
+            </div>
+            <div class="modal-field-val mono" style="word-break: break-all;">${cp.state_root}</div>
+          </div>
+
+          <div class="modal-grid-2col">
+            <div class="modal-field-box">
+              <div class="modal-field-label">Transactions in Block</div>
+              <div class="modal-field-val" style="font-size: 18px;">${cp.transaction_count || txList.length} txs</div>
+            </div>
+            <div class="modal-field-box">
+              <div class="modal-field-label">Shard Partition</div>
+              <div class="modal-field-val">Shard ${cp.shard_id}</div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; margin-bottom: 8px;">
+              Confirmed Transactions (${txList.length})
+            </div>
+            <div style="max-height: 220px; overflow-y: auto;">
+              ${txItems.length > 0 ? txItems : '<div style="color: var(--dusk); font-size: 12px; padding: 8px 0;">No transactions included in this checkpoint slot.</div>'}
+            </div>
+          </div>
+
+          <div>
+            <details style="background: var(--mist); padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--card-border);">
+              <summary style="font-size: 12px; font-weight: 600; cursor: pointer; color: var(--pine);">View Full Checkpoint JSON</summary>
+              <pre class="code-panel" style="margin-top: 10px; max-height: 200px; overflow-y: auto; font-size: 10.5px;">${JSON.stringify(cp, null, 2)}</pre>
+            </details>
+          </div>
+        `;
+      } catch (err) {
+        document.getElementById('modal-body').innerHTML = `
+          <div style="padding: 20px; background: #FFF5F2; color: var(--ember); border-radius: var(--radius-md);">
+            <strong>Checkpoint Query Error:</strong> ${err.message}
+          </div>
+        `;
       }
     }
   </script>
+
+  <!-- Canopy Interactive Inspector Modal Dialog -->
+  <div class="modal-backdrop" id="canopy-modal" onclick="onBackdropClick(event)">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon" id="modal-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+          </div>
+          <div>
+            <div class="modal-title" id="modal-title">Inspector</div>
+            <div class="modal-subtitle" id="modal-subtitle">Inspecting Layer-1 State</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="btn btn-outline btn-sm" id="modal-copy-btn" onclick="copyModalContent()" title="Copy Details (JSON)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy JSON
+          </button>
+          <button class="modal-close-btn" onclick="closeCanopyModal()" title="Close (Esc)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Injected dynamically -->
+      </div>
+      <div class="modal-footer" id="modal-footer">
+        <span>Consensus Verified · Merkle State Root Proven</span>
+        <span class="chip chip-rice">Direct L1 Axum RPC</span>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

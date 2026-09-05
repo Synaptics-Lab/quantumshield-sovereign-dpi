@@ -1189,13 +1189,23 @@
     }
 
     async function mintXrplSoulboundNFT() {
-      logConsole(`Anchoring Soulbound Identity to XRPL Testnet for ${currentL1Address}...`);
+      const addr = currentL1Address || "syn1027er2ae2g4gsjx3wxglc9pfl9uwlek8xfvfxj";
+      logConsole(`Anchoring Soulbound Identity to XRPL Testnet for ${addr}...`);
       try {
-        const res = await fetch("https://nodes.synapticchain.xyz/api/xrpl/mint-identity", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ agent_address: currentL1Address })
-        });
+        let res;
+        try {
+          res = await fetch("/api/xrpl/mint-identity", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ agent_address: addr })
+          });
+        } catch (err) {
+          res = await fetch("https://nodes.synapticchain.xyz/api/xrpl/mint-identity", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ agent_address: addr })
+          });
+        }
         const data = await res.json();
         if (data.success) {
           logConsole(`✓ XRPL Ledger confirmed XLS-20 Soulbound Mint!`);
