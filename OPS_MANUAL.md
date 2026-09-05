@@ -22,10 +22,10 @@ make preflight
 ### Manual Visual Sanity Check
 Open these three browser tabs side-by-side:
 1. **Tab 1 — Canopy Explorer:** [`https://nodes.synapticchain.xyz`](https://nodes.synapticchain.xyz)
-   - *Check:* Block height is ticking upwards past #650; 3/3 validators showing green lockstep.
+   - *Check:* Block height is ticking upwards past #1,390; 3/3 validators showing green lockstep.
 2. **Tab 2 — QuantumShield Terminal:** [`https://wallet.synapticchain.xyz/quantum/`](https://wallet.synapticchain.xyz/quantum/)
-   - *Check:* Terminal console loads with Canopy light-mode styling; buttons responsive.
-3. **Tab 3 — GovPay Sovereign Suite:** [`https://synapticchain.xyz/govpay/`](https://synapticchain.xyz/govpay/)
+   - *Check:* Terminal console loads with Canopy light-mode styling; buttons responsive; XRPL XLS-20 soulbound anchor verified.
+3. **Tab 3 — GovPay Sovereign Suite:** [`https://govpay.synapticchain.xyz`](https://govpay.synapticchain.xyz) (or [`https://synapticchain.xyz/govpay/`](https://synapticchain.xyz/govpay/))
    - *Check:* Bank of Zambia vault displays **150,000,000 ZMW**; recent settlements feed ticking.
 
 ---
@@ -38,7 +38,7 @@ Open these three browser tabs side-by-side:
 * **What to say:**  
   *"Judges, before showing the applications, we want to prove we are running on a live, high-throughput Layer-1 blockchain with native consensus, not a local mock or EVM clone. This is SynapticChain L1."*
 * **What to point at:**  
-  - Point to the **Canonical Height** ticking in real time: *"We are at block #650+ with sub-500 millisecond DAG finality."*
+  - Point to the **Canonical Height** ticking in real time: *"We are at block #1,390+ with sub-500 millisecond DAG finality."*
   - Point to the **3 Active Neurons**: *"The SCBFT consensus quorum is running 3 independent validators in active lockstep on our African testnet mesh."*
   - Point to the design: *"Our interface adheres strictly to the Canopy Evergreen spatial design system — light, institutional, zero dark-mode gaming aesthetic."*
 
@@ -52,15 +52,17 @@ Open these three browser tabs side-by-side:
 * **What to click & demonstrate:**
   1. Click **"Derive 5-Rail Isomorphism"**:  
      *"Watch this: From one single 32-byte master seed, our cryptographic engine deterministically projects native addresses across SynapticChain, Ethereum, XRP Ledger, Solana, and Bitcoin Native SegWit. Zero wrapped tokens, zero custodial bridges, 100% zero-bridge custody."*
-  2. Scroll to the **CE-WOTS+ Quantum Defense** card:  
+  2. Point to the **XRPL XLS-20 Soulbound Anchor**:  
+     *"We also anchor the sovereign L1 identity to the XRPL testnet ledger consensus via a native non-transferable XLS-20 NFToken (`Flags: 0`, Taxon `402`)."*
+  3. Scroll to the **CE-WOTS+ Quantum Defense** card:  
      *"Existing post-quantum schemes like Dilithium create 3.5 to 4.5 KB of wire bloat per signature. We implement Consensus-Enforced Winternitz Signatures (CE-WOTS+, NIST SP 800-208) with 67 compact hash chains (2,144 bytes uncompressed)."*
-  3. Click **"Verify Signature & Advance Watermark"**:  
+  4. Click **"Verify Signature & Advance Watermark"**:  
      *"Classical WOTS suffers from key reuse leakage. SynapticChain solves this by folding the ephemeral public key directly into the ADR-062 monotonic 256-lane execution watermark. Advancing the watermark permanently invalidates past signatures in the VM for a flat 100 gas."*
 
 ---
 
 ### Phase 3: Deliver Sovereign DPI & Revenue Collection (1:45 – 2:30)
-**Screen:** Switch to **Tab 3** (`https://synapticchain.xyz/govpay/`).
+**Screen:** Switch to **Tab 3** (`https://govpay.synapticchain.xyz`).
 
 * **What to say:**  
   *"Now let's examine national public infrastructure. We have deployed the GovPay Sovereign DPI Suite, piloted for the Republic of Zambia, Smart Zambia Institute, and the Bank of Zambia."*

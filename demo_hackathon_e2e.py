@@ -163,7 +163,7 @@ def main():
     section(6, "Live Production Portals & Developer Explorer")
     print(f"  ✓ Canopy Explorer:        {BOLD}https://nodes.synapticchain.xyz{NC}")
     print(f"  ✓ QuantumShield Terminal: {BOLD}https://wallet.synapticchain.xyz/quantum/{NC}")
-    print(f"  ✓ GovPay Sovereign Suite: {BOLD}https://synapticchain.xyz/govpay/{NC}")
+    print(f"  ✓ GovPay Sovereign Suite: {BOLD}https://govpay.synapticchain.xyz{NC} (or {BOLD}https://synapticchain.xyz/govpay/{NC})")
     print(f"  ✓ Public JSON-RPC API:    {BOLD}https://nodes.synapticchain.xyz/rpc{NC}")
 
     print(f"\n{BOLD}{GREEN}════════════════════════════════════════════════════════════════════════════════{NC}")

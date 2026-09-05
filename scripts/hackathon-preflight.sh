@@ -39,7 +39,7 @@ fi
 
 echo ""
 echo "[3/4] Probing Public Production Portals..."
-for PORTAL in "https://nodes.synapticchain.xyz" "https://wallet.synapticchain.xyz/quantum/" "https://synapticchain.xyz/govpay/"; do
+for PORTAL in "https://nodes.synapticchain.xyz" "https://wallet.synapticchain.xyz/quantum/" "https://govpay.synapticchain.xyz" "https://synapticchain.xyz/govpay/"; do
   CODE=$(curl -s -A "Mozilla/5.0" -o /dev/null -w "%{http_code}" "$PORTAL" || echo "ERR")
   echo "  ✓ $PORTAL -> HTTP ${CODE}"
 done

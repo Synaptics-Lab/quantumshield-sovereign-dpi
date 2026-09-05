@@ -18,7 +18,7 @@
 [![Post-Quantum](https://img.shields.io/badge/PQC-CE--WOTS%2B_(NIST_SP_800--208)-B9E04C?style=for-the-badge&logoColor=0D2B24)](./SPECIFICATION.md)
 [![5-Rail](https://img.shields.io/badge/Interoperability-Universal_5--Rail_Isomorphism-1E7A5C?style=for-the-badge)](./demo_hackathon_e2e.py)
 [![Consensus](https://img.shields.io/badge/Consensus-SCBFT_Sub--500ms_Finality-0D2B24?style=for-the-badge)](https://nodes.synapticchain.xyz)
-[![L1 Status](https://img.shields.io/badge/Network_Height-%23640%2B_Live-1E7A5C?style=for-the-badge)](https://nodes.synapticchain.xyz)
+[![L1 Status](https://img.shields.io/badge/Network_Height-%231390%2B_Live-1E7A5C?style=for-the-badge)](https://nodes.synapticchain.xyz)
 [![Verification](https://img.shields.io/badge/E2E_Demo-100%25_Passing-B9E04C?style=for-the-badge&logoColor=0D2B24)](./demo_hackathon_e2e.py)
 
 ---
@@ -53,7 +53,7 @@ All portals are running live in production and interface directly with the Synap
 |---|---|---|
 | **Canopy Explorer** | [https://nodes.synapticchain.xyz](https://nodes.synapticchain.xyz) | Canopy Evergreen light spatial UI; live SCBFT DAG telemetry, validator matrix, and checkpoint height |
 | **QuantumShield Terminal** | [https://wallet.synapticchain.xyz/quantum/](https://wallet.synapticchain.xyz/quantum/) | Institutional terminal wallet; 5-Rail key derivation, CE-WOTS+ simulator, 256-lane concurrency matrix |
-| **GovPay Sovereign Suite** | [https://synapticchain.xyz/govpay/](https://synapticchain.xyz/govpay/) | National DPI portal; 150M ZMW Central Bank vault, ZRA tax collector, INRIS biometric identity |
+| **GovPay Sovereign Suite** | [https://govpay.synapticchain.xyz](https://govpay.synapticchain.xyz) | National DPI portal; 150M ZMW Central Bank vault, ZRA tax collector, INRIS biometric identity |
 | **Public JSON-RPC API** | `https://nodes.synapticchain.xyz/rpc` | High-throughput JSON-RPC 2.0 endpoint (sub-500ms response time) |
 
 ---
