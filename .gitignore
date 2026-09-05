@@ -3,6 +3,9 @@ __pycache__/
 *.pyc
 *.pyo
 *.log
+*.map
+*.key
+*.pem
 .DS_Store
 .env
 .env.local
