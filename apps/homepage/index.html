@@ -432,7 +432,7 @@
     <!-- ══════════ HERO SECTION ══════════ -->
     <section class="hero container">
       <div class="hero-status-row">
-        <span class="hero-status"><span class="dot" aria-hidden="true"></span> Live L1 Consensus · 3 Validator Neurons · Sub-500ms DAG Commitments</span>
+        <span class="hero-status"><span class="dot" aria-hidden="true"></span> Live L1 Consensus · 1 Shard / 3 Neurons · Sub-500ms DAG Commitments</span>
         <span class="badge-finos">FINOS Sovereign DPI &amp; Post-Quantum Hackathon 2026</span>
       </div>
 
@@ -669,14 +669,25 @@
     <section class="block container" id="network">
       <div class="sec-head">
         <span class="sec-kicker label"><span class="rule"></span>Infrastructure</span>
-        <h2>Continental Validator Mesh</h2>
+        <h2>Validator Mesh &amp; Topology</h2>
         <p class="aside">Physical nodes running over private encrypted mesh networking with zero database overhead.</p>
+      </div>
+
+      <!-- Network Topology & Empirical Distribution Note -->
+      <div class="topo-notice" style="margin-bottom: 24px; padding: 20px 24px; background: rgba(30, 122, 92, 0.06); border: 1px solid rgba(30, 122, 92, 0.25); border-radius: var(--r-lg); box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--fern); color: #fff; font-size: 11px; font-weight: bold;">ℹ</span>
+          <h4 style="font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fern); margin: 0;">Topological Disclosure · 1-Shard Testnet Localization &amp; Multi-Continent Scaling</h4>
+        </div>
+        <p style="font-size: 14px; line-height: 1.65; color: var(--pine); margin: 0;">
+          SynapticChain is architected with native, empirically verified horizontal multi-shard distribution and cross-shard 2PC atomic routing. The validator mesh previously operated as a <strong>3-shard continental topology spanning North America (Zeta 🇺🇸), Germany (Alpha 🇩🇪), and South Africa (Bravo 🇿🇦)</strong>. To optimize bare-metal hosting and bandwidth expenditures during the active testnet and hackathon evaluation, the live network is currently localized to <strong>1 Shard running 3 Validator Neurons on a unified server</strong> (Zeta, ports 8545 / 8547 / 8549) fronted by the Delta Gateway. The multi-shard consensus coordination and multi-continental mesh protocols remain fully validated in the core engine and ready for immediate horizontal redeployment.
+        </p>
       </div>
 
       <div class="net">
         <div class="net-card">
-          <h3>Active Continental Mesh</h3>
-          <div class="net-sub">3 Physical Validator Neurons · SCBFT Quorum</div>
+          <h3>Active Validator Mesh</h3>
+          <div class="net-sub">1 Shard · 3 Physical Validator Neurons · SCBFT Quorum</div>
           <div class="mesh">
             <div class="node"><span class="nd"></span><span class="nm">Zeta Neuron 0</span><span class="rl">RPC :8545</span></div>
             <div class="node"><span class="nd"></span><span class="nm">Zeta Neuron 1</span><span class="rl">RPC :8547</span></div>
@@ -684,6 +695,7 @@
             <div class="node"><span class="nd" style="background:var(--dusk)"></span><span class="nm">Delta Gateway</span><span class="rl">Reverse Proxy</span></div>
           </div>
           <div class="net-feats">
+            <div class="feat"><span class="tick">✓</span><span><b>Empirical Sharding Capability:</b> Multi-shard 2PC state machine replication validated; localized to 1 Shard / 3 Neurons for testnet cost efficiency.</span></div>
             <div class="feat"><span class="tick">✓</span><span><b>Zero-Database Explorer:</b> Serves telemetry and state directly from Axum JSON-RPC and WebSocket firehose without SQL/Redis in the critical path.</span></div>
             <div class="feat"><span class="tick">✓</span><span><b>Catastrophic Recovery (ADR-643):</b> Atomic hot-snapshots (<code>cp -al</code>) with uniform <code>Address::zero()</code> fee recipient ensures 100% state root replay parity.</span></div>
             <div class="feat"><span class="tick">✓</span><span><b>Public JSON-RPC &amp; WS:</b> Open endpoints at <code>nodes.synapticchain.xyz/rpc</code> and <code>/ws</code>.</span></div>
@@ -695,6 +707,8 @@
           <div class="net-sub">Audited Figures · ADR-062 / ADR-641</div>
           <div class="kv-row"><span class="k">Architecture</span><span class="v">DAG-Primary Parallel Layer-1</span></div>
           <div class="kv-row"><span class="k">State Machine</span><span class="v">256-Lane Decoupled SMR</span></div>
+          <div class="kv-row"><span class="k">Active Topology</span><span class="v">1 Shard · 3 Neurons (Unified Host)</span></div>
+          <div class="kv-row"><span class="k">Mesh Scaling</span><span class="v">Multi-Continent Verified (US / DE / ZA)</span></div>
           <div class="kv-row"><span class="k">Post-Quantum</span><span class="v">CE-WOTS+ (BIP-360 candidate)</span></div>
           <div class="kv-row"><span class="k">Finality</span><span class="v">&lt;500 ms · Deterministic DAG</span></div>
           <div class="kv-row"><span class="k">Consensus</span><span class="v">SCBFT Hedged Leader Permutation</span></div>
