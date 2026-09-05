@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>SynapticChain — Sovereign DPI &amp; Post-Quantum Layer-1 (FINOS Showcase)</title>
+  <meta name="description" content="SynapticChain is a DAG-Primary Parallel Layer-1 with Decoupled Multi-Lane SMR (ADR-062), Post-Quantum CE-WOTS+ Security (BIP-360 candidate), and a 150M ZMW Bank of Zambia Central Bank Float with automated 0.50% TSA tax routing." />
+  <link rel="icon" type="image/svg+xml" href="/s-logo.svg" />
+  <link rel="alternate icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/s-logo.svg" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://synapticchain.xyz/" />
+  <meta property="og:title" content="SynapticChain — Sovereign DPI &amp; Post-Quantum Layer-1" />
+  <meta property="og:description" content="DAG-Primary Parallel Layer-1 with 256-Lane Decoupled SMR, Post-Quantum CE-WOTS+ Security, and 150M ZMW Central Bank Float." />
+  <meta property="og:image" content="https://synapticchain.xyz/s-logo.svg" />
+  <meta property="og:site_name" content="SynapticChain Protocol" />
+  <meta name="theme-color" content="#f2f6f2" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── SynapticChain Institutional Ledger Design System ── */
+    :root {
+      --mist: #f2f6f2;
+      --card: #ffffff;
+      --pine: #0d2b24;
+      --fern: #1e7a5c;
+      --fern-soft: rgba(30, 122, 92, 0.09);
+      --lime: #b9e04c;
+      --lime-soft: rgba(185, 224, 76, 0.16);
+      --dusk: #5c6f68;
+      --ember: #c2502f;
+      --border: rgba(13, 43, 36, 0.14);
+      --hairline: rgba(13, 43, 36, 0.08);
+      --shadow-sm: 0 1px 3px rgba(13, 43, 36, 0.06), 0 1px 6px rgba(13, 43, 36, 0.04);
+      --shadow-md: 0 4px 16px -4px rgba(13, 43, 36, 0.12);
+      --shadow-lg: 0 16px 36px -12px rgba(13, 43, 36, 0.18);
+      --font-display: 'Space Grotesk', 'Inter', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+      --r-sm: 6px;
+      --r-md: 10px;
+      --r-lg: 14px;
+      --r-xl: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--mist);
+      color: var(--pine);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      max-width: 100vw;
+      font-size: 15px;
+    }
+    img, svg { max-width: 100%; }
+    ::selection { background: var(--lime); color: var(--pine); }
+    a { color: inherit; text-decoration: none; }
+    :focus-visible { outline: 2px solid var(--fern); outline-offset: 2px; border-radius: 4px; }
+
+    .grid-paper {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(13, 43, 36, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(13, 43, 36, 0.05) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+
+    .container { width: 100%; max-width: 1240px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+    .display {
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 0.94;
+      text-transform: uppercase;
+    }
+    .label {
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 10.5px;
+      font-weight: 600;
+    }
+    .mono { font-family: var(--font-mono); }
+
+    /* ── header ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(242, 246, 242, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-wrap { display: flex; align-items: center; height: 64px; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; min-width: 0; }
+    .brand img { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; }
+    .brand .word { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.03em; font-size: 18px; }
+    .brand .tick {
+      font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+      border: 1px solid rgba(13,43,36,0.2); background: var(--lime);
+      border-radius: 4px; padding: 2px 6px; line-height: 1; flex-shrink: 0;
+    }
+    .brand .hack-pill {
+      font-family: var(--font-mono); font-size: 9.5px; font-weight: 600;
+      background: var(--pine); color: var(--lime);
+      border-radius: 4px; padding: 3px 7px; line-height: 1; letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .nav-links { display: flex; gap: 2px; align-items: center; }
+    .nav-links a {
+      font-family: var(--font-mono); font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.12em; padding: 7px 11px; border-radius: 7px;
+      color: var(--dusk); transition: background 120ms, color 120ms;
+    }
+    .nav-links a:hover { background: rgba(13,43,36,0.06); color: var(--pine); }
+    .nav-links a.active { color: var(--fern); font-weight: 700; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      font-family: var(--font-mono); font-size: 11.5px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      height: 40px; padding: 0 18px; border-radius: 10px;
+      border: 1px solid var(--border); cursor: pointer;
+      transition: transform 100ms, background 120ms, border-color 120ms, box-shadow 120ms;
+      white-space: nowrap;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-solid { background: var(--pine); color: var(--mist); border-color: var(--pine); }
+    .btn-solid:hover { background: #133d32; box-shadow: var(--shadow-sm); }
+    .btn-accent { background: var(--fern); color: var(--mist); border-color: var(--fern); box-shadow: var(--shadow-sm); }
+    .btn-accent:hover { background: #17664c; box-shadow: var(--shadow-md); }
+    .btn-lime { background: var(--lime); color: var(--pine); border-color: rgba(13,43,36,0.25); font-weight: 700; }
+    .btn-lime:hover { background: #c6ea62; box-shadow: var(--shadow-sm); }
+    .btn-ghost { background: transparent; color: var(--pine); }
+    .btn-ghost:hover { background: rgba(13,43,36,0.06); }
+    .btn-card { background: var(--card); color: var(--pine); box-shadow: var(--shadow-sm); }
+    .btn-card:hover { border-color: rgba(13,43,36,0.4); box-shadow: var(--shadow-md); }
+    .nav-cta { display: flex; gap: 8px; }
+
+    /* ── hero ── */
+    .hero { padding: 64px 0 24px; }
+    .hero-status-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 22px; }
+    .hero-status {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em;
+      border: 1px solid var(--border); background: var(--card);
+      border-radius: 999px; padding: 7px 14px; box-shadow: var(--shadow-sm);
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--fern); animation: pulse 2.2s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+    .badge-finos {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em;
+      background: var(--lime-soft); color: var(--pine); border: 1px solid rgba(185, 224, 76, 0.6);
+      border-radius: 999px; padding: 6px 12px; font-weight: 700;
+    }
+    .hero h1 {
+      font-family: var(--font-display); font-weight: 700; text-transform: uppercase;
+      letter-spacing: -0.04em; line-height: 0.95;
+      font-size: clamp(38px, 6.8vw, 84px);
+      margin-bottom: 22px; max-width: 1080px;
+    }
+    .hero h1 .hollow {
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--pine);
+      text-stroke: 1.5px var(--pine);
+    }
+    .hero h1 .fern { color: var(--fern); }
+    .hero p.lede { max-width: 760px; font-size: 17px; color: var(--dusk); margin-bottom: 32px; line-height: 1.6; }
+    .hero p.lede strong { color: var(--pine); font-weight: 600; }
+    .hero-ctas { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    /* ── lane matrix strip ── */
+    .lanes {
+      margin: 48px 0 8px;
+      border: 1px solid var(--border); border-radius: var(--r-lg);
+      background: var(--card); box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .lanes-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+      padding: 10px 16px; border-bottom: 1px solid var(--hairline);
+    }
+    .lanes-bar .label { color: var(--dusk); }
+    .lanes-canvas {
+      position: relative; height: 84px; display: flex; align-items: stretch;
+      gap: 2px; padding: 10px 14px 14px; overflow: hidden;
+    }
+    .lane { flex: 1 1 0; min-width: 2px; position: relative; background: var(--hairline); border-radius: 1px; }
+    .lane::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 100%;
+      background: var(--fern); border-radius: 1px; transform-origin: bottom;
+      transform: scaleY(0.12); opacity: 0.55;
+      animation: lanePulse var(--dur, 3s) ease-in-out var(--delay, 0s) infinite;
+    }
+    .lane.hot::after { background: var(--pine); opacity: 0.9; }
+    .lane.quantum::after { background: var(--lime); opacity: 0.95; }
+    @keyframes lanePulse { 0%, 100% { transform: scaleY(0.10); } 50% { transform: scaleY(0.88); } }
+
+    /* stat band */
+    .stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--border); border-radius: var(--r-lg);
+      background: var(--card); box-shadow: var(--shadow-sm);
+      overflow: hidden; margin-top: 12px;
+    }
+    .stat { padding: 22px 24px; border-right: 1px solid var(--hairline); min-width: 0; }
+    .stat:last-child { border-right: none; }
+    .stat .num { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.03em; font-size: 32px; line-height: 1; }
+    .stat .cap { display: block; margin-top: 8px; font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--dusk); }
+
+    /* section scaffolding */
+    section.block { padding: 74px 0 8px; }
+    .sec-head { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 32px; }
+    .sec-kicker { display: flex; align-items: center; gap: 9px; color: var(--fern); }
+    .sec-kicker .rule { width: 26px; height: 1px; background: var(--fern); }
+    .sec-head h2 {
+      font-family: var(--font-display); font-weight: 700; text-transform: uppercase;
+      letter-spacing: -0.03em; line-height: 1.0; font-size: clamp(26px, 4vw, 42px);
+    }
+    .sec-head .aside { margin-left: auto; color: var(--dusk); font-size: 13.5px; max-width: 340px; }
+
+    /* ── The 3-Tab Live Presentation Surface ── */
+    .surface-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .surface-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--r-xl);
+      box-shadow: var(--shadow-sm); padding: 28px 24px 24px;
+      display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden;
+      transition: border-color 140ms, box-shadow 140ms, transform 140ms;
+    }
+    .surface-card:hover { border-color: rgba(30,122,92,0.45); box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    .surface-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--lime), var(--fern));
+    }
+    .surface-card.accent-tab::before {
+      background: linear-gradient(90deg, var(--fern), var(--pine));
+    }
+    .surface-card .tab-badge {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .surface-card .tab-num {
+      font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--pine);
+      border: 1px solid var(--border); border-radius: 6px; padding: 4px 9px;
+      background: var(--mist);
+    }
+    .surface-card .tab-role {
+      font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--fern); font-weight: 600;
+    }
+    .surface-card h3 {
+      font-family: var(--font-display); font-weight: 700; font-size: 22px;
+      letter-spacing: -0.02em; line-height: 1.1; margin-top: 2px;
+    }
+    .surface-card .url-link {
+      font-family: var(--font-mono); font-size: 12px; color: var(--fern);
+      word-break: break-all; font-weight: 600;
+    }
+    .surface-card p.summary { color: var(--dusk); font-size: 14px; line-height: 1.55; flex: 1; }
+    .surface-card .feature-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 4px 0 8px; }
+    .surface-card .feature-list li {
+      display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--pine);
+    }
+    .surface-card .feature-list li .bullet { color: var(--fern); font-weight: bold; flex-shrink: 0; }
+    .surface-card .card-action { margin-top: auto; padding-top: 8px; }
+    .surface-card .card-action .btn { width: 100%; }
+
+    /* ── Deep Architectural Pillars ── */
+    .arch-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .arch-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      box-shadow: var(--shadow-sm); padding: 26px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .arch-card .ref-tag {
+      font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--fern); font-weight: 700;
+    }
+    .arch-card h4 {
+      font-family: var(--font-display); font-weight: 700; font-size: 18.5px;
+      letter-spacing: -0.02em;
+    }
+    .arch-card p { color: var(--dusk); font-size: 13.5px; line-height: 1.55; }
+    .code-box {
+      font-family: var(--font-mono); font-size: 11.5px; background: var(--mist);
+      border: 1px solid var(--hairline); border-radius: var(--r-sm); padding: 9px 12px;
+      color: var(--pine); overflow-x: auto;
+    }
+
+    /* ── Smart Contract Registry Table ── */
+    .table-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      box-shadow: var(--shadow-sm); overflow: hidden;
+    }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table.contracts-table {
+      width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;
+    }
+    table.contracts-table th {
+      background: var(--mist); font-family: var(--font-mono); font-size: 10.5px;
+      text-transform: uppercase; letter-spacing: 0.12em; color: var(--dusk);
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+    }
+    table.contracts-table td {
+      padding: 14px 18px; border-bottom: 1px solid var(--hairline);
+    }
+    table.contracts-table tr:last-child td { border-bottom: none; }
+    table.contracts-table .mono-addr { font-family: var(--font-mono); font-size: 12px; color: var(--fern); font-weight: 600; }
+    table.contracts-table .badge-role {
+      font-family: var(--font-mono); font-size: 9.5px; text-transform: uppercase;
+      letter-spacing: 0.08em; background: var(--fern-soft); color: var(--fern);
+      border-radius: 4px; padding: 3px 7px; font-weight: 600;
+    }
+
+    /* ── Terminal Audit Harness ── */
+    .terminal-box {
+      background: #091a15; color: #d4ebd9; border-radius: var(--r-lg);
+      padding: 24px 26px; font-family: var(--font-mono); font-size: 12px;
+      line-height: 1.6; box-shadow: var(--shadow-lg); border: 1px solid rgba(13,43,36,0.3);
+      overflow-x: auto;
+    }
+    .terminal-box .cmd { color: var(--lime); font-weight: 700; }
+    .terminal-box .comment { color: #5f8a7a; }
+
+    /* ── network ── */
+    .net { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; align-items: stretch; }
+    .net-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      box-shadow: var(--shadow-sm); padding: 26px; min-width: 0;
+    }
+    .net h3 { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin-bottom: 4px; }
+    .net .net-sub { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fern); margin-bottom: 16px; }
+    .mesh { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .node {
+      border: 1px solid var(--hairline); background: var(--mist); border-radius: var(--r-md);
+      padding: 11px 14px; display: flex; align-items: center; gap: 10px; min-width: 0;
+    }
+    .node .nd { width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--fern); }
+    .node .nm { font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .node .rl { margin-left: auto; font-family: var(--font-mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dusk); flex: none; }
+    .net-feats { margin-top: 18px; display: flex; flex-direction: column; gap: 9px; }
+    .feat { display: flex; gap: 10px; align-items: baseline; font-size: 13.5px; color: var(--dusk); }
+    .feat b { color: var(--pine); font-weight: 600; }
+    .feat .tick { color: var(--fern); font-weight: 700; flex: none; }
+    .kv { display: flex; flex-direction: column; gap: 0; }
+    .kv-row { display: flex; justify-content: space-between; gap: 14px; padding: 11px 2px; border-bottom: 1px solid var(--hairline); align-items: baseline; }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-row .k { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dusk); flex: none; }
+    .kv-row .v { font-family: var(--font-mono); font-size: 12.5px; text-align: right; word-break: break-word; font-weight: 600; }
+
+    /* footer */
+    footer { margin-top: 84px; border-top: 1px solid var(--border); background: var(--card); }
+    .foot-grid { padding: 48px 0 28px; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 28px; }
+    .foot-brand p { color: var(--dusk); font-size: 13.5px; max-width: 320px; margin-top: 12px; line-height: 1.55; }
+    footer h4 { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--dusk); margin-bottom: 14px; }
+    footer ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    footer ul a { font-size: 13px; color: var(--pine); transition: color 120ms; }
+    footer ul a:hover { color: var(--fern); }
+    .foot-base {
+      border-top: 1px solid var(--hairline); padding: 18px 0 24px;
+      display: flex; gap: 14px; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      color: var(--dusk); font-family: var(--font-mono); font-size: 11px;
+    }
+
+    /* ── responsive ── */
+    @media (max-width: 1024px) {
+      .surface-grid { grid-template-columns: 1fr; }
+      .arch-grid { grid-template-columns: 1fr; }
+      .net { grid-template-columns: 1fr; }
+      .sec-head .aside { margin-left: 0; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero { padding-top: 40px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .stat { border-bottom: 1px solid var(--hairline); }
+      .stat:nth-child(2n) { border-right: none; }
+      .stat:nth-child(3), .stat:nth-child(4) { border-bottom: none; }
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+      .lanes-canvas { height: 60px; }
+      .mesh { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .brand .hack-pill { display: none; }
+      .hero-status { font-size: 9.5px; padding: 6px 11px; }
+      .badge-finos { font-size: 9.5px; padding: 5px 10px; }
+      .lanes-bar span:last-child { display: none; }
+    }
+    @media (max-width: 480px) {
+      .hero-ctas .btn { width: 100%; }
+      .stats { grid-template-columns: 1fr; }
+      .stat:nth-child(3) { border-bottom: 1px solid var(--hairline); }
+      .stat { border-right: none; }
+      .foot-grid { grid-template-columns: 1fr; }
+      .nav-cta .btn:not(.btn-accent) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-paper" aria-hidden="true"></div>
+
+  <header>
+    <div class="container nav-wrap">
+      <a class="brand" href="/">
+        <img src="/s-logo.svg" alt="SynapticChain logo" />
+        <span class="word">SynapticChain</span>
+        <span class="tick">L1</span>
+        <span class="hack-pill">FINOS 2026</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#surface" class="active">3-Tab Surface</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#audit">Audit Matrix</a>
+        <a href="#network">Mesh</a>
+        <a href="https://github.com/Synaptics-Lab/quantumshield-sovereign-dpi" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn btn-ghost" href="https://nodes.synapticchain.xyz">Explorer</a>
+        <a class="btn btn-accent" href="https://wallet.synapticchain.xyz/quantum/">Playground</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ══════════ HERO SECTION ══════════ -->
+    <section class="hero container">
+      <div class="hero-status-row">
+        <span class="hero-status"><span class="dot" aria-hidden="true"></span> Live L1 Consensus · 3 Validator Neurons · Sub-500ms DAG Commitments</span>
+        <span class="badge-finos">FINOS Sovereign DPI &amp; Post-Quantum Hackathon 2026</span>
+      </div>
+
+      <h1>
+        <span class="hollow">Sovereign DPI</span> &amp;<br />
+        post-quantum <span class="fern">parallel</span><br />
+        Layer-1
+      </h1>
+
+      <p class="lede">
+        A <strong>DAG-Primary Parallel Layer-1</strong> built with <strong>Decoupled Multi-Lane State Machine Replication (ADR-062 &amp; ADR-641)</strong>, native <strong>Post-Quantum CE-WOTS+ Security (BIP-360 candidate)</strong>, and a <strong>150,000,000 ZMW Bank of Zambia Central Bank Reserve Float</strong> with automated 0.50% revenue deduction into the Treasury Single Account (TSA).
+      </p>
+
+      <div class="hero-ctas">
+        <a class="btn btn-accent" href="https://wallet.synapticchain.xyz/quantum/">Launch Quantum Playground &rarr;</a>
+        <a class="btn btn-solid" href="https://nodes.synapticchain.xyz">Canopy L1 Explorer</a>
+        <a class="btn btn-card" href="https://govpay.synapticchain.xyz">GovPay Sovereign DPI Suite</a>
+        <a class="btn btn-ghost" href="https://github.com/Synaptics-Lab/quantumshield-sovereign-dpi" target="_blank" rel="noopener">Hackathon Hub</a>
+      </div>
+
+      <!-- signature: 256-lane execution matrix ledger -->
+      <div class="lanes" role="img" aria-label="Live visualization of 256 hardware execution lanes processing sovereign state transitions in parallel">
+        <div class="lanes-bar">
+          <span class="label">256-Lane Decoupled SMR · ADR-062 · Zero Intra-Account Lock Contention</span>
+          <span class="label" style="letter-spacing:0.1em; color:var(--fern);">QuePaxa Hedged Consensus · BIP-360 Quantum Precompile 0x10</span>
+        </div>
+        <div class="lanes-canvas" id="lanes"></div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span class="num">#2,310+</span><span class="cap">Canonical Checkpoint Height</span></div>
+        <div class="stat"><span class="num">256</span><span class="cap">Decoupled Lanes / Account</span></div>
+        <div class="stat"><span class="num">&lt;500<span style="font-size:16px;">ms</span></span><span class="cap">DAG Block Finality</span></div>
+        <div class="stat"><span class="num">150M<span style="font-size:16px;"> ZMW</span></span><span class="cap">Central Bank Reserve Float</span></div>
+      </div>
+    </section>
+
+    <!-- ══════════ THE 3-TAB PRESENTATION SURFACE ══════════ -->
+    <section class="block container" id="surface">
+      <div class="sec-head">
+        <span class="sec-kicker label"><span class="rule"></span>Live Demo Surface</span>
+        <h2>The 3-Tab Laser-Focused Showcase</h2>
+        <p class="aside">Three live, production-verified endpoints built for the FINOS Hackathon and institutional evaluators.</p>
+      </div>
+
+      <div class="surface-grid">
+        <!-- Tab 1 -->
+        <article class="surface-card">
+          <div class="tab-badge">
+            <span class="tab-num">TAB 01</span>
+            <span class="tab-role">Proof of L1 Consensus</span>
+          </div>
+          <h3>Canopy Explorer</h3>
+          <a class="url-link" href="https://nodes.synapticchain.xyz" target="_blank">nodes.synapticchain.xyz</a>
+          <p class="summary">
+            Pure Zero-Database client architecture. Directly streams live blocks, transactions, DAG vertices, and validator quorum states via high-speed Axum JSON-RPC and WebSocket firehoses with sub-millisecond response times.
+          </p>
+          <ul class="feature-list">
+            <li><span class="bullet">✓</span> Real-time height, TPS, and epoch progression</li>
+            <li><span class="bullet">✓</span> 3/3 Physical validator neuron lockstep monitoring</li>
+            <li><span class="bullet">✓</span> Verified contract state and execution plan inspector</li>
+          </ul>
+          <div class="card-action">
+            <a class="btn btn-solid" href="https://nodes.synapticchain.xyz" target="_blank">Open Canopy Explorer &rarr;</a>
+          </div>
+        </article>
+
+        <!-- Tab 2 -->
+        <article class="surface-card accent-tab">
+          <div class="tab-badge">
+            <span class="tab-num">TAB 02</span>
+            <span class="tab-role">Interactive Playground</span>
+          </div>
+          <h3>QuantumShield Terminal</h3>
+          <a class="url-link" href="https://wallet.synapticchain.xyz/quantum/" target="_blank">wallet.synapticchain.xyz/quantum/</a>
+          <p class="summary">
+            Interactive cryptographic laboratory. Derives five sovereign rails from a single master seed, verifies post-quantum CE-WOTS+ hash chains against Shor's algorithm, and dispatches 256-lane parallel bursts without nonce contention.
+          </p>
+          <ul class="feature-list">
+            <li><span class="bullet">✓</span> Universal 5-Rail Derivation (Ed25519, SECP256k1, RSA, WOTS+, XRPL)</li>
+            <li><span class="bullet">✓</span> CE-WOTS+ ($w=16, l=67$) signature verification</li>
+            <li><span class="bullet">✓</span> Nonce bitmask dispatcher (100% ack on 256 parallel lanes)</li>
+          </ul>
+          <div class="card-action">
+            <a class="btn btn-accent" href="https://wallet.synapticchain.xyz/quantum/" target="_blank">Launch Terminal Playground &rarr;</a>
+          </div>
+        </article>
+
+        <!-- Tab 3 -->
+        <article class="surface-card">
+          <div class="tab-badge">
+            <span class="tab-num">TAB 03</span>
+            <span class="tab-role">Real-World Impact</span>
+          </div>
+          <h3>GovPay Sovereign DPI</h3>
+          <a class="url-link" href="https://govpay.synapticchain.xyz" target="_blank">govpay.synapticchain.xyz</a>
+          <p class="summary">
+            National digital public infrastructure for central banks. Features 150,000,000 ZMW Bank of Zambia reserve float, citizen biometric INRIS registry, and the automated 0.50% ZRA Tax Split Router directly into the Treasury Single Account.
+          </p>
+          <ul class="feature-list">
+            <li><span class="bullet">✓</span> 150M ZMW programmatic central bank reserve vault</li>
+            <li><span class="bullet">✓</span> Automated 0.50% ZRA TSA tax deduction on every transaction</li>
+            <li><span class="bullet">✓</span> Biometric citizen SynIdentityNFT soulbound credentials</li>
+          </ul>
+          <div class="card-action">
+            <a class="btn btn-lime" href="https://govpay.synapticchain.xyz" target="_blank">Explore GovPay Suite &rarr;</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ══════════ ARCHITECTURE DEEP DIVE ══════════ -->
+    <section class="block container" id="architecture">
+      <div class="sec-head">
+        <span class="sec-kicker label"><span class="rule"></span>Technical Specification</span>
+        <h2>Architectural Pillars</h2>
+        <p class="aside">Audited architectural mechanisms solving the trilemma of sovereign national infrastructure.</p>
+      </div>
+
+      <div class="arch-grid">
+        <div class="arch-card">
+          <span class="ref-tag">ADR-062 · High-Concurrency State Engine</span>
+          <h4>256-Lane Decoupled SMR</h4>
+          <p>
+            Traditional accounts in EVM force a single sequential counter (<code>nonce = n + 1</code>), creating severe head-of-line blocking during nationwide payroll or tax runs. ADR-062 replaces this with a 256-lane sliding window bitmask (<code>LaneNonceState</code>) per account, enabling 256 state transitions in parallel with zero lock contention.
+          </p>
+          <div class="code-box">struct LaneNonceState { watermark: u64, used_bitmap: [u8; 32] }</div>
+        </div>
+
+        <div class="arch-card">
+          <span class="ref-tag">BIP-360 Candidate · Post-Quantum Security</span>
+          <h4>CE-WOTS+ Quantum Defense</h4>
+          <p>
+            Protects national assets against Shor's algorithm on cryptographically relevant quantum computers (CRQCs). Implements Consensus-Enforced Winternitz One-Time Signatures (67 hash chains over SHA-256) folded to monotonic lane watermarks to permanently eliminate key-reuse attacks. Executed bare-metal at precompile <code>0x10</code>.
+          </p>
+          <div class="code-box">PRECOMPILE_WOTS_VERIFY (0x10) · Flat 100 Gas · 50µs Execution</div>
+        </div>
+
+        <div class="arch-card">
+          <span class="ref-tag">ADR-641 · Consensus Layer</span>
+          <h4>DAG-Primary Multi-Proposer Consensus</h4>
+          <p>
+            SCBFT consensus with QuePaxa-hedged multi-armed bandit leader scheduling, concurrent slot vertices in the DAG, sub-500ms block commitments, and cryptographic double-signing equivocation detection via <code>VertexEquivocationDetector</code>.
+          </p>
+          <div class="code-box">VertexEquivocationDetector: (height, validator) → DashMap Slash Proof</div>
+        </div>
+
+        <div class="arch-card">
+          <span class="ref-tag">Cross-Rail Settlement · XRPL XLS-20</span>
+          <h4>XRPL Soulbound Verification Anchor</h4>
+          <p>
+            Domestic execution runs at wire speed on SynapticChain, while immutable state root hashes and sovereign reserve proofs are anchored to the XRP Ledger via non-transferable XLS-20 Soulbound NFTs (Taxon 402) for global institutional auditability.
+          </p>
+          <div class="code-box">NFTokenID: 000000006A23544287CF53569B679759B1C09370D301BBB308E7E7120138E578</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ CONTRACT REGISTRY & AUDIT ══════════ -->
+    <section class="block container" id="audit">
+      <div class="sec-head">
+        <span class="sec-kicker label"><span class="rule"></span>On-Chain Truth</span>
+        <h2>Smart Contract Registry</h2>
+        <p class="aside">Production-deployed contracts verified in canonical state on the live continental cluster.</p>
+      </div>
+
+      <div class="table-card">
+        <div class="table-wrap">
+          <table class="contracts-table">
+            <thead>
+              <tr>
+                <th>Contract Name</th>
+                <th>On-Chain Bech32m Address</th>
+                <th>Standard / Role</th>
+                <th>Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Zambia Sovereign ZMW</strong></td>
+                <td><span class="mono-addr">syn1dj2a3nlrc44lqtwzeg9ws0d6plzeayrmxy98m2</span></td>
+                <td><span class="badge-role">SRC-20 Token</span></td>
+                <td>National Currency Token (18 Decimals)</td>
+              </tr>
+              <tr>
+                <td><strong>ZRA Tax Split Router</strong></td>
+                <td><span class="mono-addr">syn122h32ja44hhz8ut543krjrrzz9jkd8lxw3m9f7</span></td>
+                <td><span class="badge-role">Fiscal Interceptor</span></td>
+                <td>Automated 0.50% TSA Tax Deduction Router</td>
+              </tr>
+              <tr>
+                <td><strong>Bank of Zambia Reserve Vault</strong></td>
+                <td><span class="mono-addr">syn1r5vkuqaxss46uruj6c5k5wrnzxg04htpuylynr</span></td>
+                <td><span class="badge-role">Central Bank Vault</span></td>
+                <td>150,000,000.00 ZMW Liquid Reserve Float</td>
+              </tr>
+              <tr>
+                <td><strong>Zambia Treasury TSA</strong></td>
+                <td><span class="mono-addr">syn1t9hp790tpp450jh0sd8lyd3znqccycal4m2z0u</span></td>
+                <td><span class="badge-role">Consolidated Rev</span></td>
+                <td>Ministry of Finance Treasury Single Account</td>
+              </tr>
+              <tr>
+                <td><strong>SynIdentityNFT (IMEID)</strong></td>
+                <td><span class="mono-addr">syn1zy8dsuvpc7mt6m8lnp7ueeq808a49q6xmef06l</span></td>
+                <td><span class="badge-role">Soulbound NFT</span></td>
+                <td>Biometric Citizen Identity Credential</td>
+              </tr>
+              <tr>
+                <td><strong>ISO 20022 Pacs.008 RTGS</strong></td>
+                <td><span class="mono-addr">syn1kf0wmhqzwy649a67cv5kaapyt3pl4cga9cyuku</span></td>
+                <td><span class="badge-role">Interbank Wire</span></td>
+                <td>High-Value Financial Message Settlement</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <div class="terminal-box">
+          <div class="comment"># Independent Auditor Verification Sequence (Run from any terminal)</div>
+          <div><span class="cmd">git clone</span> https://github.com/Synaptics-Lab/quantumshield-sovereign-dpi.git</div>
+          <div><span class="cmd">cd</span> quantumshield-sovereign-dpi &amp;&amp; <span class="cmd">python3</span> demo_hackathon_e2e.py</div>
+          <div class="comment"># Verify 256-lane parallel concurrency live against the node:</div>
+          <div><span class="cmd">python3</span> /opt/synapticchain/stunt_5wallets_256lanes.py <span class="comment"># 1,280/1,280 tx 100% ack</span></div>
+          <div class="comment"># Verify post-quantum CE-WOTS+ bare-metal cryptographic precompiles:</div>
+          <div><span class="cmd">cargo test</span> -p synaptic-crypto --lib wots::tests</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ CONSENSUS MESH ══════════ -->
+    <section class="block container" id="network">
+      <div class="sec-head">
+        <span class="sec-kicker label"><span class="rule"></span>Infrastructure</span>
+        <h2>Continental Validator Mesh</h2>
+        <p class="aside">Physical nodes running over private encrypted mesh networking with zero database overhead.</p>
+      </div>
+
+      <div class="net">
+        <div class="net-card">
+          <h3>Active Continental Mesh</h3>
+          <div class="net-sub">3 Physical Validator Neurons · SCBFT Quorum</div>
+          <div class="mesh">
+            <div class="node"><span class="nd"></span><span class="nm">Zeta Neuron 0</span><span class="rl">RPC :8545</span></div>
+            <div class="node"><span class="nd"></span><span class="nm">Zeta Neuron 1</span><span class="rl">RPC :8547</span></div>
+            <div class="node"><span class="nd"></span><span class="nm">Zeta Neuron 2</span><span class="rl">RPC :8549</span></div>
+            <div class="node"><span class="nd" style="background:var(--dusk)"></span><span class="nm">Delta Gateway</span><span class="rl">Reverse Proxy</span></div>
+          </div>
+          <div class="net-feats">
+            <div class="feat"><span class="tick">✓</span><span><b>Zero-Database Explorer:</b> Serves telemetry and state directly from Axum JSON-RPC and WebSocket firehose without SQL/Redis in the critical path.</span></div>
+            <div class="feat"><span class="tick">✓</span><span><b>Catastrophic Recovery (ADR-643):</b> Atomic hot-snapshots (<code>cp -al</code>) with uniform <code>Address::zero()</code> fee recipient ensures 100% state root replay parity.</span></div>
+            <div class="feat"><span class="tick">✓</span><span><b>Public JSON-RPC &amp; WS:</b> Open endpoints at <code>nodes.synapticchain.xyz/rpc</code> and <code>/ws</code>.</span></div>
+          </div>
+        </div>
+
+        <div class="net-card kv">
+          <h3>Protocol Specifications</h3>
+          <div class="net-sub">Audited Figures · ADR-062 / ADR-641</div>
+          <div class="kv-row"><span class="k">Architecture</span><span class="v">DAG-Primary Parallel Layer-1</span></div>
+          <div class="kv-row"><span class="k">State Machine</span><span class="v">256-Lane Decoupled SMR</span></div>
+          <div class="kv-row"><span class="k">Post-Quantum</span><span class="v">CE-WOTS+ (BIP-360 candidate)</span></div>
+          <div class="kv-row"><span class="k">Finality</span><span class="v">&lt;500 ms · Deterministic DAG</span></div>
+          <div class="kv-row"><span class="k">Consensus</span><span class="v">SCBFT Hedged Leader Permutation</span></div>
+          <div class="kv-row"><span class="k">Anchor</span><span class="v">XRPL XLS-20 Soulbound (Taxon 402)</span></div>
+          <div class="kv-row"><span class="k">Runtime</span><span class="v">Rust (Tokio) · 12-Crate Monorepo</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="/">
+            <img src="/s-logo.svg" alt="" style="width:28px;height:28px;border-radius:7px;" />
+            <span class="word" style="font-size:16px;">SynapticChain</span>
+          </a>
+          <p>Sovereign Digital Public Infrastructure &amp; Post-Quantum Layer-1. Built by Synaptics Lab for the FINOS Hackathon and global institutional finance.</p>
+        </div>
+        <div>
+          <h4>Demo Surface</h4>
+          <ul>
+            <li><a href="https://nodes.synapticchain.xyz">Canopy Explorer</a></li>
+            <li><a href="https://wallet.synapticchain.xyz/quantum/">Quantum Terminal</a></li>
+            <li><a href="https://govpay.synapticchain.xyz">GovPay Sovereign DPI</a></li>
+            <li><a href="https://wallet.synapticchain.xyz">Matrix Web4 Wallet</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Network &amp; APIs</h4>
+          <ul>
+            <li><a href="https://nodes.synapticchain.xyz/rpc">Public JSON-RPC</a></li>
+            <li><a href="https://nodes.synapticchain.xyz/ws">WebSocket Firehose</a></li>
+            <li><a href="https://api.synapticchain.xyz">x402 Marketplace</a></li>
+            <li><a href="https://rpc.synapticchain.xyz">RPC Mirror</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Open Source</h4>
+          <ul>
+            <li><a href="https://github.com/Synaptics-Lab/quantumshield-sovereign-dpi" target="_blank" rel="noopener">Hackathon Hub</a></li>
+            <li><a href="https://github.com/Synaptics-Lab/Synapse1" target="_blank" rel="noopener">Synapse1 Monorepo</a></li>
+            <li><a href="https://github.com/Synaptics-Lab/quantumshield-sovereign-dpi/blob/main/docs/AUDIT_VERIFICATION_MATRIX.md" target="_blank" rel="noopener">Auditor Matrix</a></li>
+            <li><a href="https://github.com/Synaptics-Lab/quantumshield-sovereign-dpi/blob/main/docs/GRANT_PROPOSAL_POST_QUANTUM_BIP360_EF.md" target="_blank" rel="noopener">BIP-360 Grant</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-base">
+        <span>© 2026 Synaptics Lab · Licensed under BSL 1.1</span>
+        <span>African Continental Mesh · 3-Neuron SCBFT Cluster</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Build the 256-Lane Decoupled Matrix Visualizer
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var c = document.getElementById('lanes');
+      if (!c) return;
+      var N = 128; // Sample 128 active lanes across the 256-lane partition
+      var frag = document.createDocumentFragment();
+      for (var i = 0; i < N; i++) {
+        var lane = document.createElement('span');
+        var isHot = (i * 7 + 3) % 13 === 0;
+        var isQuantum = (i * 11 + 5) % 19 === 0;
+        lane.className = 'lane' + (isHot ? ' hot' : '') + (isQuantum ? ' quantum' : '');
+        lane.style.setProperty('--dur', (2.2 + ((i * 13) % 20) / 10).toFixed(2) + 's');
+        lane.style.setProperty('--delay', (-((i * 29) % 32) / 10).toFixed(2) + 's');
+        frag.appendChild(lane);
+      }
+      c.appendChild(frag);
+    })();
+  </script>
+</body>
+</html>
