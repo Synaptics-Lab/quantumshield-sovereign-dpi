@@ -228,63 +228,69 @@ $$\text{Adv}^{\text{OT-EUF-CMA}}_{\text{quantum}}(\mathcal{A}) \le \frac{1,005}{
 
 ## 4. Protocol Layer: Consensus-Enforced Transaction Authentication (CE-TAP)
 
-We now rigorously formalize how WOTS+ is deployed without key reuse.
+We now rigorously formalize how WOTS+ is deployed without key reuse, grounded directly in SynapticChain's DAG-Primary architecture.
 
-### 4.1 System Model
+### 4.1 System Model: DAG-Primary SMR (ADR-640 / ADR-641)
 
-A distributed ledger $\Pi_{\text{SMR}}$ consists of $3f + 1$ validators maintaining replicated state via a Byzantine Fault Tolerant consensus protocol (SCBFT) guaranteeing **Safety** (no two honest nodes commit conflicting blocks at height $h$) and **Liveness** under up to $f$ Byzantine nodes.
+The replicated state machine $\Pi_{\text{SMR}}$ is instantiated via **DAG-Primary Multi-Proposer Consensus with Cryptographic Accountability** (ADR-641 / ADR-640), operating over a network of $N$ validators where at most $f < N/3$ nodes are Byzantine.
 
-**State Definition:**  
-Each account $A$ maintains an ADR-062 array of 256 lanes:
+**1. DAG Topology & Ingestion (ADR-641):**  
+Transactions are packaged into content-addressed vertices:
+$$\text{Vertex } V = \langle \text{parents}, \text{txs}, \text{validator}, h, \text{sig} \rangle$$
+where $\text{id}(V) = \mathcal{H}(\text{parents} \parallel \text{txs} \parallel \text{validator} \parallel h)$ is content-addressed, and $\text{sig}$ is an Ed25519 signature by the proposing validator. Vertices reference 1–2 parent vertices, forming a Directed Acyclic Graph (DAG) of causal history.
+
+**2. Cryptographic Equivocation Detection (ADR-640 / ADR-641):**  
+Rather than relying on high-latency multi-round voting loops, safety against conflicting proposals is enforced cryptographically. Every honest node maintains a `VertexEquivocationDetector`:
+$$\mathcal{T}_{\text{equiv}}: (\text{height}, \text{validator}) \to (V, \text{attestation})$$
+If a validator signs two distinct vertices $V \neq V'$ at the same $(\text{height}, \text{validator})$, any honest node observing both signatures emits a self-verifying `VertexEquivocationProof`. Honest nodes reject equivocated vertices unconditionally.
+
+**3. State Definition & Per-Lane Watermarks (ADR-062):**  
+Each account $A$ maintains an independent array of 256 parallel execution lanes:
 $$\text{Account}[A].\text{lanes}[k] = \langle \mathcal{W}_k, \mathcal{B}_k \rangle$$
 where $\mathcal{W}_k \in \mathbb{N}$ is a strictly monotonic watermark counter and $\mathcal{B}_k$ is a 256-bit sliding window.
 
-**Ephemeral Key Derivation (PRF Assumption):**  
+**4. Ephemeral Key Derivation (PRF Assumption):**  
 Let $\text{PRF}: \{0,1\}^\lambda \times \{0,1\}^* \to \{0,1\}^\lambda$ be HMAC-SHA512. For master secret $K_{\text{master}}$ stored in client secure hardware:
 $$K_{\text{ephem}} = \text{PRF}_{K_{\text{master}}}(\text{``CE-WOTS+v1''} \parallel A \parallel k \parallel \mathcal{W}_k)$$
-The client generates $(sk_{\mathcal{W}_k}, pk_{\mathcal{W}_k}) \leftarrow \text{KeyGen}(K_{\text{ephem}})$.
+The client generates ephemeral keypair $(sk_{\mathcal{W}_k}, pk_{\mathcal{W}_k}) \leftarrow \text{KeyGen}(K_{\text{ephem}})$.
 
-**Validator Ingestion Filter:**  
-Upon receiving transaction $T = (A, k, n, pk, M, \boldsymbol{\sigma})$:
-$$\text{Admit}(T) = \begin{cases} 1 & \text{if } n \ge \mathcal{W}_k \text{ and } \text{Verify}(pk, M, \boldsymbol{\sigma}) = 1 \\ 0 & \text{otherwise} \end{cases}$$
-
-**Consensus Commit & State Transition:**  
-Upon committing block $B_h$ containing admitted transaction $T$:
-$$\text{Apply}(T): \quad \mathcal{W}_k \leftarrow n + 1$$
+**5. Validator Ingestion Filter & State Transition:**  
+- **Admission Filter:** A vertex $V$ proposing transaction $T = (A, k, n, pk, M, \boldsymbol{\sigma})$ is admitted only if $n \ge \mathcal{W}_k$ and $\text{Verify}(pk, M, \boldsymbol{\sigma}) = 1$.
+- **State Transition:** Upon committing a canonical checkpoint over the DAG at height $h$ containing admitted transaction $T$:
+  $$\text{Apply}(T): \quad \mathcal{W}_k \leftarrow n + 1$$
 
 ---
 
-### 4.2 Theorem 2 (CE-TAP Double-Authentication Safety)
+### 4.2 Theorem 2 (CE-TAP Double-Authentication Safety in DAG Consensus)
 
 **Theorem 2.** *Assume:*
 1. *The underlying signature scheme $\Sigma$ is $(t, \epsilon_{\text{OTS}})$-OT-EUF-CMA secure.*
 2. *HMAC-SHA512 is a $(t, \epsilon_{\text{PRF}})$-secure Pseudorandom Function.*
-3. *$\Pi_{\text{SMR}}$ guarantees Byzantine quorum intersection ($> 2/3$ honest voting weight).*
+3. *The DAG-Primary consensus engine (ADR-641) guarantees causal safety and fork exclusion via content-addressed `VertexEquivocationDetector` under honest validator majority ($f < N/3$).*
 
-*Then for any PPT adversary $\mathcal{A}$ interacting with the network, the probability that two distinct state transitions $T \neq T'$ are committed under the same ephemeral public key $pk_{\mathcal{W}_k}$ is bounded by:*
+*Then for any PPT adversary $\mathcal{A}$ interacting with the network, the probability that two distinct state transitions $T \neq T'$ are committed to the canonical state under the same ephemeral public key $pk_{\mathcal{W}_k}$ is bounded by:*
 $$\Pr[\text{DoubleCommit}] \le \epsilon_{\text{PRF}} + \text{negl}(\lambda)$$
 
 *Proof.*  
 Suppose towards contradiction that honest validators commit two transactions $T = (A, k, n, pk, M, \boldsymbol{\sigma})$ and $T' = (A, k, n', pk', M', \boldsymbol{\sigma}')$ such that $pk = pk' = pk_{\mathcal{W}_k}$ and $M \neq M'$.
 
-1. **Case 1: $T$ and $T'$ are committed in distinct checkpoints $h < h'$.**  
-   By the BFT Safety property of $\Pi_{\text{SMR}}$, all honest validators apply block $B_h$ before proposing or voting on $B_{h'}$.  
+1. **Case 1: $T$ and $T'$ are committed in distinct canonical checkpoints $h < h'$.**  
+   By the causal order of the DAG and checkpoint commitment, checkpoint $h$ is finalized and its state transitions are applied before checkpoint $h'$ is committed.  
    Applying $T$ executes $\mathcal{W}_k \leftarrow n + 1 \ge \mathcal{W}_k + 1$.  
    When $T'$ is evaluated at height $h'$, its declared watermark satisfies $n' = \mathcal{W}_k < \text{State}.\mathcal{W}_k$ (since $T'$ attempts to reuse the same ephemeral key corresponding to epoch $\mathcal{W}_k$, whereas the canonical state has advanced to $\text{State}.\mathcal{W}_k \ge \mathcal{W}_k + 1$).  
    The validator admission filter $\text{Admit}(T')$ strictly evaluates to $0$.  
-   No honest validator votes for a block containing $T'$.  
-   Since Byzantine voting weight is $\le f < 1/3$, $B_{h'}$ cannot achieve a $2/3$ quorum certificate. Contradiction.
+   No honest validator admits $T'$ into any vertex at or after height $h'$. Contradiction.
 
 2. **Case 2: $T$ and $T'$ are proposed concurrently in the same checkpoint height $h$.**  
-   By the SCBFT quorum intersection invariant (any two quorums of size $2f + 1$ intersect in at least $f + 1$ nodes, containing at least one honest node):  
-   The block execution pipeline orders transactions deterministically by lane and nonce. Within lane $k$, a block cannot contain duplicate nonces.  
-   If $T$ and $T'$ reside in conflicting candidate blocks $B, B'$, the SCBFT fork-choice and equivocation detector prevent honest validators from signing votes for both blocks. At most one block can receive $2f + 1$ votes. Contradiction.
+   In the DAG-Primary model (ADR-641), transactions are proposed in vertices signed by the designated lane proposer.
+   - If $T$ and $T'$ are placed in the same vertex $V$, the vertex execution pipeline orders transactions deterministically by lane and nonce; duplicate nonces on lane $k$ are rejected during block construction.
+   - If $T$ and $T'$ are placed in two conflicting candidate vertices $V \neq V'$ at the same height $h$ claiming the same lane assignment, the proposing validator must sign two distinct vertices for $(h, \text{validator})$. The `VertexEquivocationDetector` (`DashMap<(height, validator) \to (V, \text{attestation})>`) detects the duplicate signature upon receipt, emits an `EquivocationProof`, and honest nodes drop the conflicting vertex. At most one vertex is included in the canonical DAG cut. Contradiction.
 
 3. **Case 3: $\mathcal{A}$ produces $pk = pk_{\mathcal{W}_k}$ from a different watermark epoch $\mathcal{W}' \neq \mathcal{W}_k$.**  
    This requires $\text{PRF}_{K_{\text{master}}}(\text{ctx} \parallel \mathcal{W}') = \text{PRF}_{K_{\text{master}}}(\text{ctx} \parallel \mathcal{W}_k)$ for $\mathcal{W}' \neq \mathcal{W}_k$.  
-   By PRF security, this event occurs with probability at most $\epsilon_{\text{PRF}} \le q_{\text{PRF}}^2 / 2^{256} = \text{negl}(\lambda)$.
+   By PRF security of HMAC-SHA512, this event occurs with probability at most $\epsilon_{\text{PRF}} \le q_{\text{PRF}}^2 / 2^{256} = \text{negl}(\lambda)$.
 
-Since all cases produce contradictions or negligible probabilities:
+Since all three cases produce contradictions or negligible probabilities:
 $$\Pr[\text{DoubleCommit}] \le \epsilon_{\text{PRF}} + \text{negl}(\lambda). \quad \blacksquare$$
 
 ---

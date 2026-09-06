@@ -197,33 +197,37 @@ first software-deployable WOTS+ variant with mechanical enforcement.
 
 ## 3. The CE-WOTS+ Construction
 
-### 3.1 ADR-062 Monotonic Lane Watermarks
+### 3.1 DAG-Primary Ingestion and ADR-062 Monotonic Lane Watermarks
 
-SynapticChain's ADR-062 defines a per-account, per-lane nonce state:
+SynapticChain consensus (ADR-641) organizes parallel transaction proposals into a Directed Acyclic
+Graph (DAG). Rather than serializing through a single leader via round-based voting committees:
+1. **Parallel DAG Vertices:** Every validator concurrently proposes a content-addressed vertex
+   $V = \langle \text{parents}, \text{txs}, \text{validator}, h, \text{sig} \rangle$ referencing 1–2 parent vertices.
+2. **Cryptographic Equivocation Detection (ADR-640):** Safety against conflicting proposals is enforced
+   via `VertexEquivocationDetector` (`DashMap<(height, validator) \to (V, \text{attestation})>`). Any attempt
+   to sign conflicting vertices at the same $(h, \text{validator})$ emits an `EquivocationProof`, dropping the vertex.
+3. **Monotonic Lane State (ADR-062):** Each account maintains 256 independent lanes:
 
-    Account.lanes: [LaneNonceState; 256]
-    
-    struct LaneNonceState {
-        watermark: u64,   // monotonically increasing, advances on inclusion
-        bitmap:   [u64; 4], // 256-nonce out-of-order window
-    }
+       Account.lanes: [LaneNonceState; 256]
+       
+       struct LaneNonceState {
+           watermark: u64,   // monotonically increasing, advances on inclusion
+           bitmap:   [u64; 4], // 256-nonce out-of-order window
+       }
 
-The watermark advances deterministically: when transaction T with lane k and nonce n is
-included in a canonical checkpoint at height h, the consensus execution is:
+When a canonical checkpoint commits a DAG cut at height $h$, transaction $T$ on lane $k$ with nonce $n$ executes:
 
     if n >= W_k: mark_nonce_used(lane_k, n)
     if n == W_k: W_k ← W_k + 1 (advance watermark)
 
-All honest validators execute this identically. The watermark is part of the
-deterministic state root. Any transaction presenting a nonce n < W_k is rejected
-unconditionally by all honest validators.
+All honest validators execute this state transition deterministically. Any transaction presenting
+a nonce $n < W_k$ is rejected unconditionally by the admission filter.
 
 ### 3.2 Ephemeral Key Derivation
 
 The CE-WOTS+ ephemeral seed for account A, lane k, at watermark W is:
 
     K_ephem(A, k, W) = HMAC-SHA512(
-        K_master,
         "CE-WOTS+v1" ‖ A.address_bytes ‖ k.to_le_bytes(8) ‖ W.to_le_bytes(8)
     )[0..32]
 
@@ -261,16 +265,22 @@ instantiation for λ=256, w=16:
 
 ### 3.5 The Enforcement Theorem
 
-**Theorem (Key Burn Invariant).** Under SCBFT 2/3 honest majority, no two distinct
-messages M ≠ M' can both receive valid CE-WOTS+ signatures accepted by honest validators
-using the same ephemeral key K_ephem(A, k, W).
+**Theorem (Key Burn Invariant in DAG Consensus).** Under ADR-641 DAG-Primary consensus
+with ADR-640 cryptographic accountability, no two distinct messages $M \neq M'$ can both
+receive valid CE-WOTS+ signatures accepted by honest validators using the same ephemeral key
+$K_{\text{ephem}}(A, k, W)$.
 
-**Proof.** The signing key is bound to watermark W on lane k. Once the first signature
-is included in a canonical checkpoint, the watermark advances to W' ≥ W+1. Any second
-transaction using K_ephem(A, k, W) presents nonce n < W', which is rejected by the
-nonce watermark check. Under SCBFT quorum safety, no conflicting checkpoint can be
-finalized at the same height, so the watermark advance is universal across honest
-validators. Key reuse is therefore consensus-impossible under honest majority. □
+**Proof.** The signing key is bound to watermark $W$ on lane $k$.
+1. If an adversary attempts sequential reuse across heights $h < h'$: once the first transaction
+   is committed in canonical checkpoint $h$, the watermark advances to $W' \ge W+1$. Any subsequent
+   transaction using $K_{\text{ephem}}(A, k, W)$ declares nonce $n = W < W'$, which is rejected by
+   the admission filter of every honest node.
+2. If an adversary attempts concurrent proposals at the same height $h$: the proposer must publish
+   conflicting vertices for $(h, \text{validator})$. The `VertexEquivocationDetector` detects the
+   conflicting signature upon arrival, emits an `EquivocationProof`, and honest nodes discard the
+   equivocated vertex before topological sorting.
+3. Distinct watermark epochs produce computationally independent keys under HMAC-SHA512 PRF security.
+Key reuse is therefore impossible under honest majority in the DAG state machine. □
 
 ---
 
