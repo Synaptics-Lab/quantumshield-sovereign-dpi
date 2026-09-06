@@ -8,11 +8,12 @@
 
 **Abstract**
 
-Winternitz One-Time Signatures (WOTS+), first proposed in 1979 and refined through
-RFC 8391, have remained cryptographically sound for nearly 50 years — their security
-reducing tightly to hash preimage resistance — yet were abandoned by production systems
-precisely because their *one-time* property could never be mechanically enforced at
-scale. A single key reuse exposes the entire private key. We present
+The Winternitz one-time signature concept, first proposed in 1979 [WIN82, MER79]
+and later refined as WOTS+ by Hülsing (2013) [HUL13] and RFC 8391, has remained
+cryptographically sound for nearly 50 years — its security reducing tightly to hash
+preimage resistance — yet was abandoned by production systems precisely because its
+*one-time* property could never be mechanically enforced at scale. A single key reuse
+exposes the entire private key. We present
 **Consensus-Enforced WOTS+ (CE-WOTS+)** and its protocol architecture **CE-TAP**:
 a construction that solves this 30-year deployment problem by cleanly separating the
 cryptographic layer from the state machine layer. At the primitive layer, WOTS+ provides
@@ -45,11 +46,11 @@ with 97.74% Amdahl parallel efficiency.
 
 In 1979, Leslie Lamport introduced the first one-time signature scheme based on any
 one-way function [LAM79]. Robert Merkle extended this to hash trees the same year
-[MER79]. Winternitz [WIN82] observed that by using *hash chains* rather than individual
-hash pairs, one could trade signature size for computation, achieving a compact
-one-time scheme. Hülsing formalized W-OTS+ with tight security reductions in 2013
-[HUL13], and the IETF standardized XMSS (using WOTS+ as a building block) as RFC 8391
-in 2018 [RFC8391].
+[MER79], incorporating an observation by Robert Winternitz [WIN82] that using *hash
+chains* rather than individual hash pairs trades signature size for computation,
+achieving a compact one-time scheme. Decades later, Hülsing formalized W-OTS+ with
+tight security reductions in 2013 [HUL13], which the IETF standardized as part of XMSS
+in RFC 8391 (2018) [RFC8391].
 
 Across this 45-year arc, every cryptographer studying WOTS+ arrived at the same
 conclusion: the security proof is beautiful, the reduction is tight, the assumption is
@@ -124,10 +125,16 @@ parameter λ and Winternitz parameter w, a private key consists of l random seed
 public key is derived by applying a hash function F repeatedly (w-1 times per chain),
 and signatures are partial chain evaluations parameterized by message digest nibbles.
 
-Hülsing's W-OTS+ [HUL13] introduces *bitmask-keyed chaining* (F_{R,i,j}) to achieve
-a tight reduction: the EUF-CMA advantage of any forger is bounded by the preimage
-resistance advantage of an inverter against F, scaled by l(w-1). This is asymptotically
-optimal for hash-based signatures (matching the birthday bound of the hash function).
+Hülsing's W-OTS+ [HUL13] introduces *bitmask-keyed chaining* ($F_{R,i,j}$) to achieve
+a tight reduction: the OT-EUF-CMA advantage of any forger is bounded by the preimage
+resistance advantage of an inverter against $F$, scaled by $l(w-1)$. While Hülsing's
+formulation employs step-indexed bitmasks ($j$) to mitigate multi-target attacks in large
+stateful Merkle trees (such as XMSS and SPHINCS+), CE-WOTS+ adopts a step-independent
+homogeneous chaining function $c_i(x) = \mathcal{H}(\mathcal{R} \parallel i \parallel x)$.
+Because each ephemeral key is bound by consensus to a single transaction watermark epoch
+$\mathcal{W}_k$, tree-level multi-target mitigation is unnecessary, and the homogeneous
+formulation guarantees strict functional composability ($c_i^{a+b}(x) = c_i^a(c_i^b(x))$)
+in the reduction.
 
 SPHINCS+ [BER19], standardized as NIST FIPS 205 (SLH-DSA), solves the one-time problem
 using a **stateful hypertree**: WOTS+ keys are leaves in a hierarchical Merkle forest,
@@ -440,7 +447,8 @@ BIP-360 Quantum-Proxy vault pattern:
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-The P2WSH hash lock satisfies Lemma 1 (Grover preimage resistance, 2^128 quantum gates).
+The P2WSH hash lock satisfies the standard Grover preimage resistance lower bound
+($\Omega(2^{128})$ quantum oracle evaluations; Bennett et al. [BEN97], Zalka [ZAL99]).
 The CE-WOTS+ settlement on L1 satisfies Theorem 1 (OT-EUF-CMA, ε ≤ 2^{-118}) and Theorem 2
 (CE-TAP protocol safety). Together, both legs of a cross-chain payment are post-quantum secure.
 
@@ -592,8 +600,8 @@ by the TEE vendor's root-of-trust.
 
 **F2 — IoT Payment Rails:** SHA3-256 hash chains are hardware-friendly (fixed-width, no
 NTT transforms). Low-power microcontrollers (ARM Cortex-M4) can compute a 67-chain
-WOTS+ verification in approximately 15ms at 80 MHz [estimated from SHA-256 cycle counts
-in [SHA3M4]; exact figures require a dedicated port]. The enforcement mechanism would require
+WOTS+ verification in approximately 15ms at 80 MHz [estimated from Cortex-M4 SHA-3 / Keccak
+cycle benchmarks in [PQM4]; exact figures require a dedicated port]. The enforcement mechanism would require
 a lightweight consensus protocol or TEE-backed counter (see F1).
 
 **F3 — On-Chain WOTS+ Verification Cost vs. BLS:** We noted that CE-WOTS+ verification
@@ -684,6 +692,8 @@ despite its one-time property, but because of it.
 
 ## References
 
+[BEN97]   Bennett, C.H., Bernstein, E., Brassard, G., Vazirani, U. "Strengths and Weaknesses of Quantum Computing." SIAM Journal on Computing 26(5):1510–1523, 1997.
+
 [BER19]   Bernstein, D.J., Hülsing, A., Kölbl, S., et al. "The SPHINCS+ Signature Framework." CCS 2019. https://eprint.iacr.org/2019/1086.pdf
 
 [BON11]   Boneh, D., Dagdelen, Ö., Fischlin, M., Lehmann, A., Schaffner, C., Zhandry, M. "Random Oracles in a Quantum World." ASIACRYPT 2011, LNCS 7073, pp. 41–69. https://eprint.iacr.org/2010/428.pdf
@@ -702,13 +712,13 @@ despite its one-time property, but because of it.
 
 [NIST205] NIST FIPS 205 (2024). "Stateless Hash-Based Digital Signature Standard (SLH-DSA)." https://doi.org/10.6028/NIST.FIPS.205
 
+[PQM4]    Kannwischer, M.J., Rijneveld, J., Schwabe, P., Stoffelen, K. "pqm4: Testing and Benchmarking PQC on ARM Cortex-M4." Cryptology ePrint Archive, Report 2019/844, 2019. https://eprint.iacr.org/2019/844.pdf (Standard reference for Keccak/SHA-3 and post-quantum hashing benchmarks on ARM Cortex-M4).
+
 [QUA23]   Webber, M., Elfving, V., Meister, R., Benjamin, S. "The impact of hardware specifications on reaching quantum advantage in the fault-tolerant regime." AVS Quantum Science 4, 013801 (2022). https://doi.org/10.1116/5.0073075. (Estimates ~317M physical qubits for RSA-2048 at 10^{-3} error rate; attack timeline 2033–2048 under optimistic roadmaps.)
 
 [RFC8391] RFC 8391 (2018). "XMSS: eXtended Merkle Signature Scheme." https://datatracker.ietf.org/doc/html/rfc8391
 
 [SECEUF26] SynapticChain Systems Architecture Group. "Formal Security Reductions: CE-WOTS+ and the Consensus-Enforced Transaction Authentication Protocol (CE-TAP)." September 2026. docs/SECURITY_REDUCTION_EUF_CMA.md, github.com/Synaptics-Lab/quantumshield-sovereign-dpi
-
-[SHA3M4]  Schwabe, P., Stoffelen, K. "All the AES You Need on Cortex-M3 and M4." SAC 2016, LNCS 10532, pp. 180–194. (SHA-256 performance reference for Cortex-M4 cycle count estimation; SHA3-256 figures require a dedicated port not yet published.)
 
 [SHO94]   Shor, P. "Algorithms for quantum computation: Discrete logarithms and factoring." FOCS 1994, pp. 124–134.
 
