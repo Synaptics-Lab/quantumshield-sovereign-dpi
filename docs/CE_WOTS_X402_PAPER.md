@@ -391,7 +391,7 @@ CE-WOTS+ is the only post-quantum scheme that:
 - Keeps public key size at 32 bytes (identical to Ed25519).
 - Achieves sub-millisecond verification.
 - Fits in a single HTTP/2 frame (≤ 16KB default frame size).
-- Provides standard EUF-CMA security in the ROM.
+- Provides one-time EUF-CMA security in the ROM, with the one-time property enforced by the consensus watermark (CE-TAP).
 
 ### 5.4 Multi-Lane Parallelism: 256 Concurrent x402 Streams
 
@@ -438,8 +438,8 @@ BIP-360 Quantum-Proxy vault pattern:
 ```
 
 The P2WSH hash lock satisfies Lemma 1 (Grover preimage resistance, 2^128 quantum gates).
-The CE-WOTS+ settlement on L1 satisfies Theorem 1 (EUF-CMA, ε ≤ 2^{-115}).
-Together, both legs of a cross-chain payment are post-quantum secure.
+The CE-WOTS+ settlement on L1 satisfies Theorem 1 (OT-EUF-CMA, ε ≤ 2^{-118}) and Theorem 2
+(CE-TAP protocol safety). Together, both legs of a cross-chain payment are post-quantum secure.
 
 ---
 
@@ -610,7 +610,7 @@ to future work.
 - **Quantum superposition signing oracle attacks**: The proof is classically tight (ROM).
   Analyzing CE-WOTS+ under the quantum ROM (QROM), where the adversary may query the
   signing oracle in superposition, requires the framework of Boneh et al. (2011) [BON11].
-  Whether the EUF-CMA bound in Theorem 1 remains tight under QROM is an **open problem**;
+  Whether the OT-EUF-CMA bound in Theorem 1 remains tight under QROM is an **open problem**;
   we make no conjecture about the degradation factor.
 
 ### 8.2 Comparison with SPHINCS+
@@ -619,13 +619,13 @@ SPHINCS+ (FIPS 205) is the standardized stateless hash-based signature scheme. I
 solves the one-time problem using a hypertree Merkle structure at the cost of 49,856-byte
 signatures. CE-WOTS+ makes a different tradeoff:
 
-| Property | SPHINCS+ | CE-WOTS+ |
+| Property | SPHINCS+ | CE-WOTS+ / CE-TAP |
 |:---|:---:|:---:|
 | Signature size | 49,856 B | 2,144 B |
 | Statefulness required | No | No (consensus is the state) |
 | External infrastructure required | No | Yes (blockchain node) |
-| One-time enforcement mechanism | Hypertree index | Consensus watermark |
-| EUF-CMA model | ROM/QROM | ROM |
+| One-time enforcement mechanism | Hypertree index | Consensus watermark ($\mathcal{W}_k$) |
+| Security model | EUF-CMA (ROM/QROM) | OT-EUF-CMA (ROM) + BFT Protocol Safety |
 | NIST standardized | Yes (FIPS 205) | No (this paper) |
 
 SPHINCS+ is the correct choice for contexts without a blockchain. CE-WOTS+ is the
@@ -694,7 +694,7 @@ despite its one-time property, but because of it.
 
 [RFC8391] RFC 8391 (2018). "XMSS: eXtended Merkle Signature Scheme." https://datatracker.ietf.org/doc/html/rfc8391
 
-[SECEUF26] SynapticChain Systems Architecture Group. "Formal Security Reduction: EUF-CMA Proof for CE-WOTS+ in the Random Oracle Model." September 2026. docs/SECURITY_REDUCTION_EUF_CMA.md, github.com/Synaptics-Lab/quantumshield-sovereign-dpi
+[SECEUF26] SynapticChain Systems Architecture Group. "Formal Security Reductions: CE-WOTS+ and the Consensus-Enforced Transaction Authentication Protocol (CE-TAP)." September 2026. docs/SECURITY_REDUCTION_EUF_CMA.md, github.com/Synaptics-Lab/quantumshield-sovereign-dpi
 
 [SHA3M4]  Schwabe, P., Stoffelen, K. "All the AES You Need on Cortex-M3 and M4." SAC 2016, LNCS 10532, pp. 180–194. (SHA-256 performance reference for Cortex-M4 cycle count estimation; SHA3-256 figures require a dedicated port not yet published.)
 
