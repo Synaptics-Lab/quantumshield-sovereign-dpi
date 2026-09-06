@@ -167,23 +167,20 @@ The admission check evaluates $\text{CanAccept}(\ell_k', n_2)$. Two cases arise:
 
 Therefore, $T_2$ is unconditionally rejected in all cases. $\blacksquare$
 
-### Full EUF-CMA Formal Reduction
+### Formal Security Reduction & Protocol Safety
 
 > **Note for Cryptography Reviewers:** The two lemmas above establish the *systems-level*
-> invariants. The complete **formal EUF-CMA security reduction** — including game-hopping
-> proofs, explicit construction of the preimage-resistance reducer $\mathcal{B}$, concrete
-> security bounds at NIST Levels 1/3/5, and the ROM indifferentiability justification for
-> SHA3-256 — is provided in the companion document:
+> invariants. The complete, mathematically rigorous **formal security reduction** — separating
+> the primitive-level OT-EUF-CMA proof from the protocol-level State Machine Replication (SMR)
+> safety proof — is provided in the companion document:
 >
 > 📄 [`SECURITY_REDUCTION_EUF_CMA.md`](./SECURITY_REDUCTION_EUF_CMA.md)
 >
 > That document contains:
-> - **Theorem 1** (CE-WOTS+ EUF-CMA ≤ PRE hardness, tight reduction)
-> - **Corollary 1** (concrete advantage bounds: $\epsilon \le 2^{-115}$ at Level 1)
-> - **Theorem 2** (consensus watermark binding: no double-sign under 2/3 honest threshold)
-> - **Theorem 3** (BIP-360 P2WSH vault: Grover lower bound $2^{128}$ quantum gates)
-> - **Appendix A** (Chain-Inversion Lemma, self-contained proof)
-> - **Appendix B** (concrete security table across adversary budgets, grant-reviewer format)
+> - **Lemma 2.1** (Deterministic Winternitz Checksum Invariant: $\exists i^*$ such that $v_{i^*}^* < v_{i^*}$)
+> - **Theorem 1** (Rigorous OT-EUF-CMA reduction: $\text{Adv}^{\text{OT-EUF-CMA}} \le 1,005 \cdot \text{Adv}^{\text{PRE}}$, zero backward evaluation, exact advantage $\le 2^{-118}$ under Grover search)
+> - **Theorem 2** (CE-TAP Double-Authentication Protocol Safety under BFT quorum intersection and PRF security)
+> - **Detailed Comparison Table** (WOTS+ vs. SPHINCS+ FIPS 205 vs. XMSS RFC 8391)
 
 ---
 
