@@ -153,6 +153,12 @@ We construct a reduction $\mathcal{B}$ that solves the Preimage Problem for $\ma
      Thus $y_{i^*}$ is distributed identically to an honest public key endpoint!
 6. $\mathcal{B}$ computes $\mathbf{pk} = \mathcal{H}(\mathcal{R} \parallel y_1 \parallel \cdots \parallel y_l)$ and delivers $pk = (\mathcal{R}, \mathbf{pk})$ to $\mathcal{A}$.
 
+**Random Oracle Simulation (Lazy Sampling):**  
+The reduction simulates the random oracle $\mathcal{H}$ via standard lazy sampling. $\mathcal{B}$ maintains an internal lookup table $\mathcal{T}_\mathcal{H}$. On any evaluation query $X \in \{0,1\}^*$ issued by $\mathcal{A}$ or $\mathcal{B}$:
+- If $(X, Y) \in \mathcal{T}_\mathcal{H}$, return $Y$.
+- Otherwise, sample $Y \leftarrow_\$ \{0,1\}^\lambda$ uniformly at random, record $(X, Y)$ in $\mathcal{T}_\mathcal{H}$, and return $Y$.  
+When computing message digest $D = \mathcal{H}(M)$ for the signing query, $\mathcal{B}$ evaluates $\mathcal{H}(M)$ via this lazy-sampling procedure.
+
 #### Answering the Signing Query:
 Adversary $\mathcal{A}$ requests a signature on message $M$.
 1. $\mathcal{B}$ computes digest $D = \mathcal{H}(M)$ and nibbles $V = (v_1, \ldots, v_l)$.
@@ -216,6 +222,8 @@ $$\text{Adv}^{\text{OT-EUF-CMA}}_{\text{quantum}}(\mathcal{A}) \le \frac{1,005}{
 
 **Verified Security Level:** The scheme provides **118 bits of post-quantum security against Grover search** at NIST Level 1 parameters ($\lambda = 256$).
 
+*Note on Quantum Heuristic:* The $2^{-118}$ figure is a standard post-quantum heuristic bound treating Grover's algorithm as reducing preimage search complexity from $2^{256}$ to $2^{128}$ and applying the classical reduction factor $l(w-1) = 1,005$. A fully quantum-tight reduction in the Quantum Random Oracle Model (QROM) with superposition queries remains an open research direction; the document does not claim a QROM proof.
+
 ---
 
 ## 4. Protocol Layer: Consensus-Enforced Transaction Authentication (CE-TAP)
@@ -262,7 +270,7 @@ Suppose towards contradiction that honest validators commit two transactions $T 
 1. **Case 1: $T$ and $T'$ are committed in distinct checkpoints $h < h'$.**  
    By the BFT Safety property of $\Pi_{\text{SMR}}$, all honest validators apply block $B_h$ before proposing or voting on $B_{h'}$.  
    Applying $T$ executes $\mathcal{W}_k \leftarrow n + 1 \ge \mathcal{W}_k + 1$.  
-   When $T'$ is evaluated at height $h'$, its declared watermark satisfies $n' \le \mathcal{W}_k - 1 < \text{State}.\mathcal{W}_k$.  
+   When $T'$ is evaluated at height $h'$, its declared watermark satisfies $n' = \mathcal{W}_k < \text{State}.\mathcal{W}_k$ (since $T'$ attempts to reuse the same ephemeral key corresponding to epoch $\mathcal{W}_k$, whereas the canonical state has advanced to $\text{State}.\mathcal{W}_k \ge \mathcal{W}_k + 1$).  
    The validator admission filter $\text{Admit}(T')$ strictly evaluates to $0$.  
    No honest validator votes for a block containing $T'$.  
    Since Byzantine voting weight is $\le f < 1/3$, $B_{h'}$ cannot achieve a $2/3$ quorum certificate. Contradiction.
