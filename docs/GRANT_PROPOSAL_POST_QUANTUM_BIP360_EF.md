@@ -167,6 +167,24 @@ The admission check evaluates $\text{CanAccept}(\ell_k', n_2)$. Two cases arise:
 
 Therefore, $T_2$ is unconditionally rejected in all cases. $\blacksquare$
 
+### Full EUF-CMA Formal Reduction
+
+> **Note for Cryptography Reviewers:** The two lemmas above establish the *systems-level*
+> invariants. The complete **formal EUF-CMA security reduction** — including game-hopping
+> proofs, explicit construction of the preimage-resistance reducer $\mathcal{B}$, concrete
+> security bounds at NIST Levels 1/3/5, and the ROM indifferentiability justification for
+> SHA3-256 — is provided in the companion document:
+>
+> 📄 [`SECURITY_REDUCTION_EUF_CMA.md`](./SECURITY_REDUCTION_EUF_CMA.md)
+>
+> That document contains:
+> - **Theorem 1** (CE-WOTS+ EUF-CMA ≤ PRE hardness, tight reduction)
+> - **Corollary 1** (concrete advantage bounds: $\epsilon \le 2^{-115}$ at Level 1)
+> - **Theorem 2** (consensus watermark binding: no double-sign under 2/3 honest threshold)
+> - **Theorem 3** (BIP-360 P2WSH vault: Grover lower bound $2^{128}$ quantum gates)
+> - **Appendix A** (Chain-Inversion Lemma, self-contained proof)
+> - **Appendix B** (concrete security table across adversary budgets, grant-reviewer format)
+
 ---
 
 ## 5. Empirical Test Receipts & Benchmark Telemetry
