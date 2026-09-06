@@ -42,15 +42,18 @@ We explicitly distinguish between two orthogonal layers:
 
 Let $w = 16$, $l_1 = 64$, $l_2 = 3$, $l = 67$. Let $\mathcal{R} \in \{0,1\}^\lambda$ be a public seed uniformly drawn at key generation.
 
-**Chaining Function:**  
-For public seed $\mathcal{R}$, chain index $i \in [1, l]$, and iteration step $j \ge 1$:
-$$c_j(x) = \mathcal{H}(\mathcal{R} \parallel i \parallel j \parallel x)$$
-We define $c^0(x) = x$ and $c^k(x) = c_k(c^{k-1}(x))$ for $k \in [1, w-1]$.
+**Chaining Function (Step-Independent Homogeneous Chain):**  
+To ensure strict functional composability, the chaining function for chain index $i \in [1, l]$ is defined independently of the step counter:
+$$c_i(x) = \mathcal{H}(\mathcal{R} \parallel i \parallel x)$$
+For any non-negative integer $k$, the $k$-fold iteration $c_i^k: \{0,1\}^\lambda \to \{0,1\}^\lambda$ is defined as:
+$$c_i^0(x) = x, \qquad c_i^k(x) = \underbrace{c_i(c_i(\cdots c_i(x)\cdots))}_{k \text{ applications}}$$
+Because $c_i$ is a fixed, step-invariant function per chain $i$, it satisfies the **strict composition law**:
+$$\forall a, b \ge 0: \quad c_i^{a+b}(x) = c_i^a\bigl(c_i^b(x)\bigr) = c_i^b\bigl(c_i^a(x)\bigr)$$
 
 **KeyGen($1^\lambda$):**
 1. Sample secret seeds $x_1, \ldots, x_l \leftarrow_\$ \{0,1\}^\lambda$.
 2. Sample public randomization seed $\mathcal{R} \leftarrow_\$ \{0,1\}^\lambda$.
-3. Compute chain endpoints: $y_i = c^{w-1}(x_i)$ for each $i \in [1, l]$.
+3. Compute chain endpoints: $y_i = c_i^{w-1}(x_i)$ for each $i \in [1, l]$.
 4. Compute public root: $\mathbf{pk} = \mathcal{H}(\mathcal{R} \parallel y_1 \parallel \cdots \parallel y_l)$.
 5. Output $sk = (x_1, \ldots, x_l)$ and $pk = (\mathcal{R}, \mathbf{pk})$.
 
@@ -61,14 +64,14 @@ We define $c^0(x) = x$ and $c^k(x) = c_k(c^{k-1}(x))$ for $k \in [1, w-1]$.
    $$C = \sum_{i=1}^{l_1} (w - 1 - v_i)$$
    Since each $v_i \in [0, 15]$, we have $0 \le C \le 64 \times 15 = 960$.
 4. Decompose $C$ into $l_2 = 3$ nibbles in base $w$: $(v_{l_1+1}, v_{l_1+2}, v_l)$.
-5. For each $i \in [1, l]$, compute signature component: $\sigma_i = c^{v_i}(x_i)$.
+5. For each $i \in [1, l]$, compute signature component: $\sigma_i = c_i^{v_i}(x_i)$.
 6. Output $\boldsymbol{\sigma} = (\sigma_1, \ldots, \sigma_l)$.
 
 **Verify($pk, M, \boldsymbol{\sigma}$):**
 1. Parse $pk = (\mathcal{R}, \mathbf{pk})$ and $\boldsymbol{\sigma} = (\sigma_1, \ldots, \sigma_l)$.
 2. Compute $V = (v_1, \ldots, v_l)$ from $M$ as in Sign.
 3. For each $i \in [1, l]$, compute:
-   $$y_i' = c^{w - 1 - v_i}(\sigma_i)$$
+   $$y_i' = c_i^{w - 1 - v_i}(\sigma_i)$$
 4. Accept iff $\mathcal{H}(\mathcal{R} \parallel y_1' \parallel \cdots \parallel y_l') = \mathbf{pk}$.
 
 ---
@@ -141,13 +144,13 @@ We construct a reduction $\mathcal{B}$ that solves the Preimage Problem for $\ma
 3. $\mathcal{B}$ samples public seed $\mathcal{R} \leftarrow_\$ \{0,1\}^\lambda$.
 4. For all $i \in [1, l] \setminus \{i^*\}$:
    - $\mathcal{B}$ samples private seed $x_i \leftarrow_\$ \{0,1\}^\lambda$.
-   - $\mathcal{B}$ evaluates honest chain endpoints: $y_i = c^{w-1}(x_i)$.
+   - $\mathcal{B}$ evaluates honest chain endpoints: $y_i = c_i^{w-1}(x_i)$.
 5. For the target chain $i^*$:
-   - $\mathcal{B}$ embeds the target challenge $Y^*$ directly at step $j^*$:
-     $$\text{Define: } z_{i^*, j^*} = Y^*$$
-   - $\mathcal{B}$ computes forward endpoints from $Y^*$:
-     $$y_{i^*} = c^{w - 1 - j^*}(Y^*)$$
-     (Note: $\mathcal{B}$ does not know the values $z_{i^*, k}$ for $k < j^*$; it only computes forward).
+   - $\mathcal{B}$ implicitly sets the challenge $Y^*$ at step $j^*$: $Y^* = c_{i^*}^{j^*}(x_{i^*})$.
+   - Using the homogeneous composition law $c_i^a(c_i^b(x)) = c_i^{a+b}(x)$, $\mathcal{B}$ computes the chain endpoint forward from $Y^*$:
+     $$y_{i^*} = c_{i^*}^{w - 1 - j^*}(Y^*)$$
+     Notice that $c_{i^*}^{w - 1 - j^*}(Y^*) = c_{i^*}^{w - 1 - j^*}\bigl(c_{i^*}^{j^*}(x_{i^*})\bigr) = c_{i^*}^{w-1}(x_{i^*})$.
+     Thus $y_{i^*}$ is distributed identically to an honest public key endpoint!
 6. $\mathcal{B}$ computes $\mathbf{pk} = \mathcal{H}(\mathcal{R} \parallel y_1 \parallel \cdots \parallel y_l)$ and delivers $pk = (\mathcal{R}, \mathbf{pk})$ to $\mathcal{A}$.
 
 #### Answering the Signing Query:
@@ -156,8 +159,11 @@ Adversary $\mathcal{A}$ requests a signature on message $M$.
 2. $\mathcal{B}$ checks whether $v_{i^*} \ge j^*$:
    - **If $v_{i^*} < j^*$:** $\mathcal{B}$ would need a value upstream of $Y^*$, which it does not possess. $\mathcal{B}$ **aborts** and outputs failure.
    - **If $v_{i^*} \ge j^*$:** $\mathcal{B}$ can answer the query honestly and completely!
-     - For $i \neq i^*$: compute $\sigma_i = c^{v_i}(x_i)$ using known secret $x_i$.
-     - For $i = i^*$: compute $\sigma_{i^*} = c^{v_{i^*} - j^*}(Y^*)$ using purely forward evaluations from $Y^*$.
+     - For $i \neq i^*$: compute $\sigma_i = c_i^{v_i}(x_i)$ using known secret $x_i$.
+     - For $i = i^*$: compute $\sigma_{i^*} = c_{i^*}^{v_{i^*} - j^*}(Y^*)$ forward from $Y^*$.
+       By the composition law:
+       $$c_{i^*}^{v_{i^*} - j^*}(Y^*) = c_{i^*}^{v_{i^*} - j^*}\bigl(c_{i^*}^{j^*}(x_{i^*})\bigr) = c_{i^*}^{v_{i^*}}(x_{i^*})$$
+       which is the exact, valid signature component $\sigma_{i^*}$!
 3. $\mathcal{B}$ returns valid signature $\boldsymbol{\sigma} = (\sigma_1, \ldots, \sigma_l)$ to $\mathcal{A}$.
 
 #### Extracting the Preimage from the Forgery:
@@ -167,15 +173,17 @@ $\mathcal{A}$ terminates and outputs candidate forgery $(M^*, \boldsymbol{\sigma
 3. Condition on $\mathcal{B}$'s initial guess being correct: $k = i^*$ and $v_{i^*}^* = j^* - 1$.
    - The forged signature contains component $\sigma_{i^*}^*$.
    - Since $\text{Verify}(pk, M^*, \boldsymbol{\sigma}^*) = 1$, the verification equation guarantees:
-     $$c^{w - 1 - v_{i^*}^*}(\sigma_{i^*}^*) = y_{i^*}$$
-   - Recall how $y_{i^*}$ was constructed: $y_{i^*} = c^{w - 1 - j^*}(Y^*)$.
-   - Substitute $v_{i^*}^* = j^* - 1$:
-     $$c^{w - 1 - (j^* - 1)}(\sigma_{i^*}^*) = c^{w - j^*}(\sigma_{i^*}^*) = c^{w - 1 - j^*}(Y^*)$$
-   - Expanding the outer application of $c_{j^*}$:
-     $$c_{j^*}\Big(c^{j^* - 1 - (j^* - 1)}(\sigma_{i^*}^*)\Big) = c_{j^*}(\sigma_{i^*}^*) = Y^*$$
-     where $c_{j^*}(x) = \mathcal{H}(\mathcal{R} \parallel i^* \parallel j^* \parallel x)$.
-   - Therefore, the value:
-     $$X^* = (\mathcal{R} \parallel i^* \parallel j^* \parallel \sigma_{i^*}^*)$$
+     $$c_{i^*}^{w - 1 - v_{i^*}^*}(\sigma_{i^*}^*) = y_{i^*}$$
+   - Substitute $v_{i^*}^* = j^* - 1$ and $y_{i^*} = c_{i^*}^{w - 1 - j^*}(Y^*)$:
+     $$c_{i^*}^{w - j^*}(\sigma_{i^*}^*) = c_{i^*}^{w - 1 - j^*}(Y^*)$$
+   - Decomposing the left-hand side using the composition law:
+     $$c_{i^*}^{w - 1 - j^*}\bigl(c_{i^*}(\sigma_{i^*}^*)\bigr) = c_{i^*}^{w - 1 - j^*}(Y^*)$$
+   - Let $A = c_{i^*}(\sigma_{i^*}^*)$ and $B = Y^*$.
+     If $A \neq B$, then traversing the $(w - 1 - j^*)$ chain steps from $A$ and $B$ reveals a collision in $c_{i^*}$, which occurs in the Random Oracle Model with probability at most $q_H^2 / 2^{\lambda+1} = \text{negl}(\lambda)$.
+     Therefore, except with negligible collision probability, $A = B$:
+     $$c_{i^*}(\sigma_{i^*}^*) = Y^*$$
+   - Since $c_{i^*}(x) = \mathcal{H}(\mathcal{R} \parallel i^* \parallel x)$, the value:
+     $$X^* = (\mathcal{R} \parallel i^* \parallel \sigma_{i^*}^*)$$
      satisfies $\mathcal{H}(X^*) = Y^*$!
 4. $\mathcal{B}$ outputs $X^*$ as the valid preimage of $Y^*$.
 

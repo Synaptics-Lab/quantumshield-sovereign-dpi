@@ -230,11 +230,14 @@ ephemeral seeds (under PRF security, no two outputs are correlated).
 ### 3.3 Key Generation from Ephemeral Seed
 
     For i ∈ [l]:  x_i = SHA3-256(K_ephem ‖ i.to_le_bytes(4))
-    For i ∈ [l]:  y_i = F^{w-1}_{R,i}(x_i)
+    For i ∈ [l]:  y_i = c_i^{w-1}(x_i)
     pk = SHA3-256(R ‖ y_1 ‖ … ‖ y_l)
 
-The bitmask-keyed chaining function F_{R,i,j}(x) = SHA3-256(x XOR SHA3-256(R ‖ i ‖ j))
-follows RFC 8391 §3.1.2 with SHA3-256 as the instantiation (replacing SHA-256).
+The homogeneous chaining function for chain index $i \in [1, l]$ is defined independently
+of the step counter:
+    c_i(x) = SHA3-256(R ‖ i.to_le_bytes(4) ‖ x)
+Because $c_i$ is step-invariant per chain, it satisfies the strict functional composition law:
+    c_i^{a+b}(x) = c_i^a(c_i^b(x)) = c_i^b(c_i^a(x))
 
 The public seed R is derived from K_ephem to allow stateless verification:
     R = SHA3-256("CE-WOTS+seed" ‖ K_ephem)
@@ -451,6 +454,15 @@ CE-WOTS+ is implemented in Rust within the `synaptic-crypto` crate
 (github.com/Synaptics-Lab/Synapse1):
 
 ```rust
+// Homogeneous per-chain function: c_i(x) = SHA3-256(pub_seed || i || x)
+pub fn wots_chain(x: &[u8; 32], steps: usize, pub_seed: &[u8; 32], i: usize) -> [u8; 32] {
+    let mut curr = *x;
+    for _ in 0..steps {
+        curr = sha3_256(&[pub_seed, &i.to_le_bytes(), &curr].concat());
+    }
+    curr
+}
+
 // Key generation (consensus-bound)
 pub fn ce_wots_keygen(
     k_master: &[u8; 32],
@@ -464,7 +476,7 @@ pub fn ce_wots_keygen(
         .collect();
     let pub_seed = sha3_256(b"CE-WOTS+seed" + &k_ephem);
     let y: Vec<[u8; 32]> = chains.iter().enumerate()
-        .map(|(i, x)| wots_chain(x, 0, W-1, &pub_seed, i))
+        .map(|(i, x)| wots_chain(x, W-1, &pub_seed, i))
         .collect();
     let pk_root = sha3_256(&[&pub_seed, y.as_slice()].concat());
     (WotsPrivKey { chains, pub_seed }, WotsPubKey { root: pk_root, seed: pub_seed })
@@ -478,7 +490,7 @@ pub fn ce_wots_verify(
 ) -> bool {
     let nibbles = message_to_nibbles(message);  // w=16 nibble decomposition
     let y_prime: Vec<[u8; 32]> = sig.chains.iter().enumerate()
-        .map(|(i, s)| wots_chain(s, nibbles[i], W-1, &pk.seed, i))
+        .map(|(i, s)| wots_chain(s, W-1-nibbles[i], &pk.seed, i))
         .collect();
     sha3_256(&[&pk.seed, y_prime.as_slice()].concat()) == pk.root
 }
